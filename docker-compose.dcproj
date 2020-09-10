@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>fea0c318-ffed-4d39-8781-265718ca43dd</ProjectGuid>
+    <DockerLaunchBrowser>True</DockerLaunchBrowser>
+    <DockerServiceUrl>http://localhost:5100</DockerServiceUrl>
+    <DockerServiceName>webApi</DockerServiceName>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include=".dockerignore" />
+    <None Include="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose.prod.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose.yml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="docker-compose-windows.prod.yml">
+      <DependentUpon>docker-compose.windows.yml</DependentUpon>
+    </Content>
+    <Content Include="docker-compose.override.windows.yml">
+      <DependentUpon>docker-compose.windows.yml</DependentUpon>
+    </Content>
+    <Content Include="docker-compose.pre.yml" />
+    <Content Include="docker-compose.windows.yml" />
+    <Content Include="localtime" />
+  </ItemGroup>
+</Project>

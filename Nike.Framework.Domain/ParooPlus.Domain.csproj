@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <RootNamespace>ParooPlus.Domain</RootNamespace>
+        <Nullable>enable</Nullable>
+        <Version>0.4.0</Version>
+        <Company>Sabacell</Company>
+        <Authors>Mohammad ShafieZadeh</Authors>
+        <Description>Paroo Plus Domain provides a set of base classes to implement DDD with or without Event Sourcing in your project.</Description>
+        <Copyright />
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageTags>DDD;Event Sourcing;Specification;Aggregate Root;Repository;Unit of Work; Value Object;Entity</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+        <FileVersion>0.4.0.0</FileVersion>
+    </PropertyGroup>
+
+</Project>
