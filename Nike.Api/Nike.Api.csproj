@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>F:\Projects\Sabacell Projects\Nike\Nike.Api\Nike.Api.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Enexure.MicroBus.MicrosoftDependencyInjection" Version="1.1.0" />
+    <PackageReference Include="FluentValidation" Version="9.2.0" />
+    <PackageReference Include="NEST" Version="7.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nike.EventBus.Kafka\Nike.EventBus.Kafka.csproj" />
+    <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
+    <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj" />
+    <ProjectReference Include="..\Nike.Redis.Microsoft.DependencyInjection\Nike.Redis.Microsoft.DependencyInjection.csproj" />
+    <ProjectReference Include="..\Nike.Swagger\Nike.Swagger.csproj" />
+  </ItemGroup>
+
+
+</Project>

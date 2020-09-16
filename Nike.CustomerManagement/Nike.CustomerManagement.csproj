@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Enexure.MicroBus" Version="3.6.2" />
+    <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.6.0" />
+    <PackageReference Include="Enexure.MicroBus.MessageContracts" Version="3.2.0" />
+    <PackageReference Include="Enexure.MicroBus.MicrosoftDependencyInjection" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.8" />
+    <PackageReference Include="NEST" Version="7.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nike.EntityFramework.Microsoft.DependencyInjection\Nike.EntityFramework.Microsoft.DependencyInjection.csproj" />
+    <ProjectReference Include="..\Nike.EventBus.Kafka\Nike.EventBus.Kafka.csproj" />
+    <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
+    <ProjectReference Include="..\Nike.Framework.Domain\Nike.Framework.Domain.csproj" />
+    <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj" />
+    <ProjectReference Include="..\Nike.Redis.Microsoft.DependencyInjection\Nike.Redis.Microsoft.DependencyInjection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="appsettings.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
