@@ -18,8 +18,14 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore ./Nike.EventBus/Nike.EventBus.csproj
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      #run: dotnet build --configuration Release --no-restore ./Nike.Api/Nike.Api.csproj
+      run: dotnet pack ./Nike.EventBus/Nike.EventBus.csproj  -c Release -o ./nuget
+    - name: pwd  
+      run: pwd
+    - name: ls
+      run: ls -lah  
+      #run: dotnet test --no-restore --verbosity normal ./Nike.Api/Nike.Api.csproj
+    - name: Deploy
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/*.nupkg  -k oy2fbqdpc2cwvanqy6kq5og4fpj2mcvexesndtrqul6axe -s https://api.nuget.org/v3/index.json --skip-duplicate
