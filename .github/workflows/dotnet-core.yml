@@ -18,8 +18,12 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore ./Nike.Api/Nike.Api.csproj
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      #run: dotnet build --configuration Release --no-restore ./Nike.Api/Nike.Api.csproj
+      run: dotnet pack ./Nike.Api/Nike.Api.csproj  -c Release -o ./Nike.Api/nuget
+    - name: pwd  
+      run: pwd
+      #run: dotnet test --no-restore --verbosity normal ./Nike.Api/Nike.Api.csproj
+    - name: Deploy
+      run: dotnet nuget push ./Nike.Api/nuget/Nike.Api*.nupkg  -k oy2fbqdpc2cwvanqy6kq5og4fpj2mcvexesndtrqul6axe -s https://api.nuget.org/v3/index.json
