@@ -86,21 +86,4 @@ jobs:
       #run: dotnet test --no-restore --verbosity normal ./Nike.Api/Nike.Api.csproj
     - name: Deploy
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/*.nupkg  -k oy2fbqdpc2cwvanqy6kq5og4fpj2mcvexesndtrqul6axe -s https://api.nuget.org/v3/index.json --skip-duplicate
-	  
-	  
-	  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	  
+      	
