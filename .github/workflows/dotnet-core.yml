@@ -17,9 +17,90 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+
+
+    #- name: Install dependencies Nike.Api
+    #  run: dotnet restore ./Nike.Api/Nike.Api.csproj
+    #- name: Build Nike.Api
+    #  run: dotnet pack ./Nike.Api/Nike.Api.csproj  -c Release -o ./nuget
+    #- name: Install dependencies Nike.CustomerManagement.Tests.Units
+    #  run: dotnet restore ./Nike.CustomerManagement.Tests.Units/Nike.CustomerManagement.Tests.Units.csproj
+    #- name: Build Nike.CustomerManagement.Tests.Units
+    #  run: dotnet pack ./Nike.CustomerManagement.Tests.Units/Nike.CustomerManagement.Tests.Units.csproj  -c Release -o ./nuget
+    #- name: Install dependencies Nike.CustomerManagement
+    #  run: dotnet restore ./Nike.CustomerManagement/Nike.CustomerManagement.csproj
+    #- name: Build Nike.CustomerManagement
+    #  run: dotnet pack ./Nike.CustomerManagement/Nike.CustomerManagement.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.EntityFramework.Microsoft.DependencyInjection
+      run: dotnet restore ./Nike.EntityFramework.Microsoft.DependencyInjection/Nike.EntityFramework.Microsoft.DependencyInjection.csproj
+    - name: Build Nike.EntityFramework.Microsoft.DependencyInjection
+      run: dotnet pack ./Nike.EntityFramework.Microsoft.DependencyInjection/Nike.EntityFramework.Microsoft.DependencyInjection.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.EntityFramework
+      run: dotnet restore ./Nike.EntityFramework/Nike.EntityFramework.csproj
+    - name: Build Nike.EntityFramework
+      run: dotnet pack ./Nike.EntityFramework/Nike.EntityFramework.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.EventBus.Kafka
+      run: dotnet restore ./Nike.EventBus.Kafka/Nike.EventBus.Kafka.csproj
+    - name: Build Nike.EventBus.Kafka
+      run: dotnet pack ./Nike.EventBus.Kafka/Nike.EventBus.Kafka.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.EventBus.RabbitMQ
+      run: dotnet restore ./Nike.EventBus.RabbitMQ/Nike.EventBus.RabbitMQ.csproj
+    - name: Build Nike.EventBus.RabbitMQ
+      run: dotnet pack ./Nike.EventBus.RabbitMQ/Nike.EventBus.RabbitMQ.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.EventBus
+      run: dotnet restore ./Nike.EventBus/Nike.EventBus.csproj
+    - name: Build Nike.EventBus
+      #run: dotnet build --configuration Release --no-restore ./Nike.EventBus/Nike.EventBus.csproj
+      run: dotnet pack ./Nike.EventBus/Nike.EventBus.csproj  -c Release -o ./nuget	  
+    - name: Install dependencies Nike.Exception
+      run: dotnet restore ./Nike.Exception/Nike.Exception.csproj
+    - name: Build Nike.Exception
+      run: dotnet pack ./Nike.Exception/Nike.Exception.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.Framework.Domain
+      run: dotnet restore ./Nike.Framework.Domain/Nike.Framework.Domain.csproj
+    - name: Build Nike.Framework.Domain
+      run: dotnet pack ./Nike.Framework.Domain/Nike.Framework.Domain.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.Mediator
+      run: dotnet restore ./Nike.Mediator/Nike.Mediator.csproj
+    - name: Build Nike.Mediator
+      run: dotnet pack ./Nike.Mediator/Nike.Mediator.csproj  -c Release -o ./nuget
+    - name: Install dependencies  Nike.Redis.Microsoft.DependencyInjection
+      run: dotnet restore ./Nike.Redis.Microsoft.DependencyInjection/Nike.Redis.Microsoft.DependencyInjection.csproj
+    - name: Build Nike.Redis.Microsoft.DependencyInjection
+      run: dotnet pack ./Nike.Redis.Microsoft.DependencyInjection/Nike.Redis.Microsoft.DependencyInjection.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.Swagger
+      run: dotnet restore ./Nike.Swagger/Nike.Swagger.csproj
+    - name: Build Nike.Swagger
+      run: dotnet pack ./Nike.Swagger/Nike.Swagger.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.Web.DependencyInjection
+      run: dotnet restore ./Nike.Web.DependencyInjection/Nike.Web.DependencyInjection.csproj
+    - name: Build Nike.Web.DependencyInjection
+      run: dotnet pack ./Nike.Web.DependencyInjection/Nike.Web.DependencyInjection.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.Web
+      run: dotnet restore ./Nike.Web/Nike.Web.csproj
+    - name: Build Nike.Web
+      run: dotnet pack ./Nike.Web/Nike.Web.csproj  -c Release -o ./nuget
+    - name: ls
+      run: ls -lah ./nuget 
+	#- name: Test  
+      #run: dotnet test --no-restore --verbosity normal ./Nike.Api/Nike.Api.csproj
+    - name: Deploy
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/*.nupkg  -k oy2fbqdpc2cwvanqy6kq5og4fpj2mcvexesndtrqul6axe -s https://api.nuget.org/v3/index.json --skip-duplicate
+	  
+	  
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
