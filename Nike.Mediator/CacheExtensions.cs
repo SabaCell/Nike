@@ -18,15 +18,16 @@ namespace Nike.Mediator
             var sw = Stopwatch.StartNew();
 
             // TODO : Arsalan : Uncomment after implement cache invalidation solution
-            //var cachedResult = await source.GetStringAsync(key, cancellationToken);
-            //if (cachedResult != null)
-            //{
-            //    sw.Stop();
-            //    logger.LogInformation(
-            //        $"CachableQuery(Request) read data from Cache in {sw.Elapsed.TotalMilliseconds}ms- response: {cachedResult}.");
+            // TODO : Arash : You can invalidate your command instead of block it!
+            var cachedResult = await source.GetStringAsync(key, cancellationToken);
+            if (cachedResult != null)
+            {
+                sw.Stop();
+                logger.LogInformation(
+                    $"CachableQuery(Request) read data from Cache in {sw.Elapsed.TotalMilliseconds}ms- response: {cachedResult}.");
 
-            //    return JsonSerializer.Deserialize<T>(cachedResult);
-            //}
+                return JsonSerializer.Deserialize<T>(cachedResult);
+            }
 
             var options = new DistributedCacheEntryOptions();
 
