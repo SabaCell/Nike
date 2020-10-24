@@ -12,19 +12,17 @@ namespace Nike.Mediator
     public static class CacheExtensions
     {
         public static async Task<T> GetOrCreateAsync<T>(this IDistributedCache source, ILogger logger, string key,
-        Func<DistributedCacheEntryOptions, Task<T>> factory,
-        CancellationToken cancellationToken)
+                                                        Func<DistributedCacheEntryOptions, Task<T>> factory,
+                                                        CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
 
-            // TODO : Arsalan : Uncomment after implement cache invalidation solution
-            // TODO : Arash : You can invalidate your command instead of block it!
             var cachedResult = await source.GetStringAsync(key, cancellationToken);
             if (cachedResult != null)
             {
                 sw.Stop();
-                logger.LogInformation(
-                    $"CachableQuery(Request) read data from Cache in {sw.Elapsed.TotalMilliseconds}ms- response: {cachedResult}.");
+                logger.LogTrace(
+                                $"CachableQuery(Request) read data from Cache in {sw.Elapsed.TotalMilliseconds}ms- response: {cachedResult}.");
 
                 return JsonSerializer.Deserialize<T>(cachedResult);
             }
@@ -44,30 +42,21 @@ namespace Nike.Mediator
             //await source.CreateEntry(key, result, cancellationToken);
 
             sw.Stop();
-            logger.LogInformation(
-                $"CachableQuery(Request) read data for first time from DB in {dbSw.Elapsed.TotalMilliseconds}ms + {sw.Elapsed.TotalMilliseconds - dbSw.Elapsed.TotalMilliseconds}ms (more process), response: {result}.");
+            logger.LogTrace(
+                            $"CachableQuery(Request) read data for first time from DB in {dbSw.Elapsed.TotalMilliseconds}ms + {sw.Elapsed.TotalMilliseconds - dbSw.Elapsed.TotalMilliseconds}ms (more process), response: {result}.");
 
             return result;
         }
 
-        private static Task CreateEntry(this IDistributedCache cache, string key, object value,
-        CancellationToken cancellationToken)
-        {
-            var jsonEntry = JsonSerializer.Serialize(value);
-
-            return cache.SetStringAsync(key, jsonEntry, cancellationToken);
-        }
-
-
         public static Task InvalidateAsync<TQuery>(this IDistributedCache cache, TQuery query,
-        CancellationToken cancellationToken)
+                                                   CancellationToken cancellationToken)
         where TQuery : CachableQueryBase<TQuery>
         {
             return cache.RemoveAsync(query.GetKey(), cancellationToken);
         }
 
         public static Task InvalidateAsync(this IDistributedCache cache, string key,
-        CancellationToken cancellationToken)
+                                           CancellationToken cancellationToken)
         {
             //TODO fill with 
             //Guard.NotNullOrEmpty(key, nameof(key));

@@ -35,7 +35,7 @@ namespace Nike.Mediator.Handlers
                 throw;
             }
 
-            foreach (var domainEvent in events) await _mediator.PublishAsync(domainEvent);
+            foreach (var domainEvent in events) await _mediator.PublishEventAsync(domainEvent);
 
             return result;
         }
