@@ -36,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.EventBus.Kafka", "Nike
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.Web", "Nike.Web\Nike.Web.csproj", "{477E9018-8CF4-4AE6-A11C-0B6CC5D71A37}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.Exception", "Nike.Exception\Nike.Exception.csproj", "{09CF58B7-9F6E-422F-BB06-E41F2AAE9EA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.Exceptions", "Nike.Exceptions\Nike.Exceptions.csproj", "{09CF58B7-9F6E-422F-BB06-E41F2AAE9EA3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.Web.DependencyInjection", "Nike.Web.DependencyInjection\Nike.Web.DependencyInjection.csproj", "{CF3F5704-4A83-4367-AD11-685CED9D5415}"
 EndProject
