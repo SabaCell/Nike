@@ -11,9 +11,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Enexure.MicroBus" Version="3.6.2"/>
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.3"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.3"/>
+        <PackageReference Include="Enexure.MicroBus" Version="3.6.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
+      <ProjectReference Include="..\Nike.Framework.Domain\Nike.Framework.Domain.csproj" />
     </ItemGroup>
 
 </Project>

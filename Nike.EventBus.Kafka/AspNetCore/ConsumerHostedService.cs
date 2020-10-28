@@ -22,7 +22,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private readonly IServiceProvider _services;
 
         public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection,
-        IServiceProvider services)
+                                     IServiceProvider services)
         {
             _logger = logger;
             _connection = connection;
@@ -36,15 +36,15 @@ namespace Nike.EventBus.Kafka.AspNetCore
             var assembly = Assembly.GetEntryAssembly();
 
             return assembly.GetTypes().Where(p => p.BaseType == typeof(IntegrationEvent))
-            .ToDictionary(m => m.Name, m => m);
+                           .ToDictionary(m => m.Name, m => m);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation(
-            $"Queued Hosted Service is running.{Environment.NewLine}" +
-            $"{Environment.NewLine}Tap W to add a work item to the " +
-            $"background queue.{Environment.NewLine}");
+                                   $"Queued Hosted Service is running.{Environment.NewLine}" +
+                                   $"{Environment.NewLine}Tap W to add a work item to the " +
+                                   $"background queue.{Environment.NewLine}");
 
             await BackgroundProcessing(stoppingToken);
         }
@@ -52,26 +52,23 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private async Task BackgroundProcessing(CancellationToken stoppingToken)
         {
             using var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
-            // Note: All handlers are called on the main .Consume thread.
-            .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
-            .SetStatisticsHandler((_, json) =>
+                                 // Note: All handlers are called on the main .Consume thread.
+                                 .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
+                                 .SetStatisticsHandler((_, json) =>
 
-            //Console.WriteLine($"Statistics: {json}")
-            Console.WriteLine($"Statistics: raised")
-            )
-            .SetPartitionsAssignedHandler((c, partitions) =>
-            {
-                Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
-                // possibly manually specify start offsets or override the partition assignment provided by
-                // the consumer group by returning a list of topic/partition/offsets to assign to, e.g.:
-                // 
-                // return partitions.Select(tp => new TopicPartitionOffset(tp, externalOffsets[tp]));
-            })
-            .SetPartitionsRevokedHandler((c, partitions) =>
-            {
-                Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
-            })
-            .Build();
+                                                       //Console.WriteLine($"Statistics: {json}")
+                                                       Console.WriteLine($"Statistics: raised")
+                                                      )
+                                 .SetPartitionsAssignedHandler((c, partitions) =>
+                                                               {
+                                                                   Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
+                                                                   // possibly manually specify start offsets or override the partition assignment provided by
+                                                                   // the consumer group by returning a list of topic/partition/offsets to assign to, e.g.:
+                                                                   // 
+                                                                   // return partitions.Select(tp => new TopicPartitionOffset(tp, externalOffsets[tp]));
+                                                               })
+                                 .SetPartitionsRevokedHandler((c, partitions) => { Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]"); })
+                                 .Build();
 
             Console.WriteLine("A:Consumer has been constructed...");
 
@@ -86,17 +83,16 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                 try
                 {
-
                     if (consumeResult.Message == null)
                     {
                         _logger.LogInformation(
-                        $"Why EMpTy? {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
-                        await Task.Delay(500, stoppingToken);
+                                               $"Why EMpTy? {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
+                        await Task.Delay(10, stoppingToken);
                         continue;
                     }
 
                     _logger.LogInformation(
-                    $"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
+                                           $"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
                     var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
 
@@ -107,13 +103,13 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 catch (Exception ex)
                 {
                     _logger.LogError(ex,
-                    "Error occurred executing {WorkItem}.", nameof(_connection));
+                                     "Error occurred executing {WorkItem}.", nameof(_connection));
                     consumer.StoreOffset(consumeResult); // TODO : Add retry codes
                 }
             }
 
             _logger.LogWarning(
-            $"Stopping request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
+                               $"Stopping request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
         }
 
         public override async Task StopAsync(CancellationToken stoppingToken)
