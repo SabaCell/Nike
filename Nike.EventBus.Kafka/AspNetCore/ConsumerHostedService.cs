@@ -82,8 +82,6 @@ namespace Nike.EventBus.Kafka.AspNetCore
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
 
-            var semaphore = new SemaphoreSlim(_concurrentLoad);
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 var consumeResult = consumer.Consume(stoppingToken);
@@ -103,12 +101,34 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
 
-                    _semaphore.Wait();
+                    Task.Run(() =>
+                             {
+                                 Console.WriteLine($"Task {Task.CurrentId} begins and waits for the semaphore.");
+                                 int semaphoreCount;
 
-                    mediator.PublishAsync(message);
+                                 _semaphore.Wait();
+
+                                 Console.WriteLine($"Task {Task.CurrentId} enters the semaphore.");
+
+                                 try
+                                 {
+                                     var t = mediator.PublishAsync(message);
+                                     t.Wait();
+                                 }
+                                 catch (Exception e)
+                                 {
+                                     _logger.LogError($" {Task.CurrentId} background worker exception", e.Message);
+                                 }
+
+                                 finally
+                                 {
+                                     semaphoreCount = _semaphore.Release();
+                                 }
+
+                                 Console.WriteLine($"Task {Task.CurrentId} releases the semaphore; previous count: {semaphoreCount}.");
+                             });
 
                     consumer.StoreOffset(consumeResult);
-                    _semaphore.Release();
                 }
                 catch (Exception ex)
                 {
