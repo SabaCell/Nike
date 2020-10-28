@@ -52,10 +52,10 @@ jobs:
     - name: Build Nike.EventBus
       #run: dotnet build --configuration Release --no-restore ./Nike.EventBus/Nike.EventBus.csproj
       run: dotnet pack ./Nike.EventBus/Nike.EventBus.csproj  -c Release -o ./nuget	  
-    - name: Install dependencies Nike.Exception
-      run: dotnet restore ./Nike.Exception/Nike.Exception.csproj
-    - name: Build Nike.Exception
-      run: dotnet pack ./Nike.Exception/Nike.Exception.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.Exceptions
+      run: dotnet restore ./Nike.Exceptions/Nike.Exceptions.csproj
+    - name: Build Nike.Exceptions
+      run: dotnet pack ./Nike.Exceptions/Nike.Exceptions.csproj  -c Release -o ./nuget
     - name: Install dependencies Nike.Framework.Domain
       run: dotnet restore ./Nike.Framework.Domain/Nike.Framework.Domain.csproj
     - name: Build Nike.Framework.Domain
@@ -92,8 +92,8 @@ jobs:
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.Kafka*.nupkg  -k oy2jd6lg3pyvhu7f3tga3as33jsmmd5ubcglx6j5oyr4im -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EventBus.RabbitMQ
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.RabbitMQ*.nupkg  -k oy2jd6lg3pyvhu7f3tga3as33jsmmd5ubcglx6j5oyr4im -s https://api.nuget.org/v3/index.json --skip-duplicate
-    - name: Deploy Nike.Exception
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Exception*.nupkg  -k oy2jd6lg3pyvhu7f3tga3as33jsmmd5ubcglx6j5oyr4im -s https://api.nuget.org/v3/index.json --skip-duplicate
+    - name: Deploy Nike.Exceptions
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Exceptions*.nupkg  -k oy2jd6lg3pyvhu7f3tga3as33jsmmd5ubcglx6j5oyr4im -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Framework.Domain
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Framework.Domain*.nupkg  -k oy2jd6lg3pyvhu7f3tga3as33jsmmd5ubcglx6j5oyr4im -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Mediator
