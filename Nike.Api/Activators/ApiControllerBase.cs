@@ -28,13 +28,13 @@ namespace Nike.Api.Activators
         }
 
         [NonAction]
-        protected virtual async Task SendCommandAsync<TCommand>(TCommand command, Action action = null) where TCommand : CommandBase
+        protected virtual Task SendCommandAsync<TCommand>(TCommand command, Action action = null) where TCommand : CommandBase
         {
             CommandValidator.Validate(command);
 
             action?.Invoke();
 
-            await Bus.SendAsync(command);
+            return Bus.SendAsync(command);
         }
     }
 }

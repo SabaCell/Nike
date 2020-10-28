@@ -19,11 +19,19 @@ namespace Nike.Mediator.Handlers
 
         public async Task<object> Handle(INextHandler next, object message)
         {
+            var events = _unitOfWork.GetUncommittedEvents().ToList();
+
+            var count = events.Count;
+            foreach (var domainEvent in events) await _mediator.PublishEventAsync(domainEvent);
+
             var result = await next.Handle(message);
 
-            if (!(message is ICommand)) return result;
-
-            var events = _unitOfWork.GetUncommittedEvents().ToList();
+            //domain event not occured 
+            if (count <= 0)
+            // command event not occured too 
+                if (!(message is ICommand))
+                // so we dont need to Commit to db 
+                    return result;
 
             try
             {
@@ -34,8 +42,6 @@ namespace Nike.Mediator.Handlers
                 _unitOfWork.Rollback();
                 throw;
             }
-
-            foreach (var domainEvent in events) await _mediator.PublishEventAsync(domainEvent);
 
             return result;
         }

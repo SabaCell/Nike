@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Nike.Framework.Domain;
 
@@ -11,6 +12,18 @@ namespace Nike.Mediator
             foreach (var e in root.Events)
             {
                 await mediator.SendAsync(e);
+            }
+        }
+
+        public static async Task ApplyEvents(this IAggregateRoot root, IMicroMediator mediator)
+        {
+            var events = root.Events.ToList();
+
+            root.ClearEvents();
+
+            foreach (var e in events.AsParallel())
+            {
+                await mediator.PublishEventAsync(e);
             }
         }
 

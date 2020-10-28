@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Nike.EventBus.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -41,10 +42,10 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation(
-                                   $"Queued Hosted Service is running.{Environment.NewLine}" +
-                                   $"{Environment.NewLine}Tap W to add a work item to the " +
-                                   $"background queue.{Environment.NewLine}");
+            _logger.LogTrace(
+                             $"Queued Hosted Service is running.{Environment.NewLine}" +
+                             $"{Environment.NewLine}Tap W to add a work item to the " +
+                             $"background queue.{Environment.NewLine}");
 
             await BackgroundProcessing(stoppingToken);
         }
@@ -55,10 +56,10 @@ namespace Nike.EventBus.Kafka.AspNetCore
                                  // Note: All handlers are called on the main .Consume thread.
                                  .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
                                  .SetStatisticsHandler((_, json) =>
-
-                                                       //Console.WriteLine($"Statistics: {json}")
-                                                       Console.WriteLine($"Statistics: raised")
-                                                      )
+                                                       {
+                                                           //Console.WriteLine($"Statistics: {json}")
+                                                           // Console.WriteLine($"Statistics: raised")
+                                                       })
                                  .SetPartitionsAssignedHandler((c, partitions) =>
                                                                {
                                                                    Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
@@ -77,6 +78,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
             Console.WriteLine("A:Consumer has been subscribed...");
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var consumeResult = consumer.Consume(stoppingToken);
@@ -85,20 +87,26 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 {
                     if (consumeResult.Message == null)
                     {
-                        _logger.LogInformation(
-                                               $"Why EMpTy? {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
-                        await Task.Delay(10, stoppingToken);
+                        _logger.LogTrace(
+                                         $"Why EMpTy? {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
+                        await Task.Delay(1, stoppingToken);
                         continue;
                     }
 
-                    _logger.LogInformation(
-                                           $"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
+                    _logger.LogTrace(
+                                     $"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
                     var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
 
-                    await mediator.PublishAsync(message);
+                    var t = mediator.PublishAsync(message);
 
                     consumer.StoreOffset(consumeResult);
+
+                    var sw = Stopwatch.StartNew();
+                    await t;
+
+                    sw.Stop();
+                    Console.WriteLine($"VAHID Consumed Test: {sw.Elapsed.TotalMilliseconds}");
                 }
                 catch (Exception ex)
                 {
@@ -114,7 +122,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
         public override async Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Queued Hosted Service is stopping.");
+            _logger.LogTrace("Queued Hosted Service is stopping.");
 
             await base.StopAsync(stoppingToken);
         }

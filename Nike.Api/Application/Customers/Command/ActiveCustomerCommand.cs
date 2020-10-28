@@ -34,14 +34,14 @@ namespace Nike.Api.Application.Customers.Command
         }
 
         /// <inheritdoc />
-        public async Task Handle(ActiveCustomerCommand command)
+        public Task Handle(ActiveCustomerCommand command)
         {
             var @event = new ActiveCustomerIntegrationEvent
-            {
-                CustomerId = command.CustomerId
-            };
+                         {
+                         CustomerId = command.CustomerId
+                         };
 
-            await _dispatcher.PublishAsync(@event);
+            return _dispatcher.PublishAsync(@event);
         }
     }
 
