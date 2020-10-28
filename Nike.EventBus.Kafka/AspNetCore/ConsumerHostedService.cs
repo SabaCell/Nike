@@ -103,7 +103,6 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
 
-                    await semaphore.WaitAsync(stoppingToken);
                     _semaphore.Wait();
 
                     mediator.PublishAsync(message);
