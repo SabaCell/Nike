@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Enexure.MicroBus.MicrosoftDependencyInjection" Version="1.1.0" />
+    <PackageReference Include="Enexure.MicroBus.MicrosoftDependencyInjection" Version="3.7.0" />
     <PackageReference Include="FluentValidation" Version="9.2.0" />
     <PackageReference Include="NEST" Version="7.9.0" />
   </ItemGroup>

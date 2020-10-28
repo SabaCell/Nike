@@ -21,6 +21,8 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private readonly IKafkaConsumerConnection _connection;
         private readonly Dictionary<string, Type> _topics;
         private readonly IServiceProvider _services;
+        private readonly int _concurrentLoad;
+        private readonly SemaphoreSlim _semaphore;
 
         public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection,
                                      IServiceProvider services)
@@ -28,8 +30,9 @@ namespace Nike.EventBus.Kafka.AspNetCore
             _logger = logger;
             _connection = connection;
             _services = services;
-
+            _concurrentLoad = 1000;
             _topics = GetTopicDictionary();
+            _semaphore = new SemaphoreSlim(10, _concurrentLoad);
         }
 
         private Dictionary<string, Type> GetTopicDictionary()
@@ -79,6 +82,8 @@ namespace Nike.EventBus.Kafka.AspNetCore
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
 
+            var semaphore = new SemaphoreSlim(_concurrentLoad);
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var consumeResult = consumer.Consume(stoppingToken);
@@ -98,15 +103,13 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
 
-                    var t = mediator.PublishAsync(message);
+                    await semaphore.WaitAsync(stoppingToken);
+                    _semaphore.Wait();
+
+                    mediator.PublishAsync(message);
 
                     consumer.StoreOffset(consumeResult);
-
-                    var sw = Stopwatch.StartNew();
-                    await t;
-
-                    sw.Stop();
-                    Console.WriteLine($"VAHID Consumed Test: {sw.Elapsed.TotalMilliseconds}");
+                    _semaphore.Release();
                 }
                 catch (Exception ex)
                 {
