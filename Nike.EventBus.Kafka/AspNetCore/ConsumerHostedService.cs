@@ -82,7 +82,6 @@ namespace Nike.EventBus.Kafka.AspNetCore
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
 
-            var tasks = new List<Task>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 var consumeResult = consumer.Consume(stoppingToken);
@@ -93,27 +92,21 @@ namespace Nike.EventBus.Kafka.AspNetCore
                     {
                         _logger.LogTrace(
                                          $"Why EMpTy? {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
-                        await Task.Delay(1, stoppingToken);
                         continue;
                     }
 
                     _logger.LogTrace(
                                      $"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
-                    var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                    Task.Run(async () =>
+                             {
+                                 var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
 
-                    var t = mediator.PublishAsync(message);
-                    t.ConfigureAwait(false);
-
+                                 await mediator.PublishAsync(message);
+                             });
                     consumer.StoreOffset(consumeResult);
 
-                    tasks.Add(t);
-
-                    if (tasks.Count % 100 == 0)
-                    {
-                        Task.WaitAll(tasks.ToArray());
-                        tasks.Clear();
-                    }
+                    await Task.Delay(1, stoppingToken);
                 }
                 catch (Exception ex)
                 {
