@@ -21,8 +21,6 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private readonly IKafkaConsumerConnection _connection;
         private readonly Dictionary<string, Type> _topics;
         private readonly IServiceProvider _services;
-        private readonly int _concurrentLoad;
-        private readonly SemaphoreSlim _semaphore;
 
         public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection,
                                      IServiceProvider services)
@@ -30,9 +28,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
             _logger = logger;
             _connection = connection;
             _services = services;
-            _concurrentLoad = 1000;
             _topics = GetTopicDictionary();
-            _semaphore = new SemaphoreSlim(10, _concurrentLoad);
         }
 
         private Dictionary<string, Type> GetTopicDictionary()
@@ -79,6 +75,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
             consumer.Subscribe(_topics.Keys);
 
             Console.WriteLine("A:Consumer has been subscribed...");
+
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
 
@@ -90,28 +87,28 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 {
                     if (consumeResult.Message == null)
                     {
+                        await Task.Delay(1, stoppingToken);
                         _logger.LogTrace(
-                                         $"Why EMpTy? {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
+                                         $"Kafka consumer is EMPTY: {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
                         continue;
                     }
 
-                    _logger.LogTrace(
-                                     $"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
+                    // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
-                    Task.Run(async () =>
-                             {
-                                 var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
-
-                                 await mediator.PublishAsync(message);
-                             });
-                    consumer.StoreOffset(consumeResult);
-
-                    await Task.Delay(1, stoppingToken);
+                    Task.Factory.StartNew(() =>
+                                          {
+                                              var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                                              var t = mediator.PublishAsync(message);
+                                              return t;
+                                          }, stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex,
                                      "Error occurred executing {WorkItem}.", nameof(_connection));
+                }
+                finally
+                {
                     consumer.StoreOffset(consumeResult); // TODO : Add retry codes
                 }
             }
