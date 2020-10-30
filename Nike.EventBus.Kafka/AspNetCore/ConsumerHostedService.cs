@@ -22,8 +22,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private readonly Dictionary<string, Type> _topics;
         private readonly IServiceProvider _services;
 
-        public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection,
-                                     IServiceProvider services)
+        public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection, IServiceProvider services)
         {
             _logger = logger;
             _connection = connection;
