@@ -94,12 +94,18 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
-                    Task.Factory.StartNew(() =>
-                                          {
-                                              var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
-                                              var t = mediator.PublishAsync(message);
-                                              return t;
-                                          }, stoppingToken);
+                    Task.Run(async () =>
+                             {
+                                 var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                                 await mediator.PublishAsync(message);
+                             }, stoppingToken);
+                    //
+                    // Task.Factory.StartNew(() =>
+                    //                       {
+                    //                           var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                    //                           var t = mediator.PublishAsync(message);
+                    //                           return t;
+                    //                       }, stoppingToken);
                 }
                 catch (Exception ex)
                 {
