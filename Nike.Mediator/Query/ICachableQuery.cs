@@ -1,5 +1,5 @@
-using System;
 using Enexure.MicroBus;
+using System;
 
 namespace Nike.Mediator.Query
 {
