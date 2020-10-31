@@ -94,38 +94,52 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
-                    var t = Task.Run(async () =>
-                                     {
-                                         var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
-                                         await mediator.PublishAsync(message);
-                                     }, stoppingToken);
-
-                    tasks.Add(t);
-
-                    var tasktemp = tasks.ToList();
-
-                    foreach (var task in tasktemp.Where(p => p.IsCompleted))
-                    {
-                        var t2 = tasks.FirstOrDefault(p => p.Id == task.Id);
-                        tasks.Remove(t2);
-                    }
-
-                    if (tasks.Count % 100 == 0)
-                    {
-                        await Task.Delay(1, stoppingToken);
-
-                        Task.WaitAll(tasks.ToArray());
-
-                        tasks.Clear();
-                    }
-
+                    // var t = Task.Run(async () =>
+                    //                  {
+                    //                      try
+                    //                      {
+                    //                          var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                    //                          await mediator.PublishAsync(message);
+                    //                      }
+                    //                      catch (Exception e)
+                    //                      {
+                    //                          _logger.LogError($"Consumed a message : {consumeResult.Message.Value} failed {e.Message} ");
+                    //                      }
+                    //                  }, stoppingToken);
                     //
-                    // Task.Factory.StartNew(() =>
-                    //                       {
-                    //                           var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
-                    //                           var t = mediator.PublishAsync(message);
-                    //                           return t;
-                    //                       }, stoppingToken);
+
+
+                    var t = Task.Factory.StartNew(async () =>
+                                                  {
+                                                      try
+                                                      {
+                                                          var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                                                          await mediator.PublishAsync(message);
+                                                      }
+                                                      catch (Exception e)
+                                                      {
+                                                          _logger.LogError($"Consumed a message : {consumeResult.Message.Value} failed {e.Message} ");
+                                                      }
+                                                  }, stoppingToken);
+
+                    // tasks.Add(t);
+                    //
+                    // var tasktemp = tasks.ToList();
+                    //
+                    // foreach (var task in tasktemp.Where(p => p.IsCompleted))
+                    // {
+                    //     var t2 = tasks.FirstOrDefault(p => p.Id == task.Id);
+                    //     tasks.Remove(t2);
+                    // }
+                    //
+                    // if (tasks.Count % 100 == 0)
+                    // {
+                    //     await Task.Delay(1, stoppingToken);
+                    //
+                    //     Task.WaitAll(tasks.ToArray());
+                    //
+                    //     tasks.Clear();
+                    // }
                 }
                 catch (Exception ex)
                 {
@@ -147,6 +161,29 @@ namespace Nike.EventBus.Kafka.AspNetCore
             _logger.LogTrace("Queued Hosted Service is stopping.");
 
             await base.StopAsync(stoppingToken);
+        }
+
+        private void Forget(Task task)
+        {
+            // Only care about tasks that may fault or are faulted,
+            // so fast-path for SuccessfullyCompleted and Canceled tasks
+            if (!task.IsCompleted || task.IsFaulted)
+            {
+                _ = ForgetAwaited(task);
+            }
+
+            async Task ForgetAwaited(Task task)
+            {
+                try
+                {
+                    // No need to resume on the original SynchronizationContext
+                    await task.ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"Error in consumer task : {task.Id} - {e.Message}");
+                }
+            }
         }
     }
 }
