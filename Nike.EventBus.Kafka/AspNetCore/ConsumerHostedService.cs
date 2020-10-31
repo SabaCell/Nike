@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Nike.EventBus.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -21,13 +22,11 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private readonly Dictionary<string, Type> _topics;
         private readonly IServiceProvider _services;
 
-        public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection,
-        IServiceProvider services)
+        public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection, IServiceProvider services)
         {
             _logger = logger;
             _connection = connection;
             _services = services;
-
             _topics = GetTopicDictionary();
         }
 
@@ -36,15 +35,15 @@ namespace Nike.EventBus.Kafka.AspNetCore
             var assembly = Assembly.GetEntryAssembly();
 
             return assembly.GetTypes().Where(p => p.BaseType == typeof(IntegrationEvent))
-            .ToDictionary(m => m.Name, m => m);
+                           .ToDictionary(m => m.Name, m => m);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation(
-            $"Queued Hosted Service is running.{Environment.NewLine}" +
-            $"{Environment.NewLine}Tap W to add a work item to the " +
-            $"background queue.{Environment.NewLine}");
+            _logger.LogTrace(
+                             $"Queued Hosted Service is running.{Environment.NewLine}" +
+                             $"{Environment.NewLine}Tap W to add a work item to the " +
+                             $"background queue.{Environment.NewLine}");
 
             await BackgroundProcessing(stoppingToken);
         }
@@ -52,73 +51,80 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private async Task BackgroundProcessing(CancellationToken stoppingToken)
         {
             using var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
-            // Note: All handlers are called on the main .Consume thread.
-            .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
-            .SetStatisticsHandler((_, json) =>
-
-            //Console.WriteLine($"Statistics: {json}")
-            Console.WriteLine($"Statistics: raised")
-            )
-            .SetPartitionsAssignedHandler((c, partitions) =>
-            {
-                Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
-                // possibly manually specify start offsets or override the partition assignment provided by
-                // the consumer group by returning a list of topic/partition/offsets to assign to, e.g.:
-                // 
-                // return partitions.Select(tp => new TopicPartitionOffset(tp, externalOffsets[tp]));
-            })
-            .SetPartitionsRevokedHandler((c, partitions) =>
-            {
-                Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
-            })
-            .Build();
+                                 // Note: All handlers are called on the main .Consume thread.
+                                 .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
+                                 .SetStatisticsHandler((_, json) =>
+                                                       {
+                                                           //Console.WriteLine($"Statistics: {json}")
+                                                           // Console.WriteLine($"Statistics: raised")
+                                                       })
+                                 .SetPartitionsAssignedHandler((c, partitions) =>
+                                                               {
+                                                                   Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
+                                                                   // possibly manually specify start offsets or override the partition assignment provided by
+                                                                   // the consumer group by returning a list of topic/partition/offsets to assign to, e.g.:
+                                                                   // 
+                                                                   // return partitions.Select(tp => new TopicPartitionOffset(tp, externalOffsets[tp]));
+                                                               })
+                                 .SetPartitionsRevokedHandler((c, partitions) => { Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]"); })
+                                 .Build();
 
             Console.WriteLine("A:Consumer has been constructed...");
 
             consumer.Subscribe(_topics.Keys);
 
             Console.WriteLine("A:Consumer has been subscribed...");
+
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var consumeResult = consumer.Consume(stoppingToken);
 
                 try
                 {
-
                     if (consumeResult.Message == null)
                     {
-                        _logger.LogInformation(
-                        $"Why EMpTy? {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
-                        await Task.Delay(500, stoppingToken);
+                        await Task.Delay(1, stoppingToken);
+                        _logger.LogTrace(
+                                         $"Kafka consumer is EMPTY: {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
                         continue;
                     }
 
-                    _logger.LogInformation(
-                    $"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
+                    // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
-                    var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
-
-                    await mediator.PublishAsync(message);
-
-                    consumer.StoreOffset(consumeResult);
+                    Task.Run(async () =>
+                             {
+                                 var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                                 await mediator.PublishAsync(message);
+                             }, stoppingToken);
+                    //
+                    // Task.Factory.StartNew(() =>
+                    //                       {
+                    //                           var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                    //                           var t = mediator.PublishAsync(message);
+                    //                           return t;
+                    //                       }, stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex,
-                    "Error occurred executing {WorkItem}.", nameof(_connection));
+                                     "Error occurred executing {WorkItem}.", nameof(_connection));
+                }
+                finally
+                {
                     consumer.StoreOffset(consumeResult); // TODO : Add retry codes
                 }
             }
 
             _logger.LogWarning(
-            $"Stopping request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
+                               $"Stopping request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
         }
 
         public override async Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Queued Hosted Service is stopping.");
+            _logger.LogTrace("Queued Hosted Service is stopping.");
 
             await base.StopAsync(stoppingToken);
         }

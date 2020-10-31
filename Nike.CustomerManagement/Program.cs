@@ -1,6 +1,5 @@
 ﻿using Enexure.MicroBus;
 using Enexure.MicroBus.Messages;
-using Enexure.MicroBus.MicrosoftDependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +15,7 @@ using Nike.Framework.Domain;
 using Nike.Mediator.Handlers;
 using Nike.Redis.Microsoft.DependencyInjection;
 using System;
+using Enexure.MicroBus.MicrosoftDependencyInjection;
 
 namespace Nike.CustomerManagement
 {

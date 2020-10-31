@@ -10,10 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Enexure.MicroBus" Version="3.6.2" />
-    <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.6.0" />
-    <PackageReference Include="Enexure.MicroBus.MessageContracts" Version="3.2.0" />
-    <PackageReference Include="Enexure.MicroBus.MicrosoftDependencyInjection" Version="1.1.0" />
+    <PackageReference Include="Enexure.MicroBus" Version="3.7.0" />
+    <PackageReference Include="Enexure.MicroBus.MicrosoftDependencyInjection" Version="3.7.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
       <PrivateAssets>all</PrivateAssets>

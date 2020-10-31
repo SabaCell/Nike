@@ -14,12 +14,14 @@ namespace Nike.EventBus.Kafka
     {
         private readonly ILogger<KafkaEventBusDispatcher> _logger;
         private readonly IKafkaProducerConnection _connection;
+        private readonly IProducer<string, byte[]> _producer;
 
         public KafkaEventBusDispatcher(IKafkaProducerConnection connection,
-        ILogger<KafkaEventBusDispatcher> logger)
+                                       ILogger<KafkaEventBusDispatcher> logger)
         {
             _connection = connection;
             _logger = logger;
+            _producer = new ProducerBuilder<string, byte[]>(_connection.Config).Build();
         }
 
         private string GetKey<T>()
@@ -27,24 +29,24 @@ namespace Nike.EventBus.Kafka
             return typeof(T).Name;
         }
 
+        private byte[] ToBytes<T>(T value)
+        {
+            return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value));
+        }
+
         public void Publish<T>(T message) where T : IntegrationEvent
         {
-            using var producer = new ProducerBuilder<string, T>(_connection.Config).Build();
-            producer.Produce(GetKey<T>(),
-            new Message<string, T> {Key = message.Id.ToString("N"), Value = message});
+            Publish(GetKey<T>(), message.Id.ToString("N"), ToBytes(message));
         }
 
         public void Publish<T>(T message, string topic) where T : IntegrationEvent
         {
-            using var producer = new ProducerBuilder<string, T>(_connection.Config).Build();
-            producer.Produce(topic,
-            new Message<string, T> {Key = message.Id.ToString("N"), Value = message});
+            Publish(topic, message.Id.ToString("N"), ToBytes(message));
         }
 
         public void Publish(string exchange, string typeName, byte[] body)
         {
-            using var producer = new ProducerBuilder<string, byte[]>(_connection.Config).Build();
-            producer.Produce(exchange, new Message<string, byte[]> {Key = typeName, Value = body});
+            _producer.Produce(exchange, new Message<string, byte[]> {Key = typeName, Value = body});
         }
 
         public void Publish(string typeName, string message)
@@ -61,26 +63,16 @@ namespace Nike.EventBus.Kafka
             return PublishAsync(message, GetKey<T>(), cancellationToken);
         }
 
-        public async Task PublishAsync<T>(T message, string topic, CancellationToken cancellationToken = default)
+        public Task PublishAsync<T>(T message, string topic, CancellationToken cancellationToken = default)
         where T : IntegrationEvent
         {
-            var pack = new Message<string, string>
-            {
-            Key = message.Id.ToString("N"),
-            Value = JsonSerializer.Serialize(message)
-            };
-
-            Console.WriteLine("start producing");
-            using var producer = new ProducerBuilder<string, string>(_connection.Config).Build();
-           var d= await producer.ProduceAsync(topic, pack, cancellationToken);
-
-            Console.WriteLine($"produced to TOPIC:{d.Topic}:{d.Key} - OFFSET:{d.Offset}");
+            return PublishAsync(topic, message.Id.ToString("N"), ToBytes(message), cancellationToken);
         }
 
         public Task PublishAsync(string exchange, string typeName, byte[] body,
-        CancellationToken cancellationToken = default)
+                                 CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return _producer.ProduceAsync(exchange, new Message<string, byte[]> {Key = typeName, Value = body}, cancellationToken);
         }
 
         public Task PublishAsync(string typeName, string message, CancellationToken cancellationToken = default)
@@ -89,7 +81,7 @@ namespace Nike.EventBus.Kafka
         }
 
         public Task FuturePublishAsync<T>(T message, TimeSpan delay, string topic = null,
-        CancellationToken cancellationToken = default) where T : IntegrationEvent
+                                          CancellationToken cancellationToken = default) where T : IntegrationEvent
         {
             throw new NotImplementedException();
         }
