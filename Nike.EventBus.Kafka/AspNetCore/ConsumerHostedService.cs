@@ -60,24 +60,24 @@ namespace Nike.EventBus.Kafka.AspNetCore
                                                        })
                                  .SetPartitionsAssignedHandler((c, partitions) =>
                                                                {
-                                                                   Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
+                                                                   _logger.LogTrace($"Assigned partitions: [{string.Join(", ", partitions)}]");
+
                                                                    // possibly manually specify start offsets or override the partition assignment provided by
                                                                    // the consumer group by returning a list of topic/partition/offsets to assign to, e.g.:
                                                                    // 
                                                                    // return partitions.Select(tp => new TopicPartitionOffset(tp, externalOffsets[tp]));
                                                                })
-                                 .SetPartitionsRevokedHandler((c, partitions) => { Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]"); })
+                                 .SetPartitionsRevokedHandler((c, partitions) => { _logger.LogTrace($"Revoking assignment: [{string.Join(", ", partitions)}]"); })
                                  .Build();
 
             Console.WriteLine("A:Consumer has been constructed...");
 
             consumer.Subscribe(_topics.Keys);
 
-            Console.WriteLine("A:Consumer has been subscribed...");
-
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
 
+            var tasks = new List<Task>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 var consumeResult = consumer.Consume(stoppingToken);
@@ -94,11 +94,28 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
-                    Task.Run(async () =>
-                             {
-                                 var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
-                                 await mediator.PublishAsync(message);
-                             }, stoppingToken);
+                    var t = Task.Run(async () =>
+                                     {
+                                         var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
+                                         await mediator.PublishAsync(message);
+                                     }, stoppingToken);
+
+                    tasks.Add(t);
+
+                    foreach (var task in tasks.Where(p => p.IsCompleted))
+                    {
+                        tasks.Remove(task);
+                    }
+
+                    if (tasks.Count % 500 == 0)
+                    {
+                        await Task.Delay(1, stoppingToken);
+
+                        Task.WaitAll(tasks.ToArray());
+
+                        tasks.Clear();
+                    }
+
                     //
                     // Task.Factory.StartNew(() =>
                     //                       {
