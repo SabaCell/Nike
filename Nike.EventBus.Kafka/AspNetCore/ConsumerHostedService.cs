@@ -102,12 +102,15 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     tasks.Add(t);
 
-                    foreach (var task in tasks.Where(p => p.IsCompleted))
+                    var tasktemp = tasks.ToList();
+
+                    foreach (var task in tasktemp.Where(p => p.IsCompleted))
                     {
-                        tasks.Remove(task);
+                        var t2 = tasks.FirstOrDefault(p => p.Id == task.Id);
+                        tasks.Remove(t2);
                     }
 
-                    if (tasks.Count % 500 == 0)
+                    if (tasks.Count % 100 == 0)
                     {
                         await Task.Delay(1, stoppingToken);
 
