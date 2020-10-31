@@ -122,8 +122,8 @@ namespace Nike.EventBus.Kafka.AspNetCore
                                                       }
                                                   }, stoppingToken);
 
-                    // tasks.Add(t);
-                    //
+                    tasks.Add(t);
+
                     // var tasktemp = tasks.ToList();
                     //
                     // foreach (var task in tasktemp.Where(p => p.IsCompleted))
@@ -131,15 +131,13 @@ namespace Nike.EventBus.Kafka.AspNetCore
                     //     var t2 = tasks.FirstOrDefault(p => p.Id == task.Id);
                     //     tasks.Remove(t2);
                     // }
-                    //
-                    // if (tasks.Count % 100 == 0)
-                    // {
-                    //     await Task.Delay(1, stoppingToken);
-                    //
-                    //     Task.WaitAll(tasks.ToArray());
-                    //
-                    //     tasks.Clear();
-                    // }
+
+                    if (tasks.Count % 5 == 0)
+                    {
+                        Task.WaitAll(tasks.ToArray());
+
+                        tasks.Clear();
+                    }
                 }
                 catch (Exception ex)
                 {
