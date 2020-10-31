@@ -94,20 +94,6 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
 
-                    // var t = Task.Run(async () =>
-                    //                  {
-                    //                      try
-                    //                      {
-                    //                          var message = JsonSerializer.Deserialize(consumeResult.Message.Value, _topics[consumeResult.Topic]);
-                    //                          await mediator.PublishAsync(message);
-                    //                      }
-                    //                      catch (Exception e)
-                    //                      {
-                    //                          _logger.LogError($"Consumed a message : {consumeResult.Message.Value} failed {e.Message} ");
-                    //                      }
-                    //                  }, stoppingToken);
-                    //
-
 
                     var t = Task.Factory.StartNew(async () =>
                                                   {
@@ -124,15 +110,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     tasks.Add(t);
 
-                    // var tasktemp = tasks.ToList();
-                    //
-                    // foreach (var task in tasktemp.Where(p => p.IsCompleted))
-                    // {
-                    //     var t2 = tasks.FirstOrDefault(p => p.Id == task.Id);
-                    //     tasks.Remove(t2);
-                    // }
-
-                    if (tasks.Count % 5 == 0)
+                    if (tasks.Count % 50 == 0)
                     {
                         Task.WaitAll(tasks.ToArray());
 
