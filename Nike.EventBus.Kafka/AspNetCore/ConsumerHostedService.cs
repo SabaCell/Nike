@@ -77,7 +77,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
 
-            var tasks = new List<Task>();
+            // var tasks = new List<Task>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 var consumeResult = consumer.Consume(stoppingToken);
@@ -86,14 +86,13 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 {
                     if (consumeResult.Message == null)
                     {
-                        await Task.Delay(1, stoppingToken);
                         _logger.LogTrace(
                                          $"Kafka consumer is EMPTY: {consumeResult.Topic}-{consumeResult.Offset}-{consumeResult.IsPartitionEOF}");
+                        await Task.Delay(1, stoppingToken);
                         continue;
                     }
 
                     // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
-
 
                     var t = Task.Factory.StartNew(async () =>
                                                   {
@@ -108,14 +107,14 @@ namespace Nike.EventBus.Kafka.AspNetCore
                                                       }
                                                   }, stoppingToken);
 
-                    tasks.Add(t);
-
-                    if (tasks.Count % 50 == 0)
-                    {
-                        Task.WaitAll(tasks.ToArray());
-
-                        tasks.Clear();
-                    }
+                    // tasks.Add(t);
+                    //
+                    // if (tasks.Count % 50 == 0)
+                    // {
+                    //     Task.WaitAll(tasks.ToArray());
+                    //
+                    //     tasks.Clear();
+                    // }
                 }
                 catch (Exception ex)
                 {
