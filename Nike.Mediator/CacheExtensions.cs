@@ -39,7 +39,7 @@ namespace Nike.Mediator
                 return default;
 
             // 2. store the newly created object into cache
-            //await source.CreateEntry(key, result, cancellationToken);
+            await source.SetStringAsync(key, JsonSerializer.Serialize(result), options, token: cancellationToken);
 
             sw.Stop();
             logger.LogTrace(
