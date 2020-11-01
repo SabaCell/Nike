@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Nike.EventBus.Events;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -50,6 +49,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
         private async Task BackgroundProcessing(CancellationToken stoppingToken)
         {
+            _connection.Config.AllowAutoCreateTopics = true;
             using var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
                                  // Note: All handlers are called on the main .Consume thread.
                                  .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
@@ -77,7 +77,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
 
-            // var tasks = new List<Task>();
+            // var tasks = new List<Task>(); 
             while (!stoppingToken.IsCancellationRequested)
             {
                 var consumeResult = consumer.Consume(stoppingToken);
