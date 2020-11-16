@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nike.Exceptions;
@@ -160,16 +159,16 @@ namespace Nike.Web.Result
                     validationError.Members = validationResult.MemberNames.Select(m => m.ToCamelCase()).ToArray();
 
                 // If someone doesn't pass the member names correctly, we just use a counter instead
-                var key = validationError.Members?.Join(",") ?? i++.ToString();
-                if (!validationErrorInfos.ContainsKey(key))
-                {
-                    validationErrorInfos.Add(key, validationError.Message);
-                }
-                else
-                {
-                    var value = validationErrorInfos[key];
-                    validationErrorInfos[key] = value + ". " + validationError.Message;
-                }
+                // var key = validationError.Members?.Join(",") ?? i++.ToString();}
+                // if (!validationErrorInfos.ContainsKey(key))
+                // {
+                //     validationErrorInfos.Add(key, validationError.Message);
+                // }
+                // else
+                // {
+                //     var value = validationErrorInfos[key];
+                //     validationErrorInfos[key] = value + ". " + validationError.Message;
+                // }
             }
 
             return validationErrorInfos;
