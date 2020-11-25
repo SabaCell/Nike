@@ -60,8 +60,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                 if (!consumer.TryConsumeMessage(_connection.MillisecondsTimeout, consumeResult, stoppingToken))
                 {
-                    _logger.LogTrace(
-                        $"{consumer.Name}:{consumer.MemberId} is empty. Sleep for {_connection.MillisecondsTimeout}");
+                    // _logger.LogTrace($"{consumer.Name}:{consumer.MemberId} is empty. Sleep for {_connection.MillisecondsTimeout}MS");
 
                     await Task.Delay(1, stoppingToken);
 
@@ -74,8 +73,9 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 try
                 {
                     var sw = Stopwatch.StartNew();
-                    _logger.LogTrace(
-                        $"{consumer.Name} consum a new message. Offset:{consumeResult.Result.Offset.Value}, PART:{consumeResult.Result.Partition.Value}, TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}");
+
+                    _logger.LogTrace($"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
+
                     var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
 
                     sw.Stop();

@@ -3,26 +3,13 @@ using Nike.EventBus.Events;
 
 namespace Nike.SampleProducer.Model
 {
-    public class bncMsgIntegrationEvent : IntegrationEvent
+    public class Msg1 : IntegrationEvent
     {
         public int Count { get; }
         public string Name { get; }
         public string Description { get; }
 
-        public bncMsgIntegrationEvent(string name, string description, int count) : base(Guid.NewGuid(),
-            DateTime.Now)
-        {
-            Name = name;
-            Description = description;
-            Count = count;
-        }
-    }  public class MyMessage2Part : IntegrationEvent
-    {
-        public int Count { get; }
-        public string Name { get; }
-        public string Description { get; }
-
-        public MyMessage2Part(string name, string description, int count) : base(Guid.NewGuid(),
+        public Msg1(string name, string description, int count) : base(Guid.NewGuid(),
             DateTime.Now)
         {
             Name = name;
@@ -31,27 +18,13 @@ namespace Nike.SampleProducer.Model
         }
     }
 
-    public class bncMsg2IntegrationEvent : IntegrationEvent
+    public class Msg2 : IntegrationEvent
     {
         public int Count { get; }
         public string Name { get; }
         public string Description { get; }
 
-        public bncMsg2IntegrationEvent(string name, string description, int count) : base(Guid.NewGuid(),
-            DateTime.Now)
-        {
-            Name = name;
-            Description = description;
-            Count = count;
-        }
-    }
- public class bncMsg3IntegrationEvent : IntegrationEvent
-    {
-        public int Count { get; }
-        public string Name { get; }
-        public string Description { get; }
-
-        public bncMsg3IntegrationEvent(string name, string description, int count) : base(Guid.NewGuid(),
+        public Msg2(string name, string description, int count) : base(Guid.NewGuid(),
             DateTime.Now)
         {
             Name = name;
@@ -60,13 +33,13 @@ namespace Nike.SampleProducer.Model
         }
     }
 
-    public class bncMsg4IntegrationEvent : IntegrationEvent
+    public class Msg3 : IntegrationEvent
     {
         public int Count { get; }
         public string Name { get; }
         public string Description { get; }
 
-        public bncMsg4IntegrationEvent(string name, string description, int count) : base(Guid.NewGuid(),
+        public Msg3(string name, string description, int count) : base(Guid.NewGuid(),
             DateTime.Now)
         {
             Name = name;
@@ -74,4 +47,36 @@ namespace Nike.SampleProducer.Model
             Count = count;
         }
     }
+
+    public class Msg4 : IntegrationEvent
+    {
+        public int Count { get; }
+        public string Name { get; }
+        public string Description { get; }
+
+        public Msg4(string name, string description, int count) : base(Guid.NewGuid(),
+            DateTime.Now)
+        {
+            Name = name;
+            Description = description;
+            Count = count;
+        }
+    }
+
+    public class Msg5 : IntegrationEvent
+    {
+        public int Count { get; }
+        public string Name { get; }
+        public string Description { get; }
+
+        public Msg5(string name, string description, int count) : base(Guid.NewGuid(),
+            DateTime.Now)
+        {
+            Name = name;
+            Description = description;
+            Count = count;
+        }
+    }
+
+    
 }

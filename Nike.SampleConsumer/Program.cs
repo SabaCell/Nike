@@ -57,7 +57,7 @@ namespace Nike.SampleConsumer
         {
             var busConfig = hostContext.Configuration.GetSection("EventBus").Get<EventBusConfig>();
             // services.AddKafkaProducer(busConfig.ConnectionString);
-            services.AddKafkaConsumer(busConfig.ConnectionString, typeof(Program).Namespace);
+            services.AddKafkaConsumer(busConfig.ConnectionString, "CustomerInstance1");
         }
 
         private static void ConfigureMicroBus(IServiceCollection services)

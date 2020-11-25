@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 using Nike.EventBus.Events;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,87 +8,82 @@ using Nike.Mediator.Handlers;
 
 namespace Nike.SampleConsumer.Model
 {
-    
-    public class MyMessage2Part : IntegrationEvent
+    public class Msg1 : IntegrationEvent
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public int Count { get; set; }
     }
 
-    public class MyMessage2PartIntegrationEventHandler : IntegrationEventHandler<MyMessage2Part>
+    public class Msg1IntegrationEventHandler : IntegrationEventHandler<Msg1>
     {
-        public override Task HandleAsync(MyMessage2Part @event)
+        public override Task HandleAsync(Msg1 @event)
         {
-            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
 
-public class bncMsgIntegrationEvent : IntegrationEvent
+    public class Msg2 : IntegrationEvent
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public int Count { get; set; }
     }
 
-    public class bncMsgIntegrationEventHandler : IntegrationEventHandler<bncMsgIntegrationEvent>
+    public class Msg2IntegrationEventHandler : IntegrationEventHandler<Msg2>
     {
-        public override Task HandleAsync(bncMsgIntegrationEvent @event)
+        public override Task HandleAsync(Msg2 @event)
         {
-            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
 
-
-    public class bncMsg2IntegrationEvent : IntegrationEvent
+    public class Msg3 : IntegrationEvent
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public int Count { get; set; }
     }
 
-    public class bncMsg2IntegrationEventHandler : IntegrationEventHandler<bncMsg2IntegrationEvent>
+    public class Msg3IntegrationEventHandler : IntegrationEventHandler<Msg3>
     {
-        public override Task HandleAsync(bncMsg2IntegrationEvent @event)
+        public override Task HandleAsync(Msg3 @event)
         {
-            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
-
+//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
 
-
-    public class bncMsg3IntegrationEvent : IntegrationEvent
+    public class Msg4 : IntegrationEvent
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public int Count { get; set; }
     }
 
-    public class bncMsg3IntegrationEventHandler : IntegrationEventHandler<bncMsg3IntegrationEvent>
+    public class Msg4IntegrationEventHandler : IntegrationEventHandler<Msg4>
     {
-        public override Task HandleAsync(bncMsg3IntegrationEvent @event)
+        public override Task HandleAsync(Msg4 @event)
         {
-            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
 
-
-    public class bncMsg4IntegrationEvent : IntegrationEvent
+    public class Msg5 : IntegrationEvent
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public int Count { get; set; }
     }
 
-    public class bncMsg4IntegrationEventHandler : IntegrationEventHandler<bncMsg4IntegrationEvent>
+    public class Msg5IntegrationEventHandler : IntegrationEventHandler<Msg5>
     {
-        public override Task HandleAsync(bncMsg4IntegrationEvent @event)
+        public override Task HandleAsync(Msg5 @event)
         {
-            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
@@ -101,6 +95,7 @@ public class bncMsgIntegrationEvent : IntegrationEvent
         {
         }
     }
+
     public class ConsumerHostedService2 : ConsumerHostedService
     {
         public ConsumerHostedService2(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,
@@ -108,6 +103,7 @@ public class bncMsgIntegrationEvent : IntegrationEvent
         {
         }
     }
+
     public class ConsumerHostedService3 : ConsumerHostedService
     {
         public ConsumerHostedService3(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,

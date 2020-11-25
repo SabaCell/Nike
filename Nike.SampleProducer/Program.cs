@@ -33,67 +33,55 @@ namespace Nike.SampleProducer
         {
             var dispatcher = serviceProvider.GetRequiredService<IEventBusDispatcher>();
 
-            var lst0 = new List<MyMessage2Part>();
-            var lst = new List<bncMsgIntegrationEvent>();
-            var lst2 = new List<bncMsg2IntegrationEvent>();
-            var lst3 = new List<bncMsg3IntegrationEvent>();
-            var lst4 = new List<bncMsg4IntegrationEvent>();
+            var lst1 = new List<Msg1>();
+            var lst2 = new List<Msg2>();
+            var lst3 = new List<Msg3>();
+            var lst4 = new List<Msg4>();
+            var lst5 = new List<Msg5>();
 
-            var size = 100;
+            var size = 10000;
 
             for (int i = 0; i < size; i++)
             {
-                lst0.Add(new MyMessage2Part($"msg_{i}", "sample desc", i));
+                lst1.Add(new Msg1($"msg_{i}", "sample desc", i));
             }
 
             for (int i = 0; i < size; i++)
             {
-                lst.Add(new bncMsgIntegrationEvent($"msg_{i}", "sample desc", i));
+                lst2.Add(new Msg2($"msg_{i}", "sample desc", i));
             }
 
             for (int i = 0; i < size; i++)
             {
-                lst2.Add(new bncMsg2IntegrationEvent($"msg_{i}", "sample desc", i));
+                lst3.Add(new Msg3($"msg_{i}", "sample desc", i));
             }
 
             for (int i = 0; i < size; i++)
             {
-                lst3.Add(new bncMsg3IntegrationEvent($"msg_{i}", "sample desc", i));
+                lst4.Add(new Msg4($"msg_{i}", "sample desc", i));
             }
 
             for (int i = 0; i < size; i++)
             {
-                lst4.Add(new bncMsg4IntegrationEvent($"msg_{i}", "sample desc", i));
+                lst5.Add(new Msg5($"msg_{i}", "sample desc", i));
             }
 
-            Publish(dispatcher, lst0);
-            //var t0 = Task.Factory.StartNew(() => Publish(dispatcher, lst0), TaskCreationOptions.LongRunning);
-            // var t1 = Task.Factory.StartNew(() => Publish(dispatcher, lst), TaskCreationOptions.LongRunning);
-            //
-            // var t2 = Task.Factory.StartNew(() => Publish(dispatcher, lst2), TaskCreationOptions.LongRunning);
-            // var t3 = Task.Factory.StartNew(() => Publish(dispatcher, lst3), TaskCreationOptions.LongRunning);
-            // var t4 = Task.Factory.StartNew(() => Publish(dispatcher, lst4), TaskCreationOptions.LongRunning);
-            //
-            // Task.WaitAll(t1, t2, t3, t4);
-            //
-            // Console.WriteLine($"Publishing {size} msgs to Kafka in {t1.Result}. MEANS: {t1.Result / size}");
-            // Console.WriteLine($"Publishing {size} msgs to Kafka in {t2.Result}. MEANS: {t2.Result / size}");
-            // Console.WriteLine($"Publishing {size} msgs to Kafka in {t3.Result}. MEANS: {t3.Result / size}");
-            // Console.WriteLine($"Publishing {size} msgs to Kafka in {t4.Result}. MEANS: {t4.Result / size}");
+            var t1 = Task.Factory.StartNew(() => Publish(dispatcher, lst1), TaskCreationOptions.LongRunning);
+            var t2 = Task.Factory.StartNew(() => Publish(dispatcher, lst2), TaskCreationOptions.LongRunning);
+            var t3 = Task.Factory.StartNew(() => Publish(dispatcher, lst3), TaskCreationOptions.LongRunning);
+            var t4 = Task.Factory.StartNew(() => Publish(dispatcher, lst4), TaskCreationOptions.LongRunning);
+            var t5 = Task.Factory.StartNew(() => Publish(dispatcher, lst5), TaskCreationOptions.LongRunning);
+
+            Task.WaitAll(t1, t2, t3, t4);
+
+            Console.WriteLine($"Publishing {size} msgs1 to Kafka in {t1.Result}. MEANS: {t1.Result / size}");
+            Console.WriteLine($"Publishing {size} msgs2 to Kafka in {t2.Result}. MEANS: {t2.Result / size}");
+            Console.WriteLine($"Publishing {size} msgs3 to Kafka in {t3.Result}. MEANS: {t3.Result / size}");
+            Console.WriteLine($"Publishing {size} msgs4 to Kafka in {t4.Result}. MEANS: {t4.Result / size}");
+            Console.WriteLine($"Publishing {size} msgs5 to Kafka in {t4.Result}. MEANS: {t5.Result / size}");
         }
 
-        private static double Publish(IEventBusDispatcher publisher, List<MyMessage2Part> lst)
-        {
-            var sw = Stopwatch.StartNew();
-            foreach (var model in lst)
-            {
-                publisher.Publish(model);
-            }
-
-            sw.Stop();
-
-            return sw.Elapsed.TotalMilliseconds;
-        }  private static double Publish(IEventBusDispatcher publisher, List<bncMsgIntegrationEvent> lst)
+        private static double Publish(IEventBusDispatcher publisher, List<Msg1> lst)
         {
             var sw = Stopwatch.StartNew();
             foreach (var model in lst)
@@ -106,7 +94,7 @@ namespace Nike.SampleProducer
             return sw.Elapsed.TotalMilliseconds;
         }
 
-        private static double Publish(IEventBusDispatcher publisher, List<bncMsg2IntegrationEvent> lst)
+        private static double Publish(IEventBusDispatcher publisher, List<Msg2> lst)
         {
             var sw = Stopwatch.StartNew();
             foreach (var model in lst)
@@ -119,7 +107,7 @@ namespace Nike.SampleProducer
             return sw.Elapsed.TotalMilliseconds;
         }
 
-        private static double Publish(IEventBusDispatcher publisher, List<bncMsg3IntegrationEvent> lst)
+        private static double Publish(IEventBusDispatcher publisher, List<Msg3> lst)
         {
             var sw = Stopwatch.StartNew();
             foreach (var model in lst)
@@ -132,7 +120,20 @@ namespace Nike.SampleProducer
             return sw.Elapsed.TotalMilliseconds;
         }
 
-        private static double Publish(IEventBusDispatcher publisher, List<bncMsg4IntegrationEvent> lst)
+        private static double Publish(IEventBusDispatcher publisher, List<Msg4> lst)
+        {
+            var sw = Stopwatch.StartNew();
+            foreach (var model in lst)
+            {
+                publisher.Publish(model);
+            }
+
+            sw.Stop();
+
+            return sw.Elapsed.TotalMilliseconds;
+        }
+
+        private static double Publish(IEventBusDispatcher publisher, List<Msg5> lst)
         {
             var sw = Stopwatch.StartNew();
             foreach (var model in lst)
