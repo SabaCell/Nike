@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.SampleConsumer", "Nike
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.SampleProducer", "Nike.SampleProducer\Nike.SampleProducer.csproj", "{05A95C1A-28AA-4450-B91C-4CDB217071F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.SampleConsumer2", "Nike.SampleConsumer2\Nike.SampleConsumer2.csproj", "{9B271645-37FC-4439-A095-1E60F6FFA1F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,10 @@ Global
 		{05A95C1A-28AA-4450-B91C-4CDB217071F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05A95C1A-28AA-4450-B91C-4CDB217071F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05A95C1A-28AA-4450-B91C-4CDB217071F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B271645-37FC-4439-A095-1E60F6FFA1F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B271645-37FC-4439-A095-1E60F6FFA1F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B271645-37FC-4439-A095-1E60F6FFA1F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B271645-37FC-4439-A095-1E60F6FFA1F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,6 +158,7 @@ Global
 		{4E9C9135-0E3F-445A-9CA6-FFDD94953628} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
 		{2A5928C9-EDBC-4FA4-839C-8A7DBE35E5CA} = {5653A24F-2D85-4A35-ACF9-9C6C9F9526E8}
 		{05A95C1A-28AA-4450-B91C-4CDB217071F0} = {5653A24F-2D85-4A35-ACF9-9C6C9F9526E8}
+		{9B271645-37FC-4439-A095-1E60F6FFA1F1} = {5653A24F-2D85-4A35-ACF9-9C6C9F9526E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95B1279-A117-420E-931A-DEE26521BD82}

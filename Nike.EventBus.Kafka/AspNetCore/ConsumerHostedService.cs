@@ -6,11 +6,13 @@ using Microsoft.Extensions.Logging;
 using Nike.EventBus.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Nike.EventBus.Kafka.Model;
 
 namespace Nike.EventBus.Kafka.AspNetCore
 {
@@ -40,21 +42,21 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 .ToDictionary(m => m.Name, m => m);
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public override Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogTrace(
-                $"Queued Hosted Service is running.{Environment.NewLine}" +
-                $"{Environment.NewLine}Tap W to add a work item to the " +
-                $"background queue.{Environment.NewLine}");
+            if (!_topics.Any())
+            {
+                _logger.LogError(
+                    $"{_consumerFullName} ConsumerHostedService has not any IntegrationEvent for consuming!");
 
-            await BackgroundProcessing(stoppingToken);
+                return StopAsync(cancellationToken);
+            }
+
+            return base.StartAsync(cancellationToken);
         }
 
-        private async Task BackgroundProcessing(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _connection.Config.AllowAutoCreateTopics = true;
-            _connection.Config.EnableAutoOffsetStore = false;
-
             using var consumer = MakeConsumer();
             consumer.Subscribe(_topics.Keys);
 
@@ -63,15 +65,29 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (!consumer.TryConsume(_logger, out var consumeResult, 1000, stoppingToken))
+                var consumeResult = new ConsumeMessageResult(_topics);
+
+                if (!consumer.TryConsumeMessage(_logger, consumeResult, _connection.MillisecondsTimeout, stoppingToken))
                 {
                     await Task.Delay(1, stoppingToken);
+
+                    TimeTrackerCollection.Append(consumeResult.GetTimes());
+
+
+                    TimeTrackerCollection.Print();
+
                     continue;
                 }
 
                 try
                 {
+                    var sw = Stopwatch.StartNew();
+
                     var t = ProcessAsync(mediator, consumeResult, stoppingToken);
+
+                    sw.Stop();
+
+                    consumeResult.SetProcessTime(sw.Elapsed.TotalMilliseconds);
                 }
                 catch (OperationCanceledException ex) when (stoppingToken.IsCancellationRequested)
                 {
@@ -87,7 +103,15 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                 finally
                 {
-                    consumer.StoreOffset(consumeResult); // TODO : Add retry codes
+                    var sw = Stopwatch.StartNew();
+
+                    consumer.StoreOffset(consumeResult.Result); // TODO : Add retry codes
+
+                    sw.Stop();
+
+                    consumeResult.SetOffsetTime(sw.Elapsed.TotalMilliseconds);
+
+                    TimeTrackerCollection.Append(consumeResult.GetTimes());
                 }
             }
 
@@ -101,6 +125,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
         {
             var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
                 // Note: All handlers are called on the main .Consume thread.
+                // .SetValueDeserializer(new DefaultDeserializer<string>())
                 .SetErrorHandler((_, e) =>
                     _logger.LogError($"{_consumerFullName} KafkaConsumer has error {e.Code} - {e.Reason}"))
                 .SetStatisticsHandler((_, json) =>
@@ -135,76 +160,35 @@ namespace Nike.EventBus.Kafka.AspNetCore
             _logger.LogWarning($"Kafka-Consumer-Hosted-Service {this.GetType().FullName} is stopping.");
 
             await base.StopAsync(stoppingToken);
+            
             _logger.LogWarning($"Kafka-Consumer-Hosted-Service {this.GetType().FullName} has been stoped.");
         }
 
-        private Task ProcessAsync(IMicroMediator mediator, ConsumeResult<Ignore, string> consumeResult,
+        private Task ProcessAsync(IMicroMediator mediator, ConsumeMessageResult message,
             CancellationToken stoppingToken)
         {
             // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
-
             return Task.Factory.StartNew(async () =>
             {
                 try
                 {
-                    var message = JsonSerializer.Deserialize(consumeResult.Message.Value,
-                        _topics[consumeResult.Topic]);
-                    await mediator.PublishAsync(message);
+                    var sw = Stopwatch.StartNew();
+
+                    await mediator.PublishAsync(message.GetMessage());
+                    
+                    sw.Stop();
+
+                    message.SetMediatorProcess(sw.Elapsed.TotalMilliseconds);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError($"Consumed a message : {consumeResult.Message.Value} failed {e.Message} ");
+                    _logger.LogError($"Consumed a message : {message} failed {e.Message} ");
                 }
                 finally
                 {
                     await Task.CompletedTask;
                 }
             }, stoppingToken);
-        }
-
-        private Task SerializedProcessAsync(IMicroMediator mediator, object serializedMessage,
-            CancellationToken stoppingToken)
-        {
-            // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
-
-            return Task.Factory.StartNew(async () =>
-            {
-                try
-                {
-                    await mediator.PublishAsync(serializedMessage);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError($"Consumed a message : {serializedMessage} failed {e.Message} ");
-                }
-                finally
-                {
-                    await Task.CompletedTask;
-                }
-            }, stoppingToken);
-        }
-
-        private void Forget(Task task)
-        {
-            // Only care about tasks that may fault or are faulted,
-            // so fast-path for SuccessfullyCompleted and Canceled tasks
-            if (!task.IsCompleted || task.IsFaulted)
-            {
-                _ = ForgetAwaited(task);
-            }
-
-            async Task ForgetAwaited(Task task)
-            {
-                try
-                {
-                    // No need to resume on the original SynchronizationContext
-                    await task.ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError($"Error in consumer task : {task.Id} - {e.Message}");
-                }
-            }
         }
     }
 }

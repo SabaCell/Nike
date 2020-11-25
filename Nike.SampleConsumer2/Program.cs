@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using Enexure.MicroBus;
 using Enexure.MicroBus.Messages;
 using Enexure.MicroBus.MicrosoftDependencyInjection;
@@ -13,40 +10,16 @@ using Nike.EventBus.Kafka.AspNetCore;
 using Nike.Framework.Domain;
 using Nike.Mediator.Handlers;
 using Nike.Redis.Microsoft.DependencyInjection;
-using Nike.SampleProducer.Model;
+using Nike.SampleConsumer2.Model;
 
-namespace Nike.SampleProducer
+namespace Nike.SampleConsumer2
 {
     internal class Program
     {
         private static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            Test(host.Services);
             host.Run();
-        }
-
-        private static void Test(IServiceProvider serviceProvider)
-        {
-            var dispatcher = serviceProvider.GetRequiredService<IEventBusDispatcher>();
-
-            var lst = new List<BenchmarkModelIntegrationEvent>();
-            var size = 10000;
-            for (int i = 0; i < size; i++)
-            {
-                lst.Add(new BenchmarkModelIntegrationEvent($"msg_{i}", "sample desc", i));
-            }
-
-            var sw = Stopwatch.StartNew();
-            foreach (var model in lst)
-            {
-                dispatcher.Publish(model);
-            }
-
-            sw.Stop();
-
-            Console.WriteLine(
-                $"Publishing {size} msgs to Kafka in {sw.Elapsed.TotalMilliseconds}. MEANS: {sw.Elapsed.TotalMilliseconds / size}");
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)
@@ -66,9 +39,11 @@ namespace Nike.SampleProducer
             ConfigureKafka(hostContext, services);
             ConfigureMicroBus(services);
             services.AddSingleton<IClock, SystemClock>();
+
+            services.AddHostedService<ConsumerHostedService2>();
         }
 
-
+        
         #region PrivateMethods
 
         private static void ConfigureRedis(HostBuilderContext hostContext, IServiceCollection services)
@@ -79,7 +54,8 @@ namespace Nike.SampleProducer
         private static void ConfigureKafka(HostBuilderContext hostContext, IServiceCollection services)
         {
             var busConfig = hostContext.Configuration.GetSection("EventBus").Get<EventBusConfig>();
-            services.AddKafkaProducer(busConfig.ConnectionString);
+            // services.AddKafkaProducer(busConfig.ConnectionString);
+            services.AddKafkaConsumer(busConfig.ConnectionString, typeof(Program).Namespace);
         }
 
         private static void ConfigureMicroBus(IServiceCollection services)

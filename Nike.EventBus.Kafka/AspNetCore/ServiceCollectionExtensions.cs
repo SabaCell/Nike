@@ -22,7 +22,8 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 throw new ArgumentNullException(nameof(brokers));
             
             serviceCollection.AddSingleton<IKafkaConsumerConnection>(factory => new KafkaConsumerConnection(brokers,groupId));
-            serviceCollection.AddSingleton<IEventBusDispatcher, KafkaEventBusDispatcher>();
+
+            // serviceCollection.AddSingleton<IEventBusDispatcher, KafkaEventBusDispatcher>();
 
             return serviceCollection;
         }

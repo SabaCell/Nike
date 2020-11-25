@@ -10,6 +10,7 @@ using Nike.EventBus.Kafka.AspNetCore;
 using Nike.Framework.Domain;
 using Nike.Mediator.Handlers;
 using Nike.Redis.Microsoft.DependencyInjection;
+using Nike.SampleConsumer.Model;
 
 namespace Nike.SampleConsumer
 {
@@ -39,7 +40,7 @@ namespace Nike.SampleConsumer
             ConfigureMicroBus(services);
             services.AddSingleton<IClock, SystemClock>();
 
-            services.AddHostedService<ConsumerHostedService>();
+            services.AddHostedService<ConsumerHostedService1>();
         }
 
         
@@ -53,13 +54,13 @@ namespace Nike.SampleConsumer
         private static void ConfigureKafka(HostBuilderContext hostContext, IServiceCollection services)
         {
             var busConfig = hostContext.Configuration.GetSection("EventBus").Get<EventBusConfig>();
+            // services.AddKafkaProducer(busConfig.ConnectionString);
             services.AddKafkaConsumer(busConfig.ConnectionString, typeof(Program).Namespace);
         }
 
         private static void ConfigureMicroBus(IServiceCollection services)
         {
-            services.RegisterMicroBus(new BusBuilder().RegisterGlobalHandler<UnitOfWorkDelegatingHandler>()
-                .RegisterGlobalHandler<CacheInvalidationDelegatingHandler>()
+            services.RegisterMicroBus(new BusBuilder()
                 .RegisterEventHandler<NoMatchingRegistrationEvent, NoMatchingRegistrationEventHandler>()
                 .RegisterHandlers(typeof(Program).Assembly));
         }

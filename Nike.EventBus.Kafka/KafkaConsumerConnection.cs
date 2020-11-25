@@ -4,32 +4,28 @@ namespace Nike.EventBus.Kafka
 {
     public class KafkaConsumerConnection : IKafkaConsumerConnection
     {
-        // public IBus Bus { get; }
-        //
-        // public RabbitMqConnection(string rabbitMqConnectionString)
-        // {
-        //     Bus = RabbitHutch.CreateBus(rabbitMqConnectionString, r =>
-        //     {
-        //         r.Register<ITypeNameSerializer, FullNameCustomTypeNameSerializer>();
-        //         r.Register<ISerializer, ProtobufSerializer>();
-        //     });
-        // }
-
         public bool IsConnected { get; }
+        public int MillisecondsTimeout { get; set; }
         public ConsumerConfig Config { get; }
+        public int StatisticsIntervalMs { get; set; }
+        public int SessionTimeoutMs { get; set; }
 
         public KafkaConsumerConnection(string brokers, string groupId)
         {
+            MillisecondsTimeout = MillisecondsTimeout == 0 ? 1000 : MillisecondsTimeout;
+
             Config = new ConsumerConfig
             {
                 BootstrapServers = brokers,
                 GroupId = groupId,
                 EnableAutoCommit = true,
-                StatisticsIntervalMs = 2000,
-                SessionTimeoutMs = 6000,
+                StatisticsIntervalMs = StatisticsIntervalMs == 0 ? 1000 : StatisticsIntervalMs,
+                SessionTimeoutMs = SessionTimeoutMs == 0 ? 6000 : SessionTimeoutMs,
                 EnableAutoOffsetStore = false,
+                AllowAutoCreateTopics = true,
                 EnablePartitionEof = true,
             };
+
             IsConnected = true;
         }
     }
