@@ -29,7 +29,7 @@ namespace Nike.EventBus.Kafka.Model
 
         public Task SetMessageAsync(ConsumeResult<Ignore, string> result)
         {
-            var sw = Stopwatch.StartNew();
+            // var sw = Stopwatch.StartNew();
 
             Result = result;
             _topic = result.Topic;
@@ -37,8 +37,8 @@ namespace Nike.EventBus.Kafka.Model
 
             _serializationTask = Task.Run(ToDeserializeAsync);
 
-            sw.Stop();
-            _times.Add("set-messages", sw.Elapsed.TotalMilliseconds);
+            // sw.Stop();
+            // _times.Add("set-messages", sw.Elapsed.TotalMilliseconds);
             
             return _serializationTask;
         }
@@ -52,13 +52,13 @@ namespace Nike.EventBus.Kafka.Model
 
         private Task ToDeserializeAsync()
         {
-            var sw = Stopwatch.StartNew();
+            // var sw = Stopwatch.StartNew();
 
             _message = JsonSerializer.Deserialize(Result.Message.Value, _messageType);
 
-            sw.Stop();
+            // sw.Stop();
 
-            _times.Add("serialized-messages", sw.Elapsed.TotalMilliseconds);
+            // _times.Add("serialized-messages", sw.Elapsed.TotalMilliseconds);
 
             return Task.CompletedTask;
         }
@@ -89,13 +89,13 @@ namespace Nike.EventBus.Kafka.Model
             {
                 try
                 {
-                    var sw = Stopwatch.StartNew();
+                    // var sw = Stopwatch.StartNew();
 
                     await mediator.PublishAsync(GetMessage());
 
-                    sw.Stop();
+                    // sw.Stop();
 
-                    SetMediatorProcess(sw.Elapsed.TotalMilliseconds);
+                    // SetMediatorProcess(sw.Elapsed.TotalMilliseconds);
                 }
                 catch (Exception e)
                 {

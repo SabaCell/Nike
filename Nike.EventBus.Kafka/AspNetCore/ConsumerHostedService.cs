@@ -64,23 +64,23 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     await Task.Delay(1, stoppingToken);
 
-                    TimeTrackerCollection.Append(consumeResult.GetTimes());
-                    TimeTrackerCollection.Print();
+                    // TimeTrackerCollection.Append(consumeResult.GetTimes());
+                    // TimeTrackerCollection.Print();
 
                     continue;
                 }
 
                 try
                 {
-                    var sw = Stopwatch.StartNew();
+                    // var sw = Stopwatch.StartNew();
 
                     _logger.LogTrace($"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
                     var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
 
-                    sw.Stop();
+                    // sw.Stop();
 
-                    consumeResult.SetProcessTime(sw.Elapsed.TotalMilliseconds);
+                    // consumeResult.SetProcessTime(sw.Elapsed.TotalMilliseconds);
                 }
                 catch (OperationCanceledException ex) when (stoppingToken.IsCancellationRequested)
                 {
@@ -96,15 +96,15 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                 finally
                 {
-                    var sw = Stopwatch.StartNew();
+                    // var sw = Stopwatch.StartNew();
 
                     consumer.StoreOffset(consumeResult.Result); // TODO : Add retry codes
 
-                    sw.Stop();
+                    // sw.Stop();
 
-                    consumeResult.SetOffsetTime(sw.Elapsed.TotalMilliseconds);
+                    // consumeResult.SetOffsetTime(sw.Elapsed.TotalMilliseconds);
 
-                    TimeTrackerCollection.Append(consumeResult.GetTimes());
+                    // TimeTrackerCollection.Append(consumeResult.GetTimes());
                 }
             }
 

@@ -44,7 +44,7 @@ namespace Nike.EventBus.Kafka.Extenstion
             }
 
             _total.Clear();
-            File.AppendAllText(@"D:\consumerTimer.txt", json);
+            //File.AppendAllText(@"D:\consumerTimer.txt", json);
         }
     }
 }

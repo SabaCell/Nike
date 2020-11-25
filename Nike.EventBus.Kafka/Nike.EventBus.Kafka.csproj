@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <LangVersion>8</LangVersion>
-        <PackageVersion>1.0.0.6-prev</PackageVersion>
+        <PackageVersion>1.0.0.6-prev02</PackageVersion>
         <Copyright>SabaCell</Copyright>
         <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
         <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
