@@ -2,26 +2,30 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using Enexure.MicroBus;
+using Microsoft.Extensions.Logging;
 
 namespace Nike.EventBus.Kafka.Model
 {
     public class ConsumeMessageResult
     {
-        private dynamic _message;
         private readonly Dictionary<string, Type> _types;
+        private dynamic _message;
         private Type _messageType;
         private Task _serializationTask;
+        private readonly Dictionary<string, double> _times;
         private string _topic;
-        private Dictionary<string, double> _times;
-        public ConsumeResult<Ignore, string> Result { get; private set; }
 
         public ConsumeMessageResult(Dictionary<string, Type> types)
         {
             _types = types;
             _times = new Dictionary<string, double>();
         }
+
+        public ConsumeResult<Ignore, string> Result { get; private set; }
 
         public Task SetMessageAsync(ConsumeResult<Ignore, string> result)
         {
@@ -35,6 +39,7 @@ namespace Nike.EventBus.Kafka.Model
 
             sw.Stop();
             _times.Add("set-messages", sw.Elapsed.TotalMilliseconds);
+            
             return _serializationTask;
         }
 
@@ -76,6 +81,31 @@ namespace Nike.EventBus.Kafka.Model
         public Dictionary<string, double> GetTimes()
         {
             return _times;
+        }
+
+        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(async () =>
+            {
+                try
+                {
+                    var sw = Stopwatch.StartNew();
+
+                    await mediator.PublishAsync(GetMessage());
+
+                    sw.Stop();
+
+                    SetMediatorProcess(sw.Elapsed.TotalMilliseconds);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError($"Consumed a message : {_topic} failed {e.Message} ");
+                }
+                finally
+                {
+                    await Task.CompletedTask;
+                }
+            }, cancellationToken);
         }
     }
 }

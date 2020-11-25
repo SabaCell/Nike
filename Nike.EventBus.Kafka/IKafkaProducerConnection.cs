@@ -6,6 +6,6 @@ namespace Nike.EventBus.Kafka
     {
         bool IsConnected { get; }
 
-         ProducerConfig Config { get; }
+        ProducerConfig Config { get; }
     }
 }

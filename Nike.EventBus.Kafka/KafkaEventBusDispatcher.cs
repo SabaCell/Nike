@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Text;
-using Confluent.Kafka;
 using System.Text.Json;
 using System.Threading;
-using Nike.EventBus.Events;
 using System.Threading.Tasks;
-using Nike.EventBus.Abstractions;
+using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
+using Nike.EventBus.Abstractions;
+using Nike.EventBus.Events;
 
 namespace Nike.EventBus.Kafka
 {
     public class KafkaEventBusDispatcher : IEventBusDispatcher
     {
-        private readonly ILogger<KafkaEventBusDispatcher> _logger;
         private readonly IKafkaProducerConnection _connection;
+        private readonly ILogger<KafkaEventBusDispatcher> _logger;
         private readonly IProducer<string, byte[]> _producer;
 
         public KafkaEventBusDispatcher(IKafkaProducerConnection connection,
@@ -25,16 +25,6 @@ namespace Nike.EventBus.Kafka
                 .SetErrorHandler((_, e) =>
                     _logger.LogError($"KafkaProducer has error {e.Code} - {e.Reason}"))
                 .Build();
-        }
-
-        private string GetKey<T>()
-        {
-            return typeof(T).Name;
-        }
-
-        private byte[] ToBytes<T>(T value)
-        {
-            return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value));
         }
 
         public void Publish<T>(T message) where T : IntegrationEvent
@@ -92,6 +82,16 @@ namespace Nike.EventBus.Kafka
 
         public void Dispose()
         {
+        }
+
+        private string GetKey<T>()
+        {
+            return typeof(T).Name;
+        }
+
+        private byte[] ToBytes<T>(T value)
+        {
+            return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value));
         }
     }
 }

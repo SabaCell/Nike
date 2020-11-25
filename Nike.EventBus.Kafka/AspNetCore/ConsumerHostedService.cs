@@ -1,45 +1,35 @@
-﻿using Confluent.Kafka;
-using Enexure.MicroBus;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Nike.EventBus.Events;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.Linq;
-using System.Reflection;
-using System.Text.Json;
+using Confluent.Kafka;
+using Enexure.MicroBus;
 using System.Threading;
+using System.Reflection;
+using System.Diagnostics;
+using Nike.EventBus.Events;
 using System.Threading.Tasks;
 using Nike.EventBus.Kafka.Model;
+using System.Collections.Generic;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Nike.EventBus.Kafka.Extenstion;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Nike.EventBus.Kafka.AspNetCore
 {
     public class ConsumerHostedService : BackgroundService
     {
-        private readonly ILogger<ConsumerHostedService> _logger;
-        private readonly IKafkaConsumerConnection _connection;
-        private readonly Dictionary<string, Type> _topics;
         private readonly IServiceProvider _services;
-        private readonly string _consumerFullName;
+        private readonly Dictionary<string, Type> _topics;
+        private readonly IKafkaConsumerConnection _connection;
+        private readonly ILogger<ConsumerHostedService> _logger;
 
         public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection,
             IServiceProvider services)
         {
             _logger = logger;
-            _connection = connection;
             _services = services;
+            _connection = connection;
             _topics = GetTopicDictionary();
-            _consumerFullName = this.GetType().FullName;
-        }
-
-        private Dictionary<string, Type> GetTopicDictionary()
-        {
-            var assembly = Assembly.GetEntryAssembly();
-
-            return assembly.GetTypes().Where(p => p.BaseType == typeof(IntegrationEvent))
-                .ToDictionary(m => m.Name, m => m);
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
@@ -47,11 +37,12 @@ namespace Nike.EventBus.Kafka.AspNetCore
             if (!_topics.Any())
             {
                 _logger.LogError(
-                    $"{_consumerFullName} ConsumerHostedService has not any IntegrationEvent for consuming!");
+                    $"ConsumerHostedService has not any IntegrationEvent for consuming yet!");
 
                 return StopAsync(cancellationToken);
             }
 
+            _logger.LogInformation($"new consumer has been started");
             return base.StartAsync(cancellationToken);
         }
 
@@ -67,13 +58,14 @@ namespace Nike.EventBus.Kafka.AspNetCore
             {
                 var consumeResult = new ConsumeMessageResult(_topics);
 
-                if (!consumer.TryConsumeMessage(_logger, consumeResult, _connection.MillisecondsTimeout, stoppingToken))
+                if (!consumer.TryConsumeMessage(_connection.MillisecondsTimeout, consumeResult, stoppingToken))
                 {
+                    _logger.LogTrace(
+                        $"{consumer.Name}:{consumer.MemberId} is empty. Sleep for {_connection.MillisecondsTimeout}");
+
                     await Task.Delay(1, stoppingToken);
 
                     TimeTrackerCollection.Append(consumeResult.GetTimes());
-
-
                     TimeTrackerCollection.Print();
 
                     continue;
@@ -82,8 +74,9 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 try
                 {
                     var sw = Stopwatch.StartNew();
-
-                    var t = ProcessAsync(mediator, consumeResult, stoppingToken);
+                    _logger.LogTrace(
+                        $"{consumer.Name} consum a new message. Offset:{consumeResult.Result.Offset.Value}, PART:{consumeResult.Result.Partition.Value}, TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}");
+                    var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
 
                     sw.Stop();
 
@@ -118,16 +111,27 @@ namespace Nike.EventBus.Kafka.AspNetCore
             consumer.Close();
 
             _logger.LogWarning(
-                $"Stopping {_consumerFullName} request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
+                $"Stopping conusmer request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
+        }
+
+        public override async Task StopAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogWarning($"Kafka-Consumer-Hosted-Service {GetType().FullName} is stopping.");
+
+            await base.StopAsync(stoppingToken);
+
+            _logger.LogWarning($"Kafka-Consumer-Hosted-Service {GetType().FullName} has been stoped.");
         }
 
         private IConsumer<Ignore, string> MakeConsumer()
         {
+            _connection.Config.PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin;
+
             var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
                 // Note: All handlers are called on the main .Consume thread.
                 // .SetValueDeserializer(new DefaultDeserializer<string>())
                 .SetErrorHandler((_, e) =>
-                    _logger.LogError($"{_consumerFullName} KafkaConsumer has error {e.Code} - {e.Reason}"))
+                    _logger.LogError($"KafkaConsumer has error {e.Code} - {e.Reason}"))
                 .SetStatisticsHandler((_, json) =>
                 {
                     //Console.WriteLine($"Statistics: {json}")
@@ -148,47 +152,17 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 })
                 .Build();
 
-
-            _logger.LogTrace($"Consumer {this.GetType().FullName} has been constructed...");
-
+            _logger.LogInformation($"Consumer {consumer.Name} has been constructed...");
 
             return consumer;
         }
 
-        public override async Task StopAsync(CancellationToken stoppingToken)
+        private Dictionary<string, Type> GetTopicDictionary()
         {
-            _logger.LogWarning($"Kafka-Consumer-Hosted-Service {this.GetType().FullName} is stopping.");
+            var assembly = Assembly.GetEntryAssembly();
 
-            await base.StopAsync(stoppingToken);
-            
-            _logger.LogWarning($"Kafka-Consumer-Hosted-Service {this.GetType().FullName} has been stoped.");
-        }
-
-        private Task ProcessAsync(IMicroMediator mediator, ConsumeMessageResult message,
-            CancellationToken stoppingToken)
-        {
-            // _logger.LogTrace($"Raised a Kafka-Message: {consumeResult.Topic}:{consumeResult.Message.Key}-{consumeResult.Offset}-{consumeResult.Message.Value}");
-            return Task.Factory.StartNew(async () =>
-            {
-                try
-                {
-                    var sw = Stopwatch.StartNew();
-
-                    await mediator.PublishAsync(message.GetMessage());
-                    
-                    sw.Stop();
-
-                    message.SetMediatorProcess(sw.Elapsed.TotalMilliseconds);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError($"Consumed a message : {message} failed {e.Message} ");
-                }
-                finally
-                {
-                    await Task.CompletedTask;
-                }
-            }, stoppingToken);
+            return assembly.GetTypes().Where(p => p.BaseType == typeof(IntegrationEvent))
+                .ToDictionary(m => m.Name, m => m);
         }
     }
 }

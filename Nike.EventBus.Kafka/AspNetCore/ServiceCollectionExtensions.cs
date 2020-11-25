@@ -10,18 +10,21 @@ namespace Nike.EventBus.Kafka.AspNetCore
         {
             if (string.IsNullOrEmpty(brokers))
                 throw new ArgumentNullException(nameof(brokers));
-            
+
             serviceCollection.AddSingleton<IKafkaProducerConnection>(factory => new KafkaProducerConnection(brokers));
             serviceCollection.AddSingleton<IEventBusDispatcher, KafkaEventBusDispatcher>();
 
             return serviceCollection;
         }
-        public static IServiceCollection AddKafkaConsumer(this IServiceCollection serviceCollection, string brokers,string groupId)
+
+        public static IServiceCollection AddKafkaConsumer(this IServiceCollection serviceCollection, string brokers,
+            string groupId)
         {
             if (string.IsNullOrEmpty(brokers))
                 throw new ArgumentNullException(nameof(brokers));
-            
-            serviceCollection.AddSingleton<IKafkaConsumerConnection>(factory => new KafkaConsumerConnection(brokers,groupId));
+
+            serviceCollection.AddSingleton<IKafkaConsumerConnection>(factory =>
+                new KafkaConsumerConnection(brokers, groupId));
 
             // serviceCollection.AddSingleton<IEventBusDispatcher, KafkaEventBusDispatcher>();
 

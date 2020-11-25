@@ -9,19 +9,87 @@ using Nike.Mediator.Handlers;
 
 namespace Nike.SampleConsumer.Model
 {
-    public class BenchmarkModelIntegrationEvent : IntegrationEvent
+    
+    public class MyMessage2Part : IntegrationEvent
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public int Count { get; set; }
     }
 
-    public class BenchmarkModelIntegrationEventHandler : IntegrationEventHandler<BenchmarkModelIntegrationEvent>
+    public class MyMessage2PartIntegrationEventHandler : IntegrationEventHandler<MyMessage2Part>
     {
-        public override Task HandleAsync(BenchmarkModelIntegrationEvent @event)
+        public override Task HandleAsync(MyMessage2Part @event)
         {
-            // Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} ");
+            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+            return Task.CompletedTask;
+        }
+    }
 
+public class bncMsgIntegrationEvent : IntegrationEvent
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Count { get; set; }
+    }
+
+    public class bncMsgIntegrationEventHandler : IntegrationEventHandler<bncMsgIntegrationEvent>
+    {
+        public override Task HandleAsync(bncMsgIntegrationEvent @event)
+        {
+            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+            return Task.CompletedTask;
+        }
+    }
+
+
+    public class bncMsg2IntegrationEvent : IntegrationEvent
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Count { get; set; }
+    }
+
+    public class bncMsg2IntegrationEventHandler : IntegrationEventHandler<bncMsg2IntegrationEvent>
+    {
+        public override Task HandleAsync(bncMsg2IntegrationEvent @event)
+        {
+            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+
+            return Task.CompletedTask;
+        }
+    }
+
+
+    public class bncMsg3IntegrationEvent : IntegrationEvent
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Count { get; set; }
+    }
+
+    public class bncMsg3IntegrationEventHandler : IntegrationEventHandler<bncMsg3IntegrationEvent>
+    {
+        public override Task HandleAsync(bncMsg3IntegrationEvent @event)
+        {
+            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+            return Task.CompletedTask;
+        }
+    }
+
+
+    public class bncMsg4IntegrationEvent : IntegrationEvent
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Count { get; set; }
+    }
+
+    public class bncMsg4IntegrationEventHandler : IntegrationEventHandler<bncMsg4IntegrationEvent>
+    {
+        public override Task HandleAsync(bncMsg4IntegrationEvent @event)
+        {
+            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
@@ -33,5 +101,18 @@ namespace Nike.SampleConsumer.Model
         {
         }
     }
-
+    public class ConsumerHostedService2 : ConsumerHostedService
+    {
+        public ConsumerHostedService2(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,
+            IServiceProvider services) : base(logger, connection, services)
+        {
+        }
+    }
+    public class ConsumerHostedService3 : ConsumerHostedService
+    {
+        public ConsumerHostedService3(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,
+            IServiceProvider services) : base(logger, connection, services)
+        {
+        }
+    }
 }
