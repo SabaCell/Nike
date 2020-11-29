@@ -44,14 +44,16 @@ namespace Nike.CustomerManagement
             ConfigureRedis(hostContext, services);
             ConfigureElasticSearch(hostContext, services);
             ConfigureKafka(hostContext, services);
-            ConfigureEntityFrameWork(hostContext, services);
+            // ConfigureEntityFrameWork(hostContext, services);
             ConfigureMicroBus(services);
             ConfigureStoreServices(services);
 
             services.AddSingleton<IClock, SystemClock>();
+
             services.AddHostedService<ConsumerHostedService>();
         }
 
+        
         #region PrivateMethods
 
         private static void ConfigureRedis(HostBuilderContext hostContext, IServiceCollection services)

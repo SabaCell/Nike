@@ -12,26 +12,19 @@ namespace Nike.EventBus.Kafka
 {
     public class KafkaEventBusDispatcher : IEventBusDispatcher
     {
-        private readonly ILogger<KafkaEventBusDispatcher> _logger;
         private readonly IKafkaProducerConnection _connection;
+        private readonly ILogger<KafkaEventBusDispatcher> _logger;
         private readonly IProducer<string, byte[]> _producer;
 
         public KafkaEventBusDispatcher(IKafkaProducerConnection connection,
-                                       ILogger<KafkaEventBusDispatcher> logger)
+            ILogger<KafkaEventBusDispatcher> logger)
         {
             _connection = connection;
             _logger = logger;
-            _producer = new ProducerBuilder<string, byte[]>(_connection.Config).Build();
-        }
-
-        private string GetKey<T>()
-        {
-            return typeof(T).Name;
-        }
-
-        private byte[] ToBytes<T>(T value)
-        {
-            return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value));
+            _producer = new ProducerBuilder<string, byte[]>(_connection.Config)
+                .SetErrorHandler((_, e) =>
+                    _logger.LogError($"KafkaProducer has error {e.Code} - {e.Reason}"))
+                .Build();
         }
 
         public void Publish<T>(T message) where T : IntegrationEvent
@@ -64,15 +57,16 @@ namespace Nike.EventBus.Kafka
         }
 
         public Task PublishAsync<T>(T message, string topic, CancellationToken cancellationToken = default)
-        where T : IntegrationEvent
+            where T : IntegrationEvent
         {
             return PublishAsync(topic, message.Id.ToString("N"), ToBytes(message), cancellationToken);
         }
 
         public Task PublishAsync(string exchange, string typeName, byte[] body,
-                                 CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default)
         {
-            return _producer.ProduceAsync(exchange, new Message<string, byte[]> {Key = typeName, Value = body}, cancellationToken);
+            return _producer.ProduceAsync(exchange, new Message<string, byte[]> {Key = typeName, Value = body},
+                cancellationToken);
         }
 
         public Task PublishAsync(string typeName, string message, CancellationToken cancellationToken = default)
@@ -81,13 +75,23 @@ namespace Nike.EventBus.Kafka
         }
 
         public Task FuturePublishAsync<T>(T message, TimeSpan delay, string topic = null,
-                                          CancellationToken cancellationToken = default) where T : IntegrationEvent
+            CancellationToken cancellationToken = default) where T : IntegrationEvent
         {
             throw new NotImplementedException();
         }
 
         public void Dispose()
         {
+        }
+
+        private string GetKey<T>()
+        {
+            return typeof(T).Name;
+        }
+
+        private byte[] ToBytes<T>(T value)
+        {
+            return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value));
         }
     }
 }
