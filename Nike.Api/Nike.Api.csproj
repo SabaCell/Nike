@@ -22,5 +22,9 @@
     <ProjectReference Include="..\Nike.Swagger\Nike.Swagger.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\Orders\Query\" />
+  </ItemGroup>
+
 
 </Project>

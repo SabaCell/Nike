@@ -1,18 +1,17 @@
-﻿using System;
-using System.Linq;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 using Enexure.MicroBus;
-using System.Threading;
-using System.Reflection;
-using System.Diagnostics;
-using Nike.EventBus.Events;
-using System.Threading.Tasks;
-using Nike.EventBus.Kafka.Model;
-using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nike.EventBus.Events;
 using Nike.EventBus.Kafka.Extenstion;
-using Microsoft.Extensions.DependencyInjection;
+using Nike.EventBus.Kafka.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nike.EventBus.Kafka.AspNetCore
 {

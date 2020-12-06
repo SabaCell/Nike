@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.7.0" />
+    <PackageReference Include="Enexure.MicroBus.MicrosoftDependencyInjection" Version="3.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nike.EventBus.Kafka\Nike.EventBus.Kafka.csproj" />
+    <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
+    <ProjectReference Include="..\Nike.Framework.Domain.EventSourcing\Nike.Framework.Domain.EventSourcing.csproj" />
+    <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj" />
+    <ProjectReference Include="..\Nike.OrderManagement.Domain.Contracts\Nike.OrderManagement.Domain.Contracts.csproj" />
+    <ProjectReference Include="..\Nike.Persistence.EventStore\Nike.Persistence.EventStore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="appsettings.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
