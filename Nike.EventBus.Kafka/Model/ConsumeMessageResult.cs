@@ -99,7 +99,7 @@ namespace Nike.EventBus.Kafka.Model
                 }
                 catch (Exception e)
                 {
-                    logger.LogError($"Consumed a message : {_topic} failed {e.Message} ");
+                    logger.LogError($"Consumed a message : {_topic} failed", e);
                 }
                 finally
                 {
