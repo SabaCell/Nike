@@ -80,6 +80,12 @@ jobs:
       run: dotnet restore ./Nike.Web/Nike.Web.csproj
     - name: Build Nike.Web
       run: dotnet pack ./Nike.Web/Nike.Web.csproj  -c Release -o ./nuget
+    - name: Install dependencies Nike.Logging
+      run: dotnet restore ./Nike.Logging/Nike.Logging.csproj
+    - name: Build Nike.Logging
+      run: dotnet pack ./Nike.Logging/Nike.Logging.csproj  -c Release -o ./nuget
+      
+      
     - name: ls
       run: ls -lah ./nuget 
     - name: Deploy Nike.EntityFramework
@@ -106,3 +112,6 @@ jobs:
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Web*.nupkg  -k oy2gf4ujiep7vgrhpzrayosdwarm7zfexh6e22dclhbuva -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Web.DependencyInjection
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Web.DependencyInjection*.nupkg  -k oy2gf4ujiep7vgrhpzrayosdwarm7zfexh6e22dclhbuva -s https://api.nuget.org/v3/index.json --skip-duplicate
+    - name: Deploy Nike.Logging
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Logging*.nupkg  -k oy2gf4ujiep7vgrhpzrayosdwarm7zfexh6e22dclhbuva -s https://api.nuget.org/v3/index.json --skip-duplicate
+      
