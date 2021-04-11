@@ -24,7 +24,6 @@ namespace Nike.Logging
             _categoryName = categoryName;
             ScopeProvider = scopeProvider;
         }
-
         public IDisposable BeginScope<TState>(TState state) => ScopeProvider?.Push(state) ?? NullScope.Instance;
 
         public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
@@ -88,7 +87,7 @@ namespace Nike.Logging
             }
         }
 
-        
+
         private sealed class NullScope : IDisposable
         {
             public static NullScope Instance { get; } = new NullScope();
@@ -102,7 +101,7 @@ namespace Nike.Logging
             }
         }
 
-        
+
         private static class ExpressionCache
         {
             public delegate void AppendToDictionary(IDictionary<string, object> dictionary, object o);
