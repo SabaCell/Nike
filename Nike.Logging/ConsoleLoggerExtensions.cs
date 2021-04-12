@@ -11,7 +11,7 @@ namespace Nike.Logging
     {
         public static ILoggingBuilder AddJsonConsole(this ILoggingBuilder builder)
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, JsonLoggerProvider>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NikeJsonLoggerProvider>());
 
             return builder;
         }
