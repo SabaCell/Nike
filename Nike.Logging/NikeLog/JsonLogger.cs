@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
-namespace Nike.Logging
+namespace Nike.Logging.NikeLog
 {
     public class JsonLogger : ILogger
     {

@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
-namespace Nike.Logging
+namespace Nike.Logging.NikeLog
 {
     public  class JsonLoggerProvider: ILoggerProvider
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace Nike.Logging
+namespace Nike.Logging.NikeLog
 {
     internal class JsonLogEntry
     {
