@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Nike.EventBus.Kafka\Nike.EventBus.Kafka.csproj" />
     <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
+    <ProjectReference Include="..\Nike.Logging\Nike.Logging.csproj" />
     <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj" />
     <ProjectReference Include="..\Nike.Redis.Microsoft.DependencyInjection\Nike.Redis.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\Nike.Swagger\Nike.Swagger.csproj" />

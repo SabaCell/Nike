@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -7,18 +8,17 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.Logging;
 
-namespace Nike.Logging
+namespace Nike.Logging.NikeLog
 {
-    public class JsonLogger : ILogger
+    public class NikeJsonLogger : ILogger
     {
         private readonly TextWriter _writer;
         private readonly string _categoryName;
 
         private IExternalScopeProvider ScopeProvider { get; set; }
 
-        public JsonLogger(TextWriter writer, string categoryName, IExternalScopeProvider scopeProvider)
+        public NikeJsonLogger(TextWriter writer, string categoryName, IExternalScopeProvider scopeProvider)
         {
             _writer = writer;
             _categoryName = categoryName;
