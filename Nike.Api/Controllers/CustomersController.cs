@@ -33,7 +33,7 @@ namespace Nike.Api.Controllers
 
             var customers = await Bus.QueryAsync(query);
 
-            return SuccessResult(customers);
+            return Ok(customers);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Nike.Api.Controllers
 
             var customer = await Bus.QueryAsync(query);
 
-            return SuccessResult(customer);
+            return Ok(customer);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Nike.Api.Controllers
         {
             await SendCommandAsync(command);
 
-            return SuccessResult();
+            return Ok();
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Nike.Api.Controllers
 
             await SendCommandAsync(command);
 
-            return SuccessResult();
+            return Ok();
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Nike.Api.Controllers
 
             await SendCommandAsync(command);
 
-            return SuccessResult();
+            return Ok();
         }
     }
 }
