@@ -70,6 +70,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.OrderManagement.Projec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.Logging", "Nike.Logging\Nike.Logging.csproj", "{9B678E0C-4447-4848-BA68-8B4340431384}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.WebApi", "Nike.WebApi\Nike.WebApi.csproj", "{501FB01C-02E8-47E1-81D1-A0B852F4D5D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -176,6 +178,10 @@ Global
 		{9B678E0C-4447-4848-BA68-8B4340431384}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B678E0C-4447-4848-BA68-8B4340431384}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B678E0C-4447-4848-BA68-8B4340431384}.Release|Any CPU.Build.0 = Release|Any CPU
+		{501FB01C-02E8-47E1-81D1-A0B852F4D5D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{501FB01C-02E8-47E1-81D1-A0B852F4D5D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{501FB01C-02E8-47E1-81D1-A0B852F4D5D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{501FB01C-02E8-47E1-81D1-A0B852F4D5D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -207,6 +213,7 @@ Global
 		{BCE8EA84-D33C-479F-8D6E-F1B815F5AF32} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
 		{513E8D64-30CE-46C9-AD73-FECE4D27023B} = {5D721C49-C159-485A-A277-85325268FBEB}
 		{9B678E0C-4447-4848-BA68-8B4340431384} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
+		{501FB01C-02E8-47E1-81D1-A0B852F4D5D6} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95B1279-A117-420E-931A-DEE26521BD82}
