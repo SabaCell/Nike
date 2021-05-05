@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc.Abstractions;
+﻿using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
+using System.Linq;
+using System.Reflection;
 
 namespace Nike.Web.Result
 {
@@ -23,7 +23,7 @@ namespace Nike.Web.Result
 
             var wrapper = _wrapperFactory.CreateFor(context);
 
-            wrapper.Wrap(context);
+            wrapper.Wrap((dynamic)context);
         }
 
         public void OnResultExecuted(ResultExecutedContext context)
@@ -56,6 +56,6 @@ namespace Nike.Web.Result
 
         #endregion
     }
-    
-    
+
+
 }

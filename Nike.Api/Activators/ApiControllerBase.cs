@@ -1,13 +1,12 @@
 ﻿using Enexure.MicroBus;
 using Microsoft.AspNetCore.Mvc;
-using Nike.WebApi.Filters;
 using System;
 using System.Threading.Tasks;
 
 namespace Nike.Api.Activators
 {
     [ApiController]
-    [ApiResultFilter]
+    //[ApiResultFilter]
     public class ApiControllerBase : ControllerBase
     {
         protected readonly IMicroBus Bus;

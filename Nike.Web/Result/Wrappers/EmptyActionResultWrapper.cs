@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Nike.Web.Result.Responses;
 
 namespace Nike.Web.Result.Wrappers
 {
@@ -6,7 +8,8 @@ namespace Nike.Web.Result.Wrappers
     {
         public void Wrap(ResultExecutingContext actionResult)
         {
-            throw new System.NotImplementedException();
+            var apiResult = new ApiResponse<object>();
+            actionResult.Result = new JsonResult(apiResult) { StatusCode = actionResult.HttpContext.Response.StatusCode };
         }
     }
 }
