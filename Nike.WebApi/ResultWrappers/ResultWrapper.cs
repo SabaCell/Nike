@@ -1,14 +1,24 @@
-﻿namespace Nike.Api.Activators
+﻿namespace Nike.WebApi.ResultWrappers
 {
     public class ResultWrapper
     {
         public bool Success { get; set; }
+        public ErrorInfo Error { get; set; }
 
         public static ResultWrapper SuccessResult()
         {
             return new ResultWrapper
             {
                 Success = true
+            };
+        }
+
+        public static ResultWrapper ErrorResult(ErrorInfo error = null)
+        {
+            return new ResultWrapper
+            {
+                Success = false,
+                Error = error
             };
         }
     }

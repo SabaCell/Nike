@@ -24,7 +24,7 @@ namespace Nike.Api.Controllers
         {
             await SendCommandAsync(command);
 
-            return SuccessResult();
+            return Ok();
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Nike.Api.Controllers
 
             await SendCommandAsync(command);
 
-            return SuccessResult();
+            return Ok();
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Nike.Api.Controllers
 
             await SendCommandAsync(command);
 
-            return SuccessResult();
+            return Ok();
         }
     }
 }
