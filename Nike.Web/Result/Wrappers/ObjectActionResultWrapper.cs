@@ -38,7 +38,7 @@ namespace Nike.Web.Result.Wrappers
                     }
                 case BadRequestObjectResult badRequestObjectResult:
                     {
-                        var message = JsonConvert.SerializeObject(badRequestObjectResult.Value,new JsonSerializerSettings
+                        var message = JsonConvert.SerializeObject(badRequestObjectResult.Value, new JsonSerializerSettings
                         {
                             ContractResolver = new CamelCasePropertyNamesContractResolver()
                         });
@@ -71,16 +71,60 @@ namespace Nike.Web.Result.Wrappers
                         var apiResult = new ApiResponse<object>(new ErrorInfo
                         {
                             ErrorCode = (int)HttpStatusCode.BadRequest,
-                            Message = "Bad Request",
+                            Message = notFoundObjectResult.Value.ToString(),
                             Details = notFoundObjectResult.Value
                         });
                         actionResult.Result = new JsonResult(apiResult) { StatusCode = notFoundObjectResult.StatusCode };
                         break;
                     }
+                case ConflictResult conflictResult:
+                    {
+                        var apiResult = new ApiResponse<object>(new ErrorInfo
+                        {
+                            ErrorCode = (int)HttpStatusCode.Conflict,
+                            Message = "Conflict"
+                        });
+                        actionResult.Result = new JsonResult(apiResult) { StatusCode = conflictResult.StatusCode };
+                        break;
+                    }
+                case ConflictObjectResult conflictObjectResult:
+                    {
+                        var apiResult = new ApiResponse<object>(new ErrorInfo
+                        {
+                            ErrorCode = (int)HttpStatusCode.Conflict,
+                            Message = conflictObjectResult.Value.ToString(),
+                            Details = conflictObjectResult.Value
+                        });
+                        actionResult.Result = new JsonResult(apiResult) { StatusCode = conflictObjectResult.StatusCode };
+                        break;
+                    }
                 default:
                     {
-                        var apiResult = new ApiResponse<object>();
                         var objectResult = actionResult.Result as ObjectResult;
+                        var apiResult = new ApiResponse<object>();
+
+                        if (!(objectResult.Value is ProblemDetails))
+                        {
+                            if (objectResult.StatusCode == (decimal?)HttpStatusCode.OK)
+                                apiResult = new ApiResponse<object>(objectResult.Value);
+                            else
+                                apiResult = new ApiResponse<object>(new ErrorInfo
+                                {
+                                    ErrorCode = (int)objectResult.StatusCode,
+                                    Message = objectResult.Value.ToString(),
+                                    Details = objectResult.Value
+                                });
+                        }
+                        else
+                        {
+                            apiResult = new ApiResponse<object>(new ErrorInfo
+                            {
+                                ErrorCode = (int) objectResult.StatusCode,
+                                Message = null,
+                                Details = null
+                            });
+                        }
+
                         actionResult.Result = new JsonResult(apiResult) { StatusCode = objectResult.StatusCode };
                         break;
                     }
