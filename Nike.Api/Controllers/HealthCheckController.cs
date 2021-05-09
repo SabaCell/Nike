@@ -7,9 +7,9 @@ namespace Nike.Api.Controllers
     public class HealthCheckController : ControllerBase
     {
         [HttpGet]
-        public string Get()
+        public IActionResult Get()
         {
-            return "Host is ready";
+            return Ok("Host is ready .");
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.Buffers;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using Nike.Web.Result;
 
 namespace Nike.Web.Mvc

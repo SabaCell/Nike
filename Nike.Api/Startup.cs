@@ -13,6 +13,7 @@ using Nike.EventBus.Kafka.AspNetCore;
 using Nike.Mediator.Handlers;
 using Nike.Redis.Microsoft.DependencyInjection;
 using Nike.Swagger;
+using Nike.Web.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
@@ -33,6 +34,7 @@ namespace Nike.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddWrappingApiResult();
 
             ConfigureKafka(services);
             ConfigureElasticSearch(services);

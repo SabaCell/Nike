@@ -81,7 +81,7 @@ namespace Nike.Web.Result.Responses
         /// <summary>
         ///     Error details.
         /// </summary>
-        public string Details { get; set; }
+        public object Details { get; set; }
 
         /// <summary>
         ///     Source of the error. Generally it'll point to the service which the exception is originated from.
