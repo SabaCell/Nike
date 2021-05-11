@@ -2,13 +2,16 @@
 {
     public abstract class UserDataQueryBase<T> : QueryBase<T> where T : class
     {
-        public UserData UserData { get; set; }
+        private UserData _userData;
 
         public void SetUserData(UserData userInfo)
         {
-            this.UserData = userInfo;
+            this._userData = userInfo;
         }
-
+        public UserData GetUserData()
+        {
+            return _userData;
+        }
         public abstract void Validate();
     }
 }

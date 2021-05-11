@@ -4,13 +4,17 @@ namespace Nike.Mediator.Command
 {
     public abstract class UserDataCommandBase : ICommand
     {
-        public UserData UserData { get; set; }
+        private UserData _userData;
 
         public void SetUserData(UserData userInfo)
         {
-            this.UserData = userInfo;
+            this._userData = userInfo;
         }
-
+        public UserData GetUserData()
+        {
+            return _userData;
+        }
+        
         public abstract void Validate();
     }
 }
