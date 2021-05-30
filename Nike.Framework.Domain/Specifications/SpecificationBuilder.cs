@@ -13,6 +13,11 @@ namespace Nike.Framework.Domain.Specifications
             _relationalSpecification.AddInclude(include);
             return this;
         }
+        public SpecificationBuilder<T> AddInclude(string include)
+        {
+            _relationalSpecification.AddInclude(include);
+            return this;
+        }
 
         public SpecificationBuilder<T> ApplyOrderBy(Expression<Func<T, object>> orderBy)
         {
