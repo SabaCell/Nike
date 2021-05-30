@@ -13,6 +13,7 @@ namespace Nike.Framework.Domain.Specifications
         int Take { get; }
         bool TrackingEnabled { get; }
         void AddInclude(Expression<Func<TEntity, object>> include);
+        public void AddInclude(string include);
         void ApplyOrderBy(Expression<Func<TEntity, object>> orderBy);
         void ApplyOrderByDescending(Expression<Func<TEntity, object>> orderByDescending);
         void ApplySkipTake(int skip, int take);
