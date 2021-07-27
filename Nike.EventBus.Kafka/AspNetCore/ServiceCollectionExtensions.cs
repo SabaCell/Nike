@@ -18,13 +18,15 @@ namespace Nike.EventBus.Kafka.AspNetCore
         }
 
         public static IServiceCollection AddKafkaConsumer(this IServiceCollection serviceCollection, string brokers,
-            string groupId)
+            string groupId, bool allowAutoCreateTopics = true)
         {
             if (string.IsNullOrEmpty(brokers))
                 throw new ArgumentNullException(nameof(brokers));
 
-            serviceCollection.AddSingleton<IKafkaConsumerConnection>(factory =>
-                new KafkaConsumerConnection(brokers, groupId));
+
+            var consumer = new KafkaConsumerConnection(brokers, groupId);
+            consumer.Config.AllowAutoCreateTopics = allowAutoCreateTopics;
+            serviceCollection.AddSingleton<IKafkaConsumerConnection>(factory => consumer);
 
             // serviceCollection.AddSingleton<IEventBusDispatcher, KafkaEventBusDispatcher>();
 
