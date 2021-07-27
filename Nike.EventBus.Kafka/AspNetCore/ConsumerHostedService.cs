@@ -158,9 +158,8 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
         private Dictionary<string, Type> GetTopicDictionary()
         {
-            var assembly = Assembly.GetEntryAssembly();
-
-            return assembly.GetTypes().Where(p => p.BaseType == typeof(IntegrationEvent))
+            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
+                .Where(x => x.BaseType == typeof(IntegrationEvent))
                 .ToDictionary(m => m.Name, m => m);
         }
     }
