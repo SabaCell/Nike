@@ -9,7 +9,6 @@ using Nike.EventBus.Kafka.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,28 +54,29 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var consumeResult = new ConsumeMessageResult(_topics);
-
-                if (!consumer.TryConsumeMessage(_connection.MillisecondsTimeout, consumeResult, stoppingToken))
-                {
-                    // _logger.LogTrace($"{consumer.Name}:{consumer.MemberId} is empty. Sleep for {_connection.MillisecondsTimeout}MS");
-
-                    await Task.Delay(1, stoppingToken);
-
-                    // TimeTrackerCollection.Append(consumeResult.GetTimes());
-                    // TimeTrackerCollection.Print();
-
-                    continue;
-                }
-
                 try
                 {
+                    var consumeResult = new ConsumeMessageResult(_topics);
+
+                    if (!consumer.TryConsumeMessage(_connection.MillisecondsTimeout, consumeResult, stoppingToken))
+                    {
+                        // _logger.LogTrace($"{consumer.Name}:{consumer.MemberId} is empty. Sleep for {_connection.MillisecondsTimeout}MS");
+
+                        await Task.Delay(1, stoppingToken);
+
+                        // TimeTrackerCollection.Append(consumeResult.GetTimes());
+                        // TimeTrackerCollection.Print();
+
+                        continue;
+                    }
+
                     // var sw = Stopwatch.StartNew();
 
                     _logger.LogTrace($"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
                     var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
 
+                    consumer.StoreOffset(consumeResult.Result);
                     // sw.Stop();
 
                     // consumeResult.SetProcessTime(sw.Elapsed.TotalMilliseconds);
@@ -91,19 +91,6 @@ namespace Nike.EventBus.Kafka.AspNetCore
                 {
                     _logger.LogError(ex,
                         "Error occurred executing {WorkItem}.", nameof(_connection));
-                }
-
-                finally
-                {
-                    // var sw = Stopwatch.StartNew();
-
-                    consumer.StoreOffset(consumeResult.Result); // TODO : Add retry codes
-
-                    // sw.Stop();
-
-                    // consumeResult.SetOffsetTime(sw.Elapsed.TotalMilliseconds);
-
-                    // TimeTrackerCollection.Append(consumeResult.GetTimes());
                 }
             }
 
