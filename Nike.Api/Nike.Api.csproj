@@ -22,7 +22,6 @@
     <ProjectReference Include="..\Nike.Redis.Microsoft.DependencyInjection\Nike.Redis.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\Nike.Swagger\Nike.Swagger.csproj" />
     <ProjectReference Include="..\Nike.Web.DependencyInjection\Nike.Web.DependencyInjection.csproj" />
-    <ProjectReference Include="..\Nike.WebApi\Nike.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
