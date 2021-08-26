@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>F:\Projects\Sabacell Projects\Nike\Nike.Api\Nike.Api.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +25,13 @@
 
   <ItemGroup>
     <Folder Include="Application\Orders\Query\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Nike.Api.xml" />
+    <Content Include="Nike.Api.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 
