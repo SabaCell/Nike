@@ -18,7 +18,7 @@ namespace Nike.EventBus.Events
         }
 
         [JsonPropertyName("Id")]
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
         [JsonPropertyName("CreationAt")]
         public DateTime CreationAt { get; private set; }
