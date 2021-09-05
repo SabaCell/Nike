@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Confluent.Kafka;
+using Enexure.MicroBus;
+using Microsoft.Extensions.Logging;
+using Nike.EventBus.Abstractions;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Confluent.Kafka;
-using Enexure.MicroBus;
-using Microsoft.Extensions.Logging;
 
 namespace Nike.EventBus.Kafka.Model
 {
@@ -39,7 +39,7 @@ namespace Nike.EventBus.Kafka.Model
 
             // sw.Stop();
             // _times.Add("set-messages", sw.Elapsed.TotalMilliseconds);
-            
+
             return _serializationTask;
         }
 
@@ -83,23 +83,26 @@ namespace Nike.EventBus.Kafka.Model
             return _times;
         }
 
-        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, CancellationToken cancellationToken)
+        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, IEventBusDispatcher bus, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(async () =>
             {
+                var message = GetMessage();
+
                 try
                 {
-                    // var sw = Stopwatch.StartNew();
+                    await mediator.PublishAsync(message);
 
-                    await mediator.PublishAsync(GetMessage());
-
-                    // sw.Stop();
-
-                    // SetMediatorProcess(sw.Elapsed.TotalMilliseconds);
+                    if (message.IsReplyAble)
+                    {
+                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Success(message.Id), cancellationToken);
+                    }
                 }
-                catch (Exception e)
+                catch (Exception exception)
                 {
-                    logger.LogError($"Consumed a message : {_topic} failed", e);
+                    await bus.PublishAsync(MessageProcessResultIntegrationEvent.Fail(message.Id, exception.Message), cancellationToken);
+
+                    logger.LogError($"Consumed a message : {_topic} failed", exception);
                 }
                 finally
                 {

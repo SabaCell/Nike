@@ -1,5 +1,5 @@
-﻿using System;
-using Nike.EventBus.Events;
+﻿using Nike.EventBus.Events;
+using System;
 
 namespace Nike.SampleProducer.Model
 {
@@ -9,7 +9,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg1(string name, string description, int count) : base(Guid.NewGuid(),
+        public Msg1(string name, string description, int count) : base(Guid.NewGuid(), false,
             DateTime.Now)
         {
             Name = name;
@@ -24,7 +24,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg2(string name, string description, int count) : base(Guid.NewGuid(),
+        public Msg2(string name, string description, int count) : base(Guid.NewGuid(), false,
             DateTime.Now)
         {
             Name = name;
@@ -39,7 +39,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg3(string name, string description, int count) : base(Guid.NewGuid(),
+        public Msg3(string name, string description, int count) : base(Guid.NewGuid(), false,
             DateTime.Now)
         {
             Name = name;
@@ -54,7 +54,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg4(string name, string description, int count) : base(Guid.NewGuid(),
+        public Msg4(string name, string description, int count) : base(Guid.NewGuid(), false,
             DateTime.Now)
         {
             Name = name;
@@ -69,7 +69,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg5(string name, string description, int count) : base(Guid.NewGuid(),
+        public Msg5(string name, string description, int count) : base(Guid.NewGuid(), false,
             DateTime.Now)
         {
             Name = name;
@@ -78,5 +78,5 @@ namespace Nike.SampleProducer.Model
         }
     }
 
-    
+
 }

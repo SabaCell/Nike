@@ -3,6 +3,7 @@ using Enexure.MicroBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nike.EventBus.Abstractions;
 using Nike.EventBus.Events;
 using Nike.EventBus.Kafka.Extenstion;
 using Nike.EventBus.Kafka.Model;
@@ -20,12 +21,17 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private readonly Dictionary<string, Type> _topics;
         private readonly IKafkaConsumerConnection _connection;
         private readonly ILogger<ConsumerHostedService> _logger;
+        private readonly IEventBusDispatcher _bus;
 
-        public ConsumerHostedService(ILogger<ConsumerHostedService> logger, IKafkaConsumerConnection connection,
-            IServiceProvider services)
+        public ConsumerHostedService(
+            ILogger<ConsumerHostedService> logger,
+            IKafkaConsumerConnection connection,
+            IServiceProvider services,
+            IEventBusDispatcher bus)
         {
             _logger = logger;
             _services = services;
+            _bus = bus;
             _connection = connection;
             _topics = GetTopicDictionary();
         }
@@ -74,7 +80,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     _logger.LogTrace($"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
-                    var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
+                    var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, _bus, stoppingToken);
 
                     consumer.StoreOffset(consumeResult.Result);
                     // sw.Stop();
