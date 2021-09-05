@@ -23,15 +23,7 @@ namespace Nike.EntityFramework
 
         public async Task<int> CommitAsync()
         {
-            try
-            {
-                return await _dbContext.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+             return await _dbContext.SaveChangesAsync();
         }
 
         public IEnumerable<IDomainEvent> GetUncommittedEvents()

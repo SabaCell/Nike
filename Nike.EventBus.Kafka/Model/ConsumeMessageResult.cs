@@ -98,11 +98,12 @@ namespace Nike.EventBus.Kafka.Model
                 }
                 catch (Exception exception)
                 {
+
                     if (message.IsReplyAble)
                         await bus.PublishAsync(MessageProcessResultIntegrationEvent.Fail(message.Id, exception.Message), cancellationToken);
 
                     logger.LogError($"Consumed a message : {_topic} failed : {exception.Message}", exception);
-                }
+}
                 finally
                 {
                     await Task.CompletedTask;
