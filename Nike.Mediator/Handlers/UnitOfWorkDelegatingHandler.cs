@@ -1,10 +1,11 @@
 ﻿using Enexure.MicroBus;
-using Nike.EventBus.Abstractions;
+using Microsoft.Extensions.Caching.Distributed;
 using Nike.EventBus.Events;
 using Nike.Framework.Domain;
 using Nike.Framework.Domain.Exceptions;
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Nike.Mediator.Handlers
@@ -13,21 +14,21 @@ namespace Nike.Mediator.Handlers
     {
         private readonly IMicroMediator _mediator;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IEventBusDispatcher _bus;
+        private readonly IDistributedCache _distributedCache;
+        private const int ProcessedMessageAbsoluteExpirationTime = 30;
+        private const string Key = "processed-message-results:{0}";
 
-        public UnitOfWorkDelegatingHandler(
-            IUnitOfWork unitOfWork,
-            IMicroMediator mediator,
-            IEventBusDispatcher bus)
+        public UnitOfWorkDelegatingHandler(IUnitOfWork unitOfWork, IMicroMediator mediator, IDistributedCache distributedCache)
         {
             _unitOfWork = unitOfWork;
             _mediator = mediator;
-            _bus = bus;
+            _distributedCache = distributedCache;
         }
 
         public async Task<object> Handle(INextHandler next, object message)
         {
             var @event = message as IntegrationEvent;
+            var key = string.Format(Key, @event.Id);
 
             try
             {
@@ -47,7 +48,11 @@ namespace Nike.Mediator.Handlers
 
                 await _unitOfWork.CommitAsync();
 
-                await _bus.PublishAsync(ProcessedMessageResultIntegrationEvent.Success(@event.Id.ToString()));
+                await _distributedCache.SetStringAsync(key, JsonSerializer.Serialize(ProcessedMessageResult.Success()),
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(ProcessedMessageAbsoluteExpirationTime)
+                    });
 
                 return result;
             }
@@ -55,7 +60,11 @@ namespace Nike.Mediator.Handlers
             {
                 _unitOfWork.Rollback();
 
-                await _bus.PublishAsync(ProcessedMessageResultIntegrationEvent.Fail(@event.Id.ToString(), exception.Message));
+                await _distributedCache.SetStringAsync(key, JsonSerializer.Serialize(ProcessedMessageResult.Fail(exception.Message)),
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(ProcessedMessageAbsoluteExpirationTime)
+                    });
 
                 throw;
             }
@@ -63,26 +72,29 @@ namespace Nike.Mediator.Handlers
             {
                 _unitOfWork.Rollback();
 
-                await _bus.PublishAsync(ProcessedMessageResultIntegrationEvent.Fail(@event.Id.ToString(), "متاسفانه خطای سیستمی رخ داده است"));
+                await _distributedCache.SetStringAsync(key,
+                    JsonSerializer.Serialize(ProcessedMessageResult.Fail("متاسفانه خطای سیستمی رخ داده است")),
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(ProcessedMessageAbsoluteExpirationTime)
+                    });
 
                 throw;
             }
         }
     }
 
-    public class ProcessedMessageResultIntegrationEvent : IntegrationEvent
+    public class ProcessedMessageResult
     {
-        public static ProcessedMessageResultIntegrationEvent Success(string eventId)
+        public static ProcessedMessageResult Success()
         {
-            return new ProcessedMessageResultIntegrationEvent { EventId = eventId, IsSuccess = true };
+            return new ProcessedMessageResult { IsSuccess = true };
         }
 
-        public static ProcessedMessageResultIntegrationEvent Fail(string eventId, string failureReason)
+        public static ProcessedMessageResult Fail(string failureReason)
         {
-            return new ProcessedMessageResultIntegrationEvent { EventId = eventId, IsSuccess = false, FailureReason = failureReason };
+            return new ProcessedMessageResult { IsSuccess = false, FailureReason = failureReason };
         }
-
-        public string EventId { get; set; }
 
         public bool IsSuccess { get; set; }
 
