@@ -9,7 +9,7 @@ namespace Nike.EventBus.Kafka.Extenstion
         public static bool TryConsumeMessage(this IConsumer<Ignore, string> consumer, int timeOut,
             ConsumeMessageResult result, CancellationToken cancellationToken)
         {
-            if (!TryConsume(consumer, timeOut, out var consumeResult, cancellationToken))
+            if (!TryConsume(consumer, timeOut, out var consumeResult))
                 return false;
 
             result.SetMessageAsync(consumeResult);
@@ -17,18 +17,13 @@ namespace Nike.EventBus.Kafka.Extenstion
             return true;
         }
 
-        public static bool TryConsume(this IConsumer<Ignore, string> consumer, int timeout,
-            out ConsumeResult<Ignore, string> consumeResult, CancellationToken cancellationToken)
+        private static bool TryConsume(this IConsumer<Ignore, string> consumer, int timeout,
+            out ConsumeResult<Ignore, string> consumeResult)
         {
             consumeResult = null;
-
             consumeResult = consumer.Consume(timeout);
-
             if (consumeResult != null)
                 return consumeResult.Message != null;
-
-            // consumeResult = consumer.Consume(cancellationToken);
-
             return consumeResult?.Message != null;
         }
     }

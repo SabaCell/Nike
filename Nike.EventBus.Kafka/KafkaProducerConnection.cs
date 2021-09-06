@@ -9,6 +9,7 @@ namespace Nike.EventBus.Kafka
             Config = new ProducerConfig();
             // Config.QueueBufferingMaxMessages = 1000000;
             // Config.LingerMs = 10;
+     
             Config.BootstrapServers = brokers;
             Config.Partitioner = Partitioner.Murmur2Random;
             IsConnected = true;
