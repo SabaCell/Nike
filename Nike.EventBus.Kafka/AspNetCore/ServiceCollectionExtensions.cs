@@ -24,5 +24,6 @@ namespace Nike.EventBus.Kafka.AspNetCore
             serviceCollection.AddSingleton<IKafkaConsumerConnection>(factory => consumer);
             return serviceCollection;
         }
+      
     }
 }
