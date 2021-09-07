@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Nike.EventBus.Abstractions;
 
 
 namespace Nike.EventBus.Kafka.Model

@@ -74,11 +74,11 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     if (_connection.IsAsync)
                     {
-                        var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
+                        var processTask = consumeResult.PublishToDomainAsync(mediator, _logger,_bus, stoppingToken);
                     }
                     else
                     {
-                        await consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
+                        await consumeResult.PublishToDomainAsync(mediator, _logger,_bus, stoppingToken);
                     }
 
 
