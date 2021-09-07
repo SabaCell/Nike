@@ -16,14 +16,16 @@ namespace Nike.EventBus.Kafka.Model
         private readonly Dictionary<string, Type> _types;
         private dynamic _message;
         private Type _messageType;
+
         private Task _serializationTask;
+
         //private readonly Dictionary<string, double> _times;
         private string _topic;
 
         public ConsumeMessageResult(Dictionary<string, Type> types)
         {
             _types = types;
-         //   _times = new Dictionary<string, double>();
+            //   _times = new Dictionary<string, double>();
         }
 
         public ConsumeResult<Ignore, string> Result { get; private set; }
@@ -71,7 +73,8 @@ namespace Nike.EventBus.Kafka.Model
         //     return _times;
         // }
 
-        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, IEventBusDispatcher bus, CancellationToken cancellationToken)
+        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, IEventBusDispatcher bus,
+            CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(async () =>
             {
@@ -81,18 +84,18 @@ namespace Nike.EventBus.Kafka.Model
                 {
                     await mediator.PublishAsync(message);
 
-                    if (message.IsReplyAble)
-                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Success(message.Id), cancellationToken);
-
+                    if (bus != null && message.IsReplyAble)
+                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Success(message.Id),
+                            cancellationToken);
                 }
                 catch (Exception exception)
                 {
-
-                    if (message.IsReplyAble)
-                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Fail(message.Id, exception.Message), cancellationToken);
+                    if (bus != null && message.IsReplyAble)
+                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Fail(message.Id, exception.Message),
+                            cancellationToken);
 
                     logger.LogError($"Consumed a message : {_topic} failed : {exception.Message}", exception);
-}
+                }
 
                 finally
                 {

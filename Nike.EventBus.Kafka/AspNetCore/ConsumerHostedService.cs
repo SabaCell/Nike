@@ -21,17 +21,16 @@ namespace Nike.EventBus.Kafka.AspNetCore
         private readonly Dictionary<string, Type> _topics;
         private readonly IKafkaConsumerConnection _connection;
         private readonly ILogger<ConsumerHostedService> _logger;
-        private readonly IEventBusDispatcher _bus;
+
 
         public ConsumerHostedService(
             ILogger<ConsumerHostedService> logger,
             IKafkaConsumerConnection connection,
-            IServiceProvider services,
-            IEventBusDispatcher bus)
+            IServiceProvider services)
         {
             _logger = logger;
             _services = services;
-            _bus = bus;
+  
             _connection = connection;
             _topics = GetTopicDictionary();
         }
@@ -56,7 +55,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
             consumer.Subscribe(_topics.Keys);
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
-
+            var bus = scope.ServiceProvider.GetRequiredService<IEventBusDispatcher>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -74,11 +73,11 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     if (_connection.IsAsync)
                     {
-                        var processTask = consumeResult.PublishToDomainAsync(mediator, _logger,_bus, stoppingToken);
+                        var processTask = consumeResult.PublishToDomainAsync(mediator, _logger,bus, stoppingToken);
                     }
                     else
                     {
-                        await consumeResult.PublishToDomainAsync(mediator, _logger,_bus, stoppingToken);
+                        await consumeResult.PublishToDomainAsync(mediator, _logger,bus, stoppingToken);
                     }
 
 

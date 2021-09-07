@@ -92,7 +92,7 @@ namespace Nike.SampleConsumer.Model
     public class ConsumerHostedService1 : ConsumerHostedService
     {
         public ConsumerHostedService1(ILogger<ConsumerHostedService1> logger, IKafkaConsumerConnection connection,
-            IServiceProvider services, IEventBusDispatcher bus) : base(logger, connection, services, bus)
+            IServiceProvider services, IEventBusDispatcher bus) : base(logger, connection, services)
         {
         }
     }
@@ -100,7 +100,7 @@ namespace Nike.SampleConsumer.Model
     public class ConsumerHostedService2 : ConsumerHostedService
     {
         public ConsumerHostedService2(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection, IServiceProvider services,
-            IEventBusDispatcher bus) : base(logger, connection, services, bus)
+            IEventBusDispatcher bus) : base(logger, connection, services)
         {
         }
     }
@@ -108,7 +108,7 @@ namespace Nike.SampleConsumer.Model
     public class ConsumerHostedService3 : ConsumerHostedService
     {
         public ConsumerHostedService3(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,
-            IServiceProvider services, IEventBusDispatcher bus) : base(logger, connection, services, bus)
+            IServiceProvider services, IEventBusDispatcher bus) : base(logger, connection, services)
         {
         }
     }
