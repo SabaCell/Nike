@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Confluent.Kafka;
 using Enexure.MicroBus;
 using System.Text.Json;
@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Nike.EventBus.Abstractions;
+
 
 namespace Nike.EventBus.Kafka.Model
 {
@@ -32,6 +34,7 @@ namespace Nike.EventBus.Kafka.Model
             _topic = result.Topic;
             _messageType = _types[result.Topic];
             _serializationTask = Task.Run(ToDeserializeAsync);
+
             return _serializationTask;
         }
 
@@ -68,18 +71,29 @@ namespace Nike.EventBus.Kafka.Model
         //     return _times;
         // }
 
-        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, CancellationToken cancellationToken)
+        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, IEventBusDispatcher bus, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(async () =>
             {
+                var message = GetMessage();
+
                 try
                 {
-                    await mediator.PublishAsync(GetMessage());
+                    await mediator.PublishAsync(message);
+
+                    if (message.IsReplyAble)
+                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Success(message.Id), cancellationToken);
+
                 }
-                catch (Exception e)
+                catch (Exception exception)
                 {
-                    logger.LogError($"Consumed a message : {_topic} failed: {e.Message}");
-                }
+
+                    if (message.IsReplyAble)
+                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Fail(message.Id, exception.Message), cancellationToken);
+
+                    logger.LogError($"Consumed a message : {_topic} failed : {exception.Message}", exception);
+}
+
                 finally
                 {
                     await Task.CompletedTask;

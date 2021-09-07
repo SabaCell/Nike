@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Nike.EventBus.Abstractions;
 using Nike.EventBus.Events;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Nike.EventBus.Kafka;
 using Nike.EventBus.Kafka.AspNetCore;
 using Nike.Mediator.Handlers;
+using System;
+using System.Threading.Tasks;
 
 namespace Nike.SampleConsumer.Model
 {
@@ -19,7 +20,7 @@ namespace Nike.SampleConsumer.Model
     {
         public override Task HandleAsync(Msg1 @event)
         {
-//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+            //            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
@@ -35,7 +36,7 @@ namespace Nike.SampleConsumer.Model
     {
         public override Task HandleAsync(Msg2 @event)
         {
-//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+            //            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
@@ -51,7 +52,7 @@ namespace Nike.SampleConsumer.Model
     {
         public override Task HandleAsync(Msg3 @event)
         {
-//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+            //            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
@@ -67,7 +68,7 @@ namespace Nike.SampleConsumer.Model
     {
         public override Task HandleAsync(Msg4 @event)
         {
-//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+            //            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
@@ -83,7 +84,7 @@ namespace Nike.SampleConsumer.Model
     {
         public override Task HandleAsync(Msg5 @event)
         {
-//            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
+            //            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
             return Task.CompletedTask;
         }
     }
@@ -91,15 +92,15 @@ namespace Nike.SampleConsumer.Model
     public class ConsumerHostedService1 : ConsumerHostedService
     {
         public ConsumerHostedService1(ILogger<ConsumerHostedService1> logger, IKafkaConsumerConnection connection,
-            IServiceProvider services) : base(logger, connection, services)
+            IServiceProvider services, IEventBusDispatcher bus) : base(logger, connection, services, bus)
         {
         }
     }
 
     public class ConsumerHostedService2 : ConsumerHostedService
     {
-        public ConsumerHostedService2(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,
-            IServiceProvider services) : base(logger, connection, services)
+        public ConsumerHostedService2(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection, IServiceProvider services,
+            IEventBusDispatcher bus) : base(logger, connection, services, bus)
         {
         }
     }
@@ -107,7 +108,7 @@ namespace Nike.SampleConsumer.Model
     public class ConsumerHostedService3 : ConsumerHostedService
     {
         public ConsumerHostedService3(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,
-            IServiceProvider services) : base(logger, connection, services)
+            IServiceProvider services, IEventBusDispatcher bus) : base(logger, connection, services, bus)
         {
         }
     }
