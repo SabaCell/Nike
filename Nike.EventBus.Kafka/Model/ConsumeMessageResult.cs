@@ -1,12 +1,12 @@
-﻿using Confluent.Kafka;
-using Enexure.MicroBus;
-using Microsoft.Extensions.Logging;
-using Nike.EventBus.Abstractions;
 using System;
-using System.Collections.Generic;
+using Confluent.Kafka;
+using Enexure.MicroBus;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+
 
 namespace Nike.EventBus.Kafka.Model
 {
@@ -16,34 +16,28 @@ namespace Nike.EventBus.Kafka.Model
         private dynamic _message;
         private Type _messageType;
         private Task _serializationTask;
-        private readonly Dictionary<string, double> _times;
+        //private readonly Dictionary<string, double> _times;
         private string _topic;
 
         public ConsumeMessageResult(Dictionary<string, Type> types)
         {
             _types = types;
-            _times = new Dictionary<string, double>();
+         //   _times = new Dictionary<string, double>();
         }
 
         public ConsumeResult<Ignore, string> Result { get; private set; }
 
         public Task SetMessageAsync(ConsumeResult<Ignore, string> result)
         {
-            // var sw = Stopwatch.StartNew();
-
             Result = result;
             _topic = result.Topic;
             _messageType = _types[result.Topic];
-
             _serializationTask = Task.Run(ToDeserializeAsync);
-
-            // sw.Stop();
-            // _times.Add("set-messages", sw.Elapsed.TotalMilliseconds);
 
             return _serializationTask;
         }
 
-        public dynamic GetMessage()
+        private dynamic GetMessage()
         {
             if (!_serializationTask.IsCompleted)
                 _serializationTask.Wait();
@@ -52,36 +46,29 @@ namespace Nike.EventBus.Kafka.Model
 
         private Task ToDeserializeAsync()
         {
-            // var sw = Stopwatch.StartNew();
-
             _message = JsonSerializer.Deserialize(Result.Message.Value, _messageType);
-
-            // sw.Stop();
-
-            // _times.Add("serialized-messages", sw.Elapsed.TotalMilliseconds);
-
             return Task.CompletedTask;
         }
 
-        public void SetProcessTime(double elapsedTotalMilliseconds)
-        {
-            _times.Add("process-async", elapsedTotalMilliseconds);
-        }
+        // public void SetProcessTime(double elapsedTotalMilliseconds)
+        // {
+        //     _times.Add("process-async", elapsedTotalMilliseconds);
+        // }
+        //
+        // public void SetMediatorProcess(double elapsedTotalMilliseconds)
+        // {
+        //     _times.Add("meditor-message", elapsedTotalMilliseconds);
+        // }
+        //
+        // public void SetOffsetTime(double elapsedTotalMilliseconds)
+        // {
+        //     _times.Add("offset-message", elapsedTotalMilliseconds);
+        // }
 
-        public void SetMediatorProcess(double elapsedTotalMilliseconds)
-        {
-            _times.Add("meditor-message", elapsedTotalMilliseconds);
-        }
-
-        public void SetOffsetTime(double elapsedTotalMilliseconds)
-        {
-            _times.Add("offset-message", elapsedTotalMilliseconds);
-        }
-
-        public Dictionary<string, double> GetTimes()
-        {
-            return _times;
-        }
+        // public Dictionary<string, double> GetTimes()
+        // {
+        //     return _times;
+        // }
 
         public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, IEventBusDispatcher bus, CancellationToken cancellationToken)
         {
@@ -95,6 +82,7 @@ namespace Nike.EventBus.Kafka.Model
 
                     if (message.IsReplyAble)
                         await bus.PublishAsync(MessageProcessResultIntegrationEvent.Success(message.Id), cancellationToken);
+
                 }
                 catch (Exception exception)
                 {
@@ -104,6 +92,7 @@ namespace Nike.EventBus.Kafka.Model
 
                     logger.LogError($"Consumed a message : {_topic} failed : {exception.Message}", exception);
 }
+
                 finally
                 {
                     await Task.CompletedTask;

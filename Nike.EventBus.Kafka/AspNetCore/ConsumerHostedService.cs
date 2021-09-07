@@ -54,7 +54,6 @@ namespace Nike.EventBus.Kafka.AspNetCore
         {
             using var consumer = MakeConsumer();
             consumer.Subscribe(_topics.Keys);
-
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
 
@@ -66,21 +65,22 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
                     if (!consumer.TryConsumeMessage(_connection.MillisecondsTimeout, consumeResult, stoppingToken))
                     {
-                        // _logger.LogTrace($"{consumer.Name}:{consumer.MemberId} is empty. Sleep for {_connection.MillisecondsTimeout}MS");
-
                         await Task.Delay(1, stoppingToken);
-
-                        // TimeTrackerCollection.Append(consumeResult.GetTimes());
-                        // TimeTrackerCollection.Print();
-
                         continue;
                     }
+                    _logger.LogTrace(
+                        $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
-                    // var sw = Stopwatch.StartNew();
 
-                    _logger.LogTrace($"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
+                    if (_connection.IsAsync)
+                    {
+                        var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
+                    }
+                    else
+                    {
+                        await consumeResult.PublishToDomainAsync(mediator, _logger, stoppingToken);
+                    }
 
-                    var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, _bus, stoppingToken);
 
                     consumer.StoreOffset(consumeResult.Result);
                     // sw.Stop();
