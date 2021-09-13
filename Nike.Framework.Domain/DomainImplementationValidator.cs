@@ -97,7 +97,7 @@ namespace Nike.Framework.Domain
 
                 foreach (var domainProperty in domainProperties)
                 {
-                    if (domainProperty.Name.Equals(nameof(IAggregateRoot.Events))) continue;
+               //     if (domainProperty.Name.Equals(nameof(IAggregateRoot.Events))) continue;
 
                     var equivalentProperty = snapshotModelType.GetProperty(domainProperty.Name);
 

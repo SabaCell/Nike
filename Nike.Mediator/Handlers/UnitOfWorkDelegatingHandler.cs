@@ -1,9 +1,9 @@
-﻿using Enexure.MicroBus;
+﻿using System;
+using System.Threading.Tasks;
+using Enexure.MicroBus;
+using Nike.EventBus.Events;
 using Nike.Framework.Domain;
 using Nike.Framework.Domain.Exceptions;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nike.Mediator.Handlers
 {
@@ -22,21 +22,19 @@ namespace Nike.Mediator.Handlers
         {
             try
             {
-                var events = _unitOfWork.GetUncommittedEvents().ToList();
-
-                var count = events.Count;
-                foreach (var domainEvent in events) await _mediator.PublishEventAsync(domainEvent);
-
                 var result = await next.Handle(message);
+                var events = Tracker.GetAllEvents();
+                var count = events.Count;
+                foreach (var domainEvent in events)
+                {
+                    await _mediator.SendAsync(domainEvent);
+                }
 
-                //domain event not occured 
-                if (count <= 0)
-                    // command event not occured too 
-                    if (!(message is ICommand))
-                        // so we dont need to Commit to db 
-                        return result;
+                if (count > 0 && message is ICommand | message is IntegrationEvent)
+                {
+                    await _unitOfWork.CommitAsync();
+                }
 
-                await _unitOfWork.CommitAsync();
 
                 return result;
             }

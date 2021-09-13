@@ -53,6 +53,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
         {
             using var consumer = MakeConsumer();
             consumer.Subscribe(_topics.Keys);
+            
             using var scope = _services.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
             var bus = scope.ServiceProvider.GetRequiredService<IEventBusDispatcher>();
@@ -113,9 +114,10 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
             _logger.LogWarning($"Kafka-Consumer-Hosted-Service {GetType().FullName} has been stoped.");
         }
-
+       
         private IConsumer<Ignore, string> MakeConsumer()
         {
+            
             _connection.Config.PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin;
 
             var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
