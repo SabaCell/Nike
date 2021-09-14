@@ -22,14 +22,10 @@ namespace Nike.Framework.Domain
         {
             lock (_lock)
             {
-                return _events.ToList();
+                var events = _events.ToList();
+                _events.Clear();
+                return events;
             }
-        }
-
-        public static void RemoveEvent(IDomainEvent domainEvent)
-        {
-            lock (_lock)
-                _events.Remove(domainEvent);
         }
     }
 }
