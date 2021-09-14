@@ -31,6 +31,7 @@ namespace Nike.EntityFramework
 
         protected DbContextBase(DbContextOptions<TContext> options) : base(options)
         {
+            
             //   ChangeTracker.Tracked += OnEntityCreate;
             //   ChangeTracker.StateChanged += OnEntityUpdate;
         }
@@ -112,6 +113,9 @@ namespace Nike.EntityFramework
             {
                 await SaveChangesAsync();
                 transaction.Commit();
+                
+                
+                
             }
             catch
             {

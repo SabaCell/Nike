@@ -7,7 +7,7 @@ namespace Nike.Framework.Domain
     public interface IUnitOfWork : IDisposable
     {
         Task<int> CommitAsync();
-       // IEnumerable<IDomainEvent> GetUncommittedEvents();
+       IEnumerable<IDomainEvent> GetChangedEvents();
         void Rollback();
     }
 }

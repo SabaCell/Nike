@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Nike.EventBus.Events;
@@ -30,9 +31,15 @@ namespace Nike.Mediator.Handlers
                     await _mediator.SendAsync(domainEvent);
                 }
 
-                if (count > 0 && message is ICommand | message is IntegrationEvent)
+                if (count <= 0 || !(message is ICommand | message is IntegrationEvent)) return result;
+               
+                
+                var changedEvents = _unitOfWork.GetChangedEvents().ToList();
+                await _unitOfWork.CommitAsync();
+                if (changedEvents.Count <= 0) return result;
+                foreach (var @event in changedEvents)
                 {
-                    await _unitOfWork.CommitAsync();
+                    await _mediator.SendAsync(@event);
                 }
 
 
