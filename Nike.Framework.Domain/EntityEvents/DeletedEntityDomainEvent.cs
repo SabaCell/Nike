@@ -2,13 +2,13 @@
 
 namespace Nike.Framework.Domain.EntityEvents
 {
-    public class DeletedEntityDomainEvent:IDomainEvent
+    public class DeletedEntityDomainEvent<TEntity>:IDomainEvent
     {
         public Type AggregateRootType { get; }
         public DateTime RaisedAt { get; }
-        public IAggregateRoot AggregateRoot { get; }
+        public TEntity AggregateRoot { get; }
 
-        public DeletedEntityDomainEvent(IAggregateRoot aggregateRoot)
+        public DeletedEntityDomainEvent(TEntity aggregateRoot)
         {
             AggregateRootType = aggregateRoot.GetType();
             RaisedAt = DateTime.Now;

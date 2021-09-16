@@ -30,7 +30,6 @@ namespace Nike.EntityFramework
             return result;
         }
 
-     
 
         // public IEnumerable<IDomainEvent> GetUncommittedEvents()
         // {
@@ -61,15 +60,19 @@ namespace Nike.EntityFramework
                 switch (change.State)
                 {
                     case EntityState.Added:
-                        events.Add(new AddedEntityDomainEvent(change.Entity));
+                        var @event = CreateDynamicEvent(typeof(AddedEntityDomainEvent<>), change.Entity);
+
+                        events.Add(@event);
                         break;
 
                     case EntityState.Modified:
-                        events.Add(new ModifiedEntityDomainEvent(change.Entity));
+                        @event = CreateDynamicEvent(typeof(ModifiedEntityDomainEvent<>), change.Entity);
+                        events.Add(@event);
                         break;
                     case EntityState.Deleted:
+                        @event = CreateDynamicEvent(typeof(DeletedEntityDomainEvent<>), change.Entity);
+                        events.Add(@event);
 
-                        events.Add(new DeletedEntityDomainEvent(change.Entity));
                         break;
                 }
             }
@@ -77,6 +80,11 @@ namespace Nike.EntityFramework
             return events;
         }
 
+        private dynamic CreateDynamicEvent(Type domainType, IAggregateRoot entity)
+        {
+            var type = domainType.MakeGenericType(entity.GetType());
+            return Activator.CreateInstance(type, entity);
+        }
 
         public void Rollback()
         {
