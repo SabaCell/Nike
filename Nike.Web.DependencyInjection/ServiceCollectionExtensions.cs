@@ -25,12 +25,7 @@ namespace Nike.Web.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddEntityFrameworkDefaultRepository(this IServiceCollection serviceCollection)
-        {
-            // serviceCollection.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-
-            return serviceCollection;
-        }
+  
         
         
     }
