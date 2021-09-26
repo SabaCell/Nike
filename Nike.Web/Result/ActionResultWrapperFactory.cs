@@ -17,6 +17,8 @@ namespace Nike.Web.Result
                 ObjectResult _ => new ObjectActionResultWrapper(),
                 JsonResult _ => new JsonActionResultWrapper(),
                 EmptyResult _ => new EmptyActionResultWrapper(),
+                ChallengeResult _=> new ChallengeActionResultWrapper(),
+                
                 _ => new NullAbpActionResultWrapper()
             };
         }

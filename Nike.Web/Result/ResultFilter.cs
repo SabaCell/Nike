@@ -20,10 +20,12 @@ namespace Nike.Web.Result
         {
             if (!WrapOnSuccess(context.ActionDescriptor))
                 return;
-
+                
             var wrapper = _wrapperFactory.CreateFor(context);
 
             wrapper.Wrap((dynamic)context);
+            
+   
         }
 
         public void OnResultExecuted(ResultExecutedContext context)
