@@ -2,12 +2,10 @@
 
 namespace Nike.Web.Result.Wrappers
 {
-    public class ChallengeActionResultWrapper: IActionResultWrapper
+    public class NotChangeActionResultWrapper : IActionResultWrapper
     {
         public void Wrap(ResultExecutingContext actionResult)
         {
-
-
         }
     }
 }
