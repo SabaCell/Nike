@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nike.Exceptions;
@@ -158,9 +157,7 @@ namespace Nike.Web.Result
 
                 if (validationResult.MemberNames != null && validationResult.MemberNames.Any())
                     validationError.Members = validationResult.MemberNames.Select(m => m.ToCamelCase()).ToArray();
-
-                // If someone doesn't pass the member names correctly, we just use a counter instead
-                var key = validationError.Members?.Join(",") ?? i++.ToString();
+                var key = validationError.Members != null ? string.Join(',', validationError.Members) : i++.ToString();
                 if (!validationErrorInfos.ContainsKey(key))
                 {
                     validationErrorInfos.Add(key, validationError.Message);
