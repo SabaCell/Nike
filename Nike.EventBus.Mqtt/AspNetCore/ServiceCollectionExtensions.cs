@@ -8,7 +8,7 @@ namespace Nike.EventBus.Mqtt.AspNetCore
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddMqttProducer(this IServiceCollection serviceCollection,
-            MqttProducerTTConfig config)
+            MqttProducerConfig config)
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
