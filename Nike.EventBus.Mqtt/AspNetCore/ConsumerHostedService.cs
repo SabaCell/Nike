@@ -13,7 +13,7 @@ using Nike.EventBus.Mqtt.Model;
 
 namespace Nike.EventBus.Mqtt.AspNetCore
 {
-    public class ConsumerHostedService : BackgroundService, IDisposable
+    public class ConsumerHostedService : BackgroundService
     {
         private readonly IMicroMediator _microMediator;
         private readonly MqttConsumerConfig _mqttConfig;

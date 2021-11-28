@@ -18,7 +18,7 @@ namespace Nike.EventBus.Mqtt.AspNetCore
         }
 
         public static IServiceCollection AddMqttConsumer(this IServiceCollection serviceCollection,
-            MqttProducerConfig config)
+            MqttConsumerConfig config)
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
