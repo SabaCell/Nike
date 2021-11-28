@@ -2,9 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <LangVersion>8</LangVersion>
-        <PackageVersion>1.0.0.1</PackageVersion>
+        <PackageVersion>1.0.0.2</PackageVersion>
         <Copyright>SabaCell</Copyright>
         <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
         <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
