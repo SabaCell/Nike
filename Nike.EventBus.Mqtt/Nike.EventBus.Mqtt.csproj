@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <LangVersion>8</LangVersion>
+        <PackageVersion>1.0.0.0</PackageVersion>
+        <Copyright>SabaCell</Copyright>
+        <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
+        <PackageTags>microservice, netcore</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.7.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
+        <PackageReference Include="MQTTnet" Version="3.1.0" />
+        <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.0.16" />
+        
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
+    </ItemGroup>
+
+</Project>
