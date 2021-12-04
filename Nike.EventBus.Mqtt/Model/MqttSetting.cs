@@ -1,6 +1,6 @@
-﻿namespace Orion.Hunter.Framework.Model
+﻿namespace Nike.EventBus.Mqtt.Model
 {
-    public class MqttConfig
+    public class MqttSetting
     {
         
         public string Host { get; set; }

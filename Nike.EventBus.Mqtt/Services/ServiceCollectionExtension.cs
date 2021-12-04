@@ -2,16 +2,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nike.EventBus.Abstractions;
+using Nike.EventBus.Mqtt.Model;
 using Nike.EventBus.Mqtt.Options;
 using Orion.Hunter.Framework;
-using Orion.Hunter.Framework.Model;
 
 namespace Nike.EventBus.Mqtt.Services
 {
     public static class ServiceCollectionExtension
     {
         public static IServiceCollection AddMqttClientHostedService(this IServiceCollection services,
-            MqttConfig mqttSetting)
+            MqttSetting mqttSetting)
         {
             services.AddMqttClientServiceWithConfig(aspOptionBuilder =>
             {
