@@ -1,45 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet;
-using MQTTnet.Client;
-using MQTTnet.Client.Options;
 using Nike.EventBus.Abstractions;
 using Nike.EventBus.Events;
-using Nike.EventBus.Mqtt.Model;
+using Nike.EventBus.Mqtt.Services;
 
-namespace Nike.EventBus.Mqtt
+
+namespace Orion.Hunter.Framework
 {
     public class MqttEventBusDispatcher : IEventBusDispatcher
     {
-        private readonly IMqttClient _mqttClient;
-        private readonly MqttClientOptionsBuilder _option;
+        private readonly IMqttClientService _mqttClientService;
 
-
-        public MqttEventBusDispatcher(MqttProducerConfig config)
+        public MqttEventBusDispatcher(MqttClientServiceProvider provider)
         {
-            _option =
-                new MqttClientOptionsBuilder()
-                    .WithTcpServer(config.Host, config.Port);
-          
-            
-            if (string.IsNullOrEmpty(config.ClientId) == false)
-                _option = _option.WithClientId(config.ClientId);
-            if (config.UserName != string.Empty && config.Password != string.Empty)
-                _option = _option.WithCredentials(config.UserName, config.Password);
-
-            _mqttClient = new MqttFactory().CreateMqttClient();
-            _mqttClient.UseConnectedHandler(e => { Console.WriteLine("Connected successfully with MQTT Brokers."); });
-            _mqttClient.UseDisconnectedHandler(e => { Console.WriteLine("Disconnected from MQTT Brokers."); });
-            _mqttClient.ConnectAsync(_option.Build());
-        }
-
-
-        public void Dispose()
-        {
-            _mqttClient?.Dispose();
+            _mqttClientService = provider.MqttClientService;
         }
 
         public void Publish<T>(T message) where T : IntegrationEvent
@@ -95,7 +75,7 @@ namespace Nike.EventBus.Mqtt
                 ContentType = typeName,
                 Payload = body,
             };
-            return _mqttClient.PublishAsync(msg);
+            return _mqttClientService.PublishAsync(msg);
         }
 
 
@@ -113,6 +93,18 @@ namespace Nike.EventBus.Mqtt
         private byte[] ToBytes<T>(T value)
         {
             return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value));
+        }
+
+        private Dictionary<string, Type> GetTopicDictionary()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
+                .Where(x => x.BaseType == typeof(IntegrationEvent))
+                .ToDictionary(m => m.Name, m => m);
+        }
+
+
+        public void Dispose()
+        {
         }
     }
 }

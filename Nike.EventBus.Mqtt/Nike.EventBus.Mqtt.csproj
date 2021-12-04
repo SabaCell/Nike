@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <LangVersion>8</LangVersion>
-        <PackageVersion>1.0.0.2</PackageVersion>
+        <PackageVersion>1.0.0.3</PackageVersion>
         <Copyright>SabaCell</Copyright>
         <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
         <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
@@ -11,15 +11,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.7.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
-        <PackageReference Include="MQTTnet" Version="3.1.0" />
-        <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.0.16" />
-        
+        <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.7.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8"/>
+        <PackageReference Include="MQTTnet" Version="3.1.0"/>
+        <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.0.16"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
+        <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj"/>
     </ItemGroup>
 
 </Project>

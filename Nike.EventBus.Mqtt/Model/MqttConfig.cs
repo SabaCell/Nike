@@ -1,12 +1,15 @@
-﻿namespace Nike.EventBus.Mqtt.Model
+﻿namespace Orion.Hunter.Framework.Model
 {
-    public class MqttConsumerConfig
+    public class MqttConfig
     {
+        
+        public string Host { get; set; }
         public int Port { get; set; }
         public string ClientId { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-        public int TlsPort { get; set; }
+ 
+
     }
 }
 
