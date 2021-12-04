@@ -10,6 +10,7 @@ using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
+using MQTTnet.Protocol;
 using Nike.EventBus.Events;
 using Nike.EventBus.Mqtt.Model;
 
@@ -57,11 +58,13 @@ namespace Nike.EventBus.Mqtt.Services
         public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
         {
             _logger.LogInformation("connected");
-            await _mqttClient.SubscribeAsync(_topics.Keys.Select(p => new MqttTopicFilter()
-                {
-                    Topic = p
-                }).ToArray()
-            );
+
+            var topics = _topics.Keys.Select(p => new MqttTopicFilter()
+            {
+                Topic = p,
+                QualityOfServiceLevel = MqttQualityOfServiceLevel.AtLeastOnce
+            }).ToArray();
+            await _mqttClient.SubscribeAsync(topics);
         }
 
         public async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)

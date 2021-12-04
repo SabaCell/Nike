@@ -34,10 +34,7 @@ namespace Nike.EventBus.Mqtt.Services
             });
             services.AddSingleton<IEventBusDispatcher, MqttEventBusDispatcher>();
             services.AddSingleton<MqttClientService>();
-            services.AddSingleton<IHostedService>(serviceProvider =>
-            {
-                return serviceProvider.GetService<MqttClientService>();
-            });
+            services.AddSingleton<IHostedService>(serviceProvider => serviceProvider.GetService<MqttClientService>());
             services.AddSingleton(serviceProvider =>
             {
                 var mqttClientService = serviceProvider.GetService<MqttClientService>();
