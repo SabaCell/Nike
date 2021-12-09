@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Enexure.MicroBus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
@@ -11,27 +13,32 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Protocol;
-using Nike.EventBus.Events;
+using Nike.EventBus.Abstractions;
 using Nike.EventBus.Mqtt.Model;
+using Nike.Mediator.Handlers;
+
 
 namespace Nike.EventBus.Mqtt.Services
 {
     public class MqttClientService : IMqttClientService
     {
         private readonly IMqttClient _mqttClient;
-        private readonly IMicroMediator _microMediator;
+
+        //     private readonly IMicroMediator _microMediator;
         private readonly IMqttClientOptions _options;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, Type> _topics;
         private readonly ConsumeMessageResult _consumeResult;
         private readonly ILogger<MqttClientService> _logger;
 
-        public MqttClientService(IMqttClientOptions options, IMicroMediator microMediator,
+        public MqttClientService(IMqttClientOptions options, IServiceProvider serviceProvider,
             ILogger<MqttClientService> logger)
         {
             _topics = GetTopicDictionary();
             _consumeResult = new ConsumeMessageResult(_topics);
             _options = options;
-            _microMediator = microMediator;
+            _serviceProvider = serviceProvider;
+
             _logger = logger;
             _mqttClient = new MqttFactory().CreateMqttClient();
             ConfigureMqttClient();
@@ -46,8 +53,9 @@ namespace Nike.EventBus.Mqtt.Services
 
         public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
         {
+ 
             _consumeResult.SetMessageAsync(eventArgs.ApplicationMessage);
-            _consumeResult.PublishToDomainAsync(_microMediator, _logger, CancellationToken.None);
+            _consumeResult.PublishToDomainAsync(_serviceProvider, _logger, CancellationToken.None);
         }
 
         public Task PublishAsync(MqttApplicationMessage msg)
@@ -58,12 +66,16 @@ namespace Nike.EventBus.Mqtt.Services
         public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
         {
             _logger.LogInformation("connected");
+            var topics = (from topic in _topics
+                let attribute = GetAttribute(topic.Value)
+                select new MqttTopicFilter()
+                {
+                    Topic = attribute != null ? attribute.TopicName : topic.Key,
+                    QualityOfServiceLevel = attribute != null
+                        ? GetMqttQualityOfServiceLevel(attribute.ServiceLevel)
+                        : MqttQualityOfServiceLevel.AtLeastOnce
+                }).ToArray();
 
-            var topics = _topics.Keys.Select(p => new MqttTopicFilter()
-            {
-                Topic = p,
-                QualityOfServiceLevel = MqttQualityOfServiceLevel.AtLeastOnce
-            }).ToArray();
             await _mqttClient.SubscribeAsync(topics);
         }
 
@@ -96,11 +108,72 @@ namespace Nike.EventBus.Mqtt.Services
             await _mqttClient.DisconnectAsync(cancellationToken);
         }
 
+        static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    return true;
+                }
+
+                toCheck = toCheck.BaseType;
+            }
+
+            return false;
+        }
+
         private Dictionary<string, Type> GetTopicDictionary()
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
-                .Where(x => x.BaseType == typeof(IntegrationEvent))
-                .ToDictionary(m => m.Name, m => m);
+            var topics = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(x => x.GetTypes().Where(p =>
+                    p.IsGenericType == false && IsSubclassOfRawGeneric(typeof(IntegrationEventHandler<>), p)))
+                .ToList();
+
+            var results = new Dictionary<string, Type>();
+            foreach (var topic in topics)
+            {
+                var topicName = "";
+                var type = topic.BaseType?.GetGenericArguments();
+
+                if (type == null) continue;
+                var attribute = GetAttribute(type[0]);
+                topicName = attribute == null ? type[0].Name : attribute.TopicName;
+                results.Add(topicName, type[0]);
+            }
+
+            return results;
+        }
+
+        private TopicAttribute GetAttribute(Type type)
+        {
+            var attributes = type.GetCustomAttributes();
+
+            foreach (var attribute in attributes)
+            {
+                if (attribute is TopicAttribute topicAttribute)
+                {
+                    return topicAttribute;
+                }
+            }
+
+            return null;
+        }
+
+        private MqttQualityOfServiceLevel GetMqttQualityOfServiceLevel(QualityOfServiceLevel serviceLevel)
+        {
+            switch (serviceLevel)
+            {
+                case QualityOfServiceLevel.ExactlyOnce:
+                    return MqttQualityOfServiceLevel.ExactlyOnce;
+                case QualityOfServiceLevel.AtLeastOnce:
+                    return MqttQualityOfServiceLevel.AtLeastOnce;
+                case QualityOfServiceLevel.AtMostOnce:
+                    return MqttQualityOfServiceLevel.AtMostOnce;
+                default:
+                    return MqttQualityOfServiceLevel.AtLeastOnce;
+            }
         }
     }
 }

@@ -12,9 +12,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nike.EventBus.Abstractions;
 using Nike.EventBus.Kafka.AspNetCore;
+using Nike.EventBus.Mqtt.Model;
+using Nike.EventBus.Mqtt.Services;
 using Nike.Framework.Domain;
 using Nike.Mediator.Handlers;
 using Nike.Redis.Microsoft.DependencyInjection;
+using Nike.SampleProducer.Events;
 using Nike.SampleProducer.Model;
 
 namespace Nike.SampleProducer
@@ -24,61 +27,62 @@ namespace Nike.SampleProducer
         private static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            Test(host.Services);
+   
+            Task.Run( ()=>Test(host.Services)) ;
             host.Run();
         }
 
 
         private static void Test(IServiceProvider serviceProvider)
-        {
+        {            Thread.Sleep(5000);
             var dispatcher = serviceProvider.GetRequiredService<IEventBusDispatcher>();
-
-            var lst1 = new List<Msg1>();
-            var lst2 = new List<Msg2>();
-            var lst3 = new List<Msg3>();
-            var lst4 = new List<Msg4>();
-            var lst5 = new List<Msg5>();
-
-            var size = 10000;
-
-            for (int i = 0; i < size; i++)
-            {
-                lst1.Add(new Msg1($"msg_{i}", "sample desc", i));
-            }
-
-            for (int i = 0; i < size; i++)
-            {
-                lst2.Add(new Msg2($"msg_{i}", "sample desc", i));
-            }
-
-            for (int i = 0; i < size; i++)
-            {
-                lst3.Add(new Msg3($"msg_{i}", "sample desc", i));
-            }
-
-            for (int i = 0; i < size; i++)
-            {
-                lst4.Add(new Msg4($"msg_{i}", "sample desc", i));
-            }
-
-            for (int i = 0; i < size; i++)
-            {
-                lst5.Add(new Msg5($"msg_{i}", "sample desc", i));
-            }
-
-            var t1 = Task.Factory.StartNew(() => Publish(dispatcher, lst1), TaskCreationOptions.LongRunning);
-            var t2 = Task.Factory.StartNew(() => Publish(dispatcher, lst2), TaskCreationOptions.LongRunning);
-            var t3 = Task.Factory.StartNew(() => Publish(dispatcher, lst3), TaskCreationOptions.LongRunning);
-            var t4 = Task.Factory.StartNew(() => Publish(dispatcher, lst4), TaskCreationOptions.LongRunning);
-            var t5 = Task.Factory.StartNew(() => Publish(dispatcher, lst5), TaskCreationOptions.LongRunning);
-
-            Task.WaitAll(t1, t2, t3, t4);
-
-            Console.WriteLine($"Publishing {size} msgs1 to Kafka in {t1.Result}. MEANS: {t1.Result / size}");
-            Console.WriteLine($"Publishing {size} msgs2 to Kafka in {t2.Result}. MEANS: {t2.Result / size}");
-            Console.WriteLine($"Publishing {size} msgs3 to Kafka in {t3.Result}. MEANS: {t3.Result / size}");
-            Console.WriteLine($"Publishing {size} msgs4 to Kafka in {t4.Result}. MEANS: {t4.Result / size}");
-            Console.WriteLine($"Publishing {size} msgs5 to Kafka in {t4.Result}. MEANS: {t5.Result / size}");
+            dispatcher.Publish(new TestIntegrationEvent());
+            // var lst1 = new List<Msg1>();
+            // var lst2 = new List<Msg2>();
+            // var lst3 = new List<Msg3>();
+            // var lst4 = new List<Msg4>();
+            // var lst5 = new List<Msg5>();
+            //
+            // var size = 10000;
+            //
+            // for (int i = 0; i < size; i++)
+            // {
+            //     lst1.Add(new Msg1($"msg_{i}", "sample desc", i));
+            // }
+            //
+            // for (int i = 0; i < size; i++)
+            // {
+            //     lst2.Add(new Msg2($"msg_{i}", "sample desc", i));
+            // }
+            //
+            // for (int i = 0; i < size; i++)
+            // {
+            //     lst3.Add(new Msg3($"msg_{i}", "sample desc", i));
+            // }
+            //
+            // for (int i = 0; i < size; i++)
+            // {
+            //     lst4.Add(new Msg4($"msg_{i}", "sample desc", i));
+            // }
+            //
+            // for (int i = 0; i < size; i++)
+            // {
+            //     lst5.Add(new Msg5($"msg_{i}", "sample desc", i));
+            // }
+            //
+            // var t1 = Task.Factory.StartNew(() => Publish(dispatcher, lst1), TaskCreationOptions.LongRunning);
+            // var t2 = Task.Factory.StartNew(() => Publish(dispatcher, lst2), TaskCreationOptions.LongRunning);
+            // var t3 = Task.Factory.StartNew(() => Publish(dispatcher, lst3), TaskCreationOptions.LongRunning);
+            // var t4 = Task.Factory.StartNew(() => Publish(dispatcher, lst4), TaskCreationOptions.LongRunning);
+            // var t5 = Task.Factory.StartNew(() => Publish(dispatcher, lst5), TaskCreationOptions.LongRunning);
+            //
+            // Task.WaitAll(t1, t2, t3, t4);
+            //
+            // Console.WriteLine($"Publishing {size} msgs1 to Kafka in {t1.Result}. MEANS: {t1.Result / size}");
+            // Console.WriteLine($"Publishing {size} msgs2 to Kafka in {t2.Result}. MEANS: {t2.Result / size}");
+            // Console.WriteLine($"Publishing {size} msgs3 to Kafka in {t3.Result}. MEANS: {t3.Result / size}");
+            // Console.WriteLine($"Publishing {size} msgs4 to Kafka in {t4.Result}. MEANS: {t4.Result / size}");
+            // Console.WriteLine($"Publishing {size} msgs5 to Kafka in {t4.Result}. MEANS: {t5.Result / size}");
         }
 
         private static double Publish(IEventBusDispatcher publisher, List<Msg1> lst)
@@ -159,10 +163,18 @@ namespace Nike.SampleProducer
 
         private static void Configuration(HostBuilderContext hostContext, IServiceCollection services)
         {
-            ConfigureRedis(hostContext, services);
-            ConfigureKafka(hostContext, services);
+            var config = new MqttSetting()
+            {
+                Host = "127.0.0.1",
+                Port = 1883,
+                ClientId = "asdasdasd"
+            };
+            services.AddMqttClientHostedService(config);
+            //    ConfigureRedis(hostContext, services);
+            //   ConfigureKafka(hostContext, services);
             ConfigureMicroBus(services);
-            services.AddSingleton<IClock, SystemClock>();
+
+            //  services.AddSingleton<IClock, SystemClock>();
         }
 
 

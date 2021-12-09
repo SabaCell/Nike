@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -10,8 +11,7 @@ using Nike.EventBus.Abstractions;
 using Nike.EventBus.Events;
 using Nike.EventBus.Mqtt.Services;
 
-
-namespace Orion.Hunter.Framework
+namespace Nike.EventBus.Mqtt
 {
     public class MqttEventBusDispatcher : IEventBusDispatcher
     {
@@ -87,7 +87,8 @@ namespace Orion.Hunter.Framework
 
         private string GetKey<T>()
         {
-            return typeof(T).Name;
+            var attr = GetAttribute(typeof(T));
+            return attr != null ? attr.TopicName : typeof(T).Name;
         }
 
         private byte[] ToBytes<T>(T value)
@@ -95,11 +96,19 @@ namespace Orion.Hunter.Framework
             return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value));
         }
 
-        private Dictionary<string, Type> GetTopicDictionary()
+        private TopicAttribute GetAttribute(Type type)
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
-                .Where(x => x.BaseType == typeof(IntegrationEvent))
-                .ToDictionary(m => m.Name, m => m);
+            var attributes = type.GetCustomAttributes();
+
+            foreach (var attribute in attributes)
+            {
+                if (attribute is TopicAttribute topicAttribute)
+                {
+                    return topicAttribute;
+                }
+            }
+
+            return null;
         }
 
 

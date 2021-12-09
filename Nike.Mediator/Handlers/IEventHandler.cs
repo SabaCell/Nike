@@ -1,4 +1,5 @@
 using Enexure.MicroBus;
+using Nike.EventBus.Abstractions;
 
 namespace Nike.Mediator.Handlers
 {

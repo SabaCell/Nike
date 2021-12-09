@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Enexure.MicroBus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 
@@ -54,7 +55,7 @@ namespace Nike.EventBus.Mqtt.Model
         }
 
 
-        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger,
+        public Task PublishToDomainAsync(IServiceProvider serviceProvider, ILogger logger,
             CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(async () =>
@@ -63,6 +64,8 @@ namespace Nike.EventBus.Mqtt.Model
 
                 try
                 {
+                    using var scope = serviceProvider.CreateScope();
+                    var mediator = scope.ServiceProvider.GetService<IMicroMediator>();
                     await mediator.PublishAsync(message);
                 }
                 catch (Exception exception)

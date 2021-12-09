@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using Nike.EventBus.Abstractions;
 using Nike.EventBus.Mqtt.Model;
 using Nike.EventBus.Mqtt.Options;
-using Orion.Hunter.Framework;
 
 namespace Nike.EventBus.Mqtt.Services
 {
