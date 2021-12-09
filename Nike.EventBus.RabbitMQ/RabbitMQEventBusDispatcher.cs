@@ -40,9 +40,9 @@ namespace Nike.EventBus.RabbitMQ
         {
             var properties = new MessageProperties
             {
-            Type = typeName,
-            CorrelationId = Guid.NewGuid().ToString(),
-            DeliveryMode = 2
+                Type = typeName,
+                CorrelationId = Guid.NewGuid().ToString(),
+                DeliveryMode = 2
             };
             _bus.Advanced.Publish(new Exchange(exchange), "", false, properties, body);
         }
@@ -62,19 +62,19 @@ namespace Nike.EventBus.RabbitMQ
         }
 
         public Task PublishAsync<T>(T message, string topic, CancellationToken cancellationToken = default)
-        where T : IntegrationEvent
+            where T : IntegrationEvent
         {
             return _bus.PublishAsync(message, topic);
         }
 
         public Task PublishAsync(string exchange, string typeName, byte[] body,
-        CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default)
         {
             var properties = new MessageProperties
             {
-            Type = typeName,
-            CorrelationId = Guid.NewGuid().ToString(),
-            DeliveryMode = 2
+                Type = typeName,
+                CorrelationId = Guid.NewGuid().ToString(),
+                DeliveryMode = 2
             };
             return _bus.Advanced.PublishAsync(new Exchange(exchange), "", false, properties, body);
         }
@@ -89,7 +89,7 @@ namespace Nike.EventBus.RabbitMQ
         }
 
         public Task FuturePublishAsync<T>(T message, TimeSpan delay, string topic = null,
-        CancellationToken cancellationToken = default) where T : IntegrationEvent
+            CancellationToken cancellationToken = default) where T : IntegrationEvent
         {
             return _bus.FuturePublishAsync(delay, message, topic);
         }

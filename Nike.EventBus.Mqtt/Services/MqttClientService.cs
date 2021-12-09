@@ -4,8 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Enexure.MicroBus;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
@@ -53,7 +51,6 @@ namespace Nike.EventBus.Mqtt.Services
 
         public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
         {
- 
             _consumeResult.SetMessageAsync(eventArgs.ApplicationMessage);
             _consumeResult.PublishToDomainAsync(_serviceProvider, _logger, CancellationToken.None);
         }
@@ -75,8 +72,8 @@ namespace Nike.EventBus.Mqtt.Services
                         ? GetMqttQualityOfServiceLevel(attribute.ServiceLevel)
                         : MqttQualityOfServiceLevel.AtLeastOnce
                 }).ToArray();
-
-            await _mqttClient.SubscribeAsync(topics);
+            if (topics.Length > 0)
+                await _mqttClient.SubscribeAsync(topics);
         }
 
         public async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
@@ -108,21 +105,8 @@ namespace Nike.EventBus.Mqtt.Services
             await _mqttClient.DisconnectAsync(cancellationToken);
         }
 
-        static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
-        {
-            while (toCheck != null && toCheck != typeof(object))
-            {
-                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur)
-                {
-                    return true;
-                }
 
-                toCheck = toCheck.BaseType;
-            }
-
-            return false;
-        }
+        #region PrivateMethod
 
         private Dictionary<string, Type> GetTopicDictionary()
         {
@@ -144,6 +128,22 @@ namespace Nike.EventBus.Mqtt.Services
             }
 
             return results;
+        }
+
+        private bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    return true;
+                }
+
+                toCheck = toCheck.BaseType;
+            }
+
+            return false;
         }
 
         private TopicAttribute GetAttribute(Type type)
@@ -175,5 +175,7 @@ namespace Nike.EventBus.Mqtt.Services
                     return MqttQualityOfServiceLevel.AtLeastOnce;
             }
         }
+
+        #endregion PrivateMethod
     }
 }

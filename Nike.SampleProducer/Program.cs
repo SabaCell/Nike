@@ -36,7 +36,11 @@ namespace Nike.SampleProducer
         private static void Test(IServiceProvider serviceProvider)
         {            Thread.Sleep(5000);
             var dispatcher = serviceProvider.GetRequiredService<IEventBusDispatcher>();
-            dispatcher.Publish(new TestIntegrationEvent());
+            dispatcher.Publish(new MonitorIntegrationEvent()
+            {
+                DeviceAddress = new NetworkDevice(),
+                IntervalInSeconds = 50
+            });
             // var lst1 = new List<Msg1>();
             // var lst2 = new List<Msg2>();
             // var lst3 = new List<Msg3>();
