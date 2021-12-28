@@ -90,7 +90,7 @@ jobs:
     - name: ls
       run: ls -lah ./nuget 
     - name: Deploy Nike.EntityFramework
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EntityFramework*.nupkg  -k oy2enkaq7ghb4fmdhfhq3rrnubdcxgpe3j6yjm733xiove -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EntityFramework*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EntityFramework.Microsoft.DependencyInjection
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EntityFramework.Microsoft.DependencyInjection*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EventBus
