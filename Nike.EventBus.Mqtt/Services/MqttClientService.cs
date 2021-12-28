@@ -79,6 +79,16 @@ namespace Nike.EventBus.Mqtt.Services
         public async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
         {
             _logger.LogInformation("Disconnected");
+            var tryConnect = 5;
+            var cnt = 1;
+            while (cnt <= tryConnect)
+            {
+                if (_mqttClient.IsConnected)
+                    return;
+                await _mqttClient.ReconnectAsync();
+                cnt++;
+                Thread.Sleep(1000);
+            }
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
