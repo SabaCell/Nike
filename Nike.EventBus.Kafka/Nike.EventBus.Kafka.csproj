@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Google.Protobuf" Version="3.11.4" />
+        <PackageReference Include="Google.Protobuf" Version="3.15.0" />
         <PackageReference Include="Confluent.Kafka" Version="1.6.0-PRE4" />
         <PackageReference Include="Enexure.MicroBus" Version="3.7.0" />
         <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
