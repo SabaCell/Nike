@@ -90,31 +90,31 @@ jobs:
     - name: ls
       run: ls -lah ./nuget 
     - name: Deploy Nike.EntityFramework
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EntityFramework*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EntityFramework*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EntityFramework.Microsoft.DependencyInjection
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EntityFramework.Microsoft.DependencyInjection*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EntityFramework.Microsoft.DependencyInjection*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EventBus
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EventBus.Kafka
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.Kafka*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.Kafka*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EventBus.RabbitMQ
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.RabbitMQ*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.RabbitMQ*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Exceptions
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Exceptions*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Exceptions*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Framework.Domain
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Framework.Domain*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Framework.Domain*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Mediator
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Mediator*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Mediator*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Redis.Microsoft.DependencyInjection
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Redis.Microsoft.DependencyInjection*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Redis.Microsoft.DependencyInjection*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Swagger
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Swagger*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Swagger*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Web
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Web*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Web*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Web.DependencyInjection
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Web.DependencyInjection*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Web.DependencyInjection*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.Logging
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Logging*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Logging*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EventBus.Mqtt
-      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.Mqtt*.nupkg  -k oy2deofcxkb6qecpj2nafzah5hio5n5u7o6h44p2emy3ha -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.Mqtt*.nupkg  -k oy2intw47uxxkg3cwreaactss2ckwgwurhriimzejma4mm -s https://api.nuget.org/v3/index.json --skip-duplicate
       
