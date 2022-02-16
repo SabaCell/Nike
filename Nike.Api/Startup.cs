@@ -18,6 +18,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
 
 namespace Nike.Api
 {
@@ -79,6 +80,10 @@ namespace Nike.Api
         {
             var busConfig = Configuration.GetSection("EventBus").Get<EventBusConfig>();
             services.AddKafkaProducer(busConfig.ConnectionString);
+            services.AddKafkaConsumer(busConfig.ConnectionString, Assembly.GetExecutingAssembly().GetName().Name);
+
+
+            services.AddHostedService<ConsumerHostedService>();
         }
 
         private void ConfigureElasticSearch(IServiceCollection services)

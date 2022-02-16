@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -71,7 +72,11 @@ namespace Nike.EventBus.Kafka
 
         public Task PublishAsync(string typeName, string message, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(typeName))
+                throw new ArgumentNullException(nameof(typeName), typeName);
+            var body = Encoding.UTF8.GetBytes(message);
+            return _producer.ProduceAsync(typeName, new Message<string, byte[]> {Key = typeName, Value = body},
+                cancellationToken);
         }
 
         public Task FuturePublishAsync<T>(T message, TimeSpan delay, string topic = null,
