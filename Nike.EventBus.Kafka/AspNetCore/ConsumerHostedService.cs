@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Nike.Mediator.Handlers;
+using System.Reflection;
 
 namespace Nike.EventBus.Kafka.AspNetCore
 {
@@ -152,9 +154,53 @@ namespace Nike.EventBus.Kafka.AspNetCore
 
         private Dictionary<string, Type> GetTopicDictionary()
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
-                .Where(x => x.BaseType == typeof(IntegrationEvent))
-                .ToDictionary(m => m.Name, m => m);
+            var topics = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(x => x.GetTypes().Where(p =>
+                    p.IsGenericType == false && IsSubclassOfRawGeneric(typeof(IntegrationEventHandler<>), p)))
+                .ToList();
+
+            var results = new Dictionary<string, Type>();
+            foreach (var topic in topics)
+            {
+                var topicName = "";
+                var type = topic.BaseType?.GetGenericArguments();
+
+                if (type == null) continue;
+                var attribute = GetAttribute(type[0]);
+                topicName = attribute == null ? type[0].Name : attribute.TopicName;
+                results.Add(topicName, type[0]);
+            }
+
+            return results;
+        }      private bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    return true;
+                }
+
+                toCheck = toCheck.BaseType;
+            }
+
+            return false;
+        }
+
+        private TopicAttribute GetAttribute(Type type)
+        {
+            var attributes = type.GetCustomAttributes();
+
+            foreach (var attribute in attributes)
+            {
+                if (attribute is TopicAttribute topicAttribute)
+                {
+                    return topicAttribute;
+                }
+            }
+
+            return null;
         }
     }
 }
