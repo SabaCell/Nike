@@ -9,8 +9,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg1(string name, string description, int count) : base(Guid.NewGuid(), false,
-            DateTime.Now)
+        public Msg1(string name, string description, int count) 
         {
             Name = name;
             Description = description;
@@ -24,8 +23,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg2(string name, string description, int count) : base(Guid.NewGuid(), false,
-            DateTime.Now)
+        public Msg2(string name, string description, int count) 
         {
             Name = name;
             Description = description;
@@ -39,8 +37,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg3(string name, string description, int count) : base(Guid.NewGuid(), false,
-            DateTime.Now)
+        public Msg3(string name, string description, int count)
         {
             Name = name;
             Description = description;
@@ -54,8 +51,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg4(string name, string description, int count) : base(Guid.NewGuid(), false,
-            DateTime.Now)
+        public Msg4(string name, string description, int count)
         {
             Name = name;
             Description = description;
@@ -69,8 +65,7 @@ namespace Nike.SampleProducer.Model
         public string Name { get; }
         public string Description { get; }
 
-        public Msg5(string name, string description, int count) : base(Guid.NewGuid(), false,
-            DateTime.Now)
+        public Msg5(string name, string description, int count)
         {
             Name = name;
             Description = description;

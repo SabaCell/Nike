@@ -11,18 +11,16 @@ namespace Nike.EventBus.Events
             CreationAt = DateTime.UtcNow;
         }
 
-        public IntegrationEvent(Guid id, bool isReplyAble, DateTime createDate)
+        public IntegrationEvent(Guid id, DateTime createDate)
         {
             Id = id;
-            IsReplyAble = isReplyAble;
             CreationAt = createDate;
         }
 
-        [JsonPropertyName("Id")]
+        [JsonPropertyName("Id")] 
         public Guid Id { get; set; }
 
-        public bool IsReplyAble { get; set; }
-
+        
         [JsonPropertyName("CreationAt")]
         public DateTime CreationAt { get; private set; }
     }
