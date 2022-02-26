@@ -1,23 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-		<PackageVersion>1.0.1.0</PackageVersion>
-		<TargetFramework>net6.0</TargetFramework>
-		<Copyright>SabaCell</Copyright>
-		<PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
-		<PackageTags>microservice, netcore, kafka, ef, reactive, DDD, EventSourcing</PackageTags>
-	</PropertyGroup>
+        <PackageVersion>1.0.1.0</PackageVersion>
+        <TargetFramework>net6.0</TargetFramework>
+        <Copyright>SabaCell</Copyright>
+        <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
+        <PackageTags>microservice, netcore, kafka, ef, reactive, DDD, EventSourcing</PackageTags>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Enexure.MicroBus" Version="3.7.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Enexure.MicroBus" Version="3.7.0"/>
+        <PackageReference Include="System.Reactive.Linq" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
-      <ProjectReference Include="..\Nike.Framework.Domain\Nike.Framework.Domain.csproj" />
+        <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj"/>
+        <ProjectReference Include="..\Nike.Framework.Domain\Nike.Framework.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -83,17 +83,9 @@ namespace Nike.EventBus.Kafka.Model
                 try
                 {
                     await mediator.PublishAsync(message);
-
-                    if (bus != null && message.IsReplyAble)
-                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Success(message.Id),
-                            cancellationToken);
                 }
                 catch (Exception exception)
                 {
-                    if (bus != null && message.IsReplyAble)
-                        await bus.PublishAsync(MessageProcessResultIntegrationEvent.Fail(message.Id, exception.Message),
-                            cancellationToken);
-
                     logger.LogError($"Consumed a message : {_topic} failed : {exception.Message}", exception);
                 }
 
