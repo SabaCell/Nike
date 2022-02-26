@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ.AutoSubscribe;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,8 +15,9 @@ namespace Nike.EventBus.RabbitMQ.AspNetCore
             _serviceProvider = serviceProvider;
         }
 
-        public void Dispatch<TMessage, TConsumer>(TMessage message) where TMessage : class
-        where TConsumer : class, IConsume<TMessage>
+        public void Dispatch<TMessage, TConsumer>(TMessage message,
+            CancellationToken cancellationToken = new CancellationToken()) where TMessage : class
+            where TConsumer : class, IConsume<TMessage>
         {
             using (var scop = _serviceProvider.CreateScope())
             {
@@ -24,8 +26,9 @@ namespace Nike.EventBus.RabbitMQ.AspNetCore
             }
         }
 
-        public async Task DispatchAsync<TMessage, TConsumer>(TMessage message) where TMessage : class
-        where TConsumer : class, IConsumeAsync<TMessage>
+        public async Task DispatchAsync<TMessage, TConsumer>(TMessage message,
+            CancellationToken cancellationToken = new CancellationToken()) where TMessage : class
+            where TConsumer : class, IConsumeAsync<TMessage>
         {
             using (var scop = _serviceProvider.CreateScope())
             {

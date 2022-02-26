@@ -156,7 +156,7 @@ namespace Nike.EventBus.Kafka.AspNetCore
         {
             var topics = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes().Where(p =>
-                    p.IsGenericType == false && IsSubclassOfRawGeneric(typeof(IntegrationEventHandler<>), p)))
+                    p.IsGenericType == false && IsSubclassOfRawGeneric(typeof(IntegrationEventHandler<>), p))).Distinct()
                 .ToList();
 
             var results = new Dictionary<string, Type>();

@@ -12,8 +12,8 @@
   <ItemGroup>
     <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.7.0" />
     <PackageReference Include="Enexure.MicroBus.MicrosoftDependencyInjection" Version="3.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

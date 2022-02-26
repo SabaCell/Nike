@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
-using EasyNetQ.Scheduling;
 using EasyNetQ.Topology;
 using Microsoft.Extensions.Logging;
 using Nike.EventBus.Abstractions;
@@ -28,12 +27,12 @@ namespace Nike.EventBus.RabbitMQ
 
         public void Publish<T>(T message) where T : IntegrationEvent
         {
-            _bus.Publish(message);
+            _bus.PubSub.Publish(message);
         }
 
         public void Publish<T>(T message, string topic) where T : IntegrationEvent
         {
-            _bus.Publish(message, topic);
+            _bus.PubSub.Publish(message, topic);
         }
 
         public void Publish(string exchange, string typeName, byte[] body)
@@ -58,13 +57,13 @@ namespace Nike.EventBus.RabbitMQ
 
         public Task PublishAsync<T>(T message, CancellationToken cancellationToken = default) where T : IntegrationEvent
         {
-            return _bus.PublishAsync(message);
+            return _bus.PubSub.PublishAsync(message);
         }
 
         public Task PublishAsync<T>(T message, string topic, CancellationToken cancellationToken = default)
             where T : IntegrationEvent
         {
-            return _bus.PublishAsync(message, topic);
+            return _bus.PubSub.PublishAsync(message, topic);
         }
 
         public Task PublishAsync(string exchange, string typeName, byte[] body,
@@ -91,7 +90,8 @@ namespace Nike.EventBus.RabbitMQ
         public Task FuturePublishAsync<T>(T message, TimeSpan delay, string topic = null,
             CancellationToken cancellationToken = default) where T : IntegrationEvent
         {
-            return _bus.FuturePublishAsync(delay, message, topic);
+            // return _bus.Scheduler.FuturePublishAsync(delay, message, topic);
+            throw new NotImplementedException();
         }
 
         public void Dispose()
