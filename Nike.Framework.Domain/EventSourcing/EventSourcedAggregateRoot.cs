@@ -6,10 +6,10 @@ namespace Nike.Framework.Domain.EventSourcing
 {
     public abstract class EventSourcedAggregateRoot : IAggregateRoot<string>
     {
-        private readonly List<IDomainEvent> _events = new List<IDomainEvent>();
+        private readonly List<DomainEvent> _events = new List<DomainEvent>();
         public int Version { get; protected set; }
         public string Id { get; protected set; } = Guid.NewGuid().ToString();
-        public IReadOnlyCollection<IDomainEvent> Events => _events.AsReadOnly();
+        public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
 
         public void ClearEvents()
         {
@@ -19,9 +19,9 @@ namespace Nike.Framework.Domain.EventSourcing
         public DateTime CreatedAt { get; }
         public DateTime? EditAt { get; }
 
-        public void Replay(IEnumerable<IDomainEvent> events)
+        public void Replay(IEnumerable<DomainEvent> events)
         {
-            var domainEvents = events as IDomainEvent[] ?? events.ToArray();
+            var domainEvents = events as DomainEvent[] ?? events.ToArray();
 
             foreach (var domainEvent in domainEvents) ApplyEvent(domainEvent);
         }
@@ -30,12 +30,12 @@ namespace Nike.Framework.Domain.EventSourcing
         ///     Adds the event to the new events collection.
         /// </summary>
         /// <param name="event">The event.</param>
-        protected void AddEvent(IDomainEvent domainEvent)
+        protected void AddEvent(DomainEvent domainEvent)
         {
             _events.Add(domainEvent);
         }
 
-        protected void ApplyEvent(IDomainEvent domainEvent)
+        protected void ApplyEvent(DomainEvent domainEvent)
         {
             MethodInvoker.Invoke(this, domainEvent);
             Version++;
@@ -44,7 +44,7 @@ namespace Nike.Framework.Domain.EventSourcing
         /// <summary>
         ///     Adds the event to the new events collection and calls the related apply method.
         /// </summary>
-        protected void AddAndApplyEvent(IDomainEvent domainEvent)
+        protected void AddAndApplyEvent(DomainEvent domainEvent)
         {
             AddEvent(domainEvent);
             ApplyEvent(domainEvent);

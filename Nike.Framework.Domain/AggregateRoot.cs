@@ -24,7 +24,7 @@ namespace Nike.Framework.Domain
         //     _events.Clear();
         // }
 
-        protected void AddEvent(IDomainEvent domainEvent)
+        protected void AddEvent(DomainEvent domainEvent)
         {
           
             Tracker.AddEvent(domainEvent);

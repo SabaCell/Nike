@@ -25,19 +25,20 @@ namespace Nike.Mediator.Handlers
             {
                 var result = await next.Handle(message);
                 var events = Tracker.GetAllEvents();
-                var count = events.Count;
-                foreach (var domainEvent in events)
+                
+                foreach (var domainEvent in events.Where(e => e.CommitTime == CommitTime.BeforeCommit))
                 {
                     await _mediator.SendAsync(domainEvent);
                 }
 
-                if (count <= 0 || !(message is ICommand | message is IntegrationEvent)) return result;
-               
-                
-                var changedEvents = _unitOfWork.GetChangedEvents().ToList();
+                if (events.Count <= 0 || !(message is ICommand | message is IntegrationEvent))
+                {
+                    return result;
+                }
+
                 await _unitOfWork.CommitAsync();
-                if (changedEvents.Count <= 0) return result;
-                foreach (var @event in changedEvents)
+                
+                foreach (var @event in events.Where(p => p.CommitTime == CommitTime.AfterCommit))
                 {
                     await _mediator.SendAsync(@event);
                 }

@@ -6,19 +6,22 @@ namespace Nike.Framework.Domain
 {
     public static class Tracker
     {
-        private static readonly List<IDomainEvent> _events = new List<IDomainEvent>();
+        private static readonly List<DomainEvent> _events = new();
 
         //  use ConcurrentDictionary
         private static object _lock = new Object();
 
-        public static void AddEvent(IDomainEvent domainEvent)
+        public static void AddEvent(DomainEvent domainEvent, CommitTime commitTime = CommitTime.BeforeCommit)
         {
             lock (_lock)
+            {
+                domainEvent.SetCommitTime(commitTime);
                 _events.Add(domainEvent);
+            }
         }
 
 
-        public static List<IDomainEvent> GetAllEvents()
+        public static List<DomainEvent> GetAllEvents()
         {
             lock (_lock)
             {

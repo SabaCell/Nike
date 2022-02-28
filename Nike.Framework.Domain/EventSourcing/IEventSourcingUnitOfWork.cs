@@ -5,8 +5,8 @@ namespace Nike.Framework.Domain.EventSourcing
 {
     public interface IEventSourcingUnitOfWork : IUnitOfWork
     {
-        Task AddEvents(string stream, IEnumerable<IDomainEvent> events);
+        Task AddEvents(string stream, IEnumerable<DomainEvent> events);
 
-        IEnumerable<IDomainEvent> GetUncommittedEvents(string stream);
+        IEnumerable<DomainEvent> GetUncommittedEvents(string stream);
     }
 }
