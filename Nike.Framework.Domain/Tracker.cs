@@ -15,7 +15,15 @@ namespace Nike.Framework.Domain
         {
             lock (_lock)
             {
-                _events.Add(new Tuple<DomainEvent, CommitTime>(domainEvent, commitTime));
+                if (commitTime.HasFlag(CommitTime.BeforeCommit))
+                {
+                    _events.Add(new Tuple<DomainEvent, CommitTime>(domainEvent, CommitTime.BeforeCommit));
+                }
+
+                if (commitTime.HasFlag(CommitTime.AfterCommit))
+                {
+                    _events.Add(new Tuple<DomainEvent, CommitTime>(domainEvent, CommitTime.AfterCommit));
+                }
             }
         }
 
