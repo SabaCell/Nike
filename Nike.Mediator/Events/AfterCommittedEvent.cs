@@ -7,8 +7,6 @@ namespace Nike.Mediator.Events
     {
         public TDomainEvent Event { get; }
 
-
-     
         public AfterCommittedEvent(TDomainEvent @event) : base(@event.AggregateRootType)
         {
         

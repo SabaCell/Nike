@@ -70,7 +70,6 @@ namespace Nike.Mediator.Handlers
             return targets.Count;
         }
 
-
         public dynamic CreateDynamicEvent(DomainEvent domainEvent)
         {
             var type = typeof(AfterCommittedEvent<>).MakeGenericType(domainEvent.GetType());
