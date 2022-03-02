@@ -1,6 +1,7 @@
 ﻿using System;
 using Enexure.MicroBus;
 using Nike.EventBus.Events;
+using Nike.Mediator.Events;
 using Nike.Framework.Domain;
 using System.Threading.Tasks;
 using Nike.Framework.Domain.Exceptions;

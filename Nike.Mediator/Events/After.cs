@@ -1,4 +1,6 @@
-﻿namespace Nike.Framework.Domain
+﻿using Nike.Framework.Domain;
+
+namespace Nike.Mediator.Events
 {
     public class AfterCommittedEvent<TDomainEvent> where TDomainEvent : DomainEvent
     {
