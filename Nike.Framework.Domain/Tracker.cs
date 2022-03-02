@@ -1,32 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Nike.Framework.Domain
 {
     public static class Tracker
     {
-        private static readonly List<DomainEvent> _events = new();
+        private static readonly List<Tuple<DomainEvent, CommitTime>> _events = new();
 
         //  use ConcurrentDictionary
-        private static object _lock = new Object();
+        private static object _lock = new();
 
-        public static void AddEvent(DomainEvent domainEvent, CommitTime commitTime = CommitTime.BeforeCommit)
+        public static void AddEvent(DomainEvent domainEvent, CommitTime commitTime)
         {
             lock (_lock)
             {
-                domainEvent.SetCommitTime(commitTime);
-                _events.Add(domainEvent);
+                _events.Add(new Tuple<DomainEvent, CommitTime>(domainEvent, commitTime));
             }
         }
 
-
-        public static List<DomainEvent> GetAllEvents()
+        public static List<DomainEvent> GetAllEvents(CommitTime commitTime = CommitTime.BeforeCommit)
         {
             lock (_lock)
             {
-                var events = _events.ToList();
-                _events.Clear();
+                var events = new List<DomainEvent>();
+
+                var allEvents = _events.Where(p => p.Item2.HasFlag(commitTime)).ToList();
+
+                events = allEvents.Select(m => m.Item1).ToList();
+
+                allEvents.ForEach(m => _events.Remove(m));
+
                 return events;
             }
         }

@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Nike.EventBus.Events;
 using Nike.Framework.Domain;
+using System.Threading.Tasks;
 using Nike.Framework.Domain.Exceptions;
 
 namespace Nike.Mediator.Handlers
 {
-    public class UnitOfWorkDelegatingHandler : IDelegatingHandler
+    public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
     {
         private readonly IMicroMediator _mediator;
         private readonly IUnitOfWork _unitOfWork;
@@ -24,25 +23,17 @@ namespace Nike.Mediator.Handlers
             try
             {
                 var result = await next.Handle(message);
-                var events = Tracker.GetAllEvents();
-                
-                foreach (var domainEvent in events.Where(e => e.CommitTime == CommitTime.BeforeCommit))
-                {
-                    await _mediator.SendAsync(domainEvent);
-                }
 
-                if (events.Count <= 0 || !(message is ICommand | message is IntegrationEvent))
+                var eventCount = await PublishEventsByCommitTimeAsync(CommitTime.BeforeCommit);
+
+                if (eventCount <= 0 || !(message is ICommand | message is IntegrationEvent))
                 {
                     return result;
                 }
 
                 await _unitOfWork.CommitAsync();
-                
-                foreach (var @event in events.Where(p => p.CommitTime == CommitTime.AfterCommit))
-                {
-                    await _mediator.SendAsync(@event);
-                }
 
+                await PublishEventsByCommitTimeAsync(CommitTime.AfterCommit);
 
                 return result;
             }
@@ -56,6 +47,25 @@ namespace Nike.Mediator.Handlers
                 _unitOfWork.Rollback();
                 throw;
             }
+        }
+
+        private async Task<int> PublishEventsByCommitTimeAsync(CommitTime commitTime)
+        {
+            var targets = Tracker.GetAllEvents(commitTime);
+
+            foreach (var @event in targets)
+            {
+                if (commitTime.HasFlag(CommitTime.AfterCommit))
+                {
+                    await _mediator.SendAsync(new AfterCommittedEvent<DomainEvent>(@event));
+                }
+                else if (commitTime.HasFlag(CommitTime.BeforeCommit))
+                {
+                    await _mediator.SendAsync(@event);
+                }
+            }
+
+            return targets.Count;
         }
     }
 }

@@ -6,7 +6,7 @@
 		<Copyright>SabaCell</Copyright>
 		<PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
-		<PackageTags>microservice, netcore, kafka, ef, reactive, DDD, EventSourcing</PackageTags>
+		<PackageTags>microservice, netcore, kafka,High Performance, ef, reactive, DDD, EventSourcing</PackageTags>
 	</PropertyGroup>
 
     <ItemGroup>
