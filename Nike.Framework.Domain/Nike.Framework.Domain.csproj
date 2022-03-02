@@ -6,7 +6,7 @@
 		<Copyright>SabaCell</Copyright>
 		<PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
-		<Description>Domain Driven Design with DomainEvent support</Description>
+		<Description>Domaing Driven Design with DomainEvent support</Description>
 		<PackageTags>microservice, netcore, kafka, ef, reactive, DDD, EventSourcing</PackageTags>
 	</PropertyGroup>
 
