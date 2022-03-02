@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nike.Framework.Domain
+namespace Nike.Framework.Domain.Events
 {
     [Flags]
     public enum CommitTime

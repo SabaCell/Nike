@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nike.Framework.Domain.Events;
 
 namespace Nike.Framework.Domain.EventSourcing
 {

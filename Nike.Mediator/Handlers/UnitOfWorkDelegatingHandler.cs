@@ -4,6 +4,7 @@ using Nike.EventBus.Events;
 using Nike.Mediator.Events;
 using Nike.Framework.Domain;
 using System.Threading.Tasks;
+using Nike.Framework.Domain.Events;
 using Nike.Framework.Domain.Exceptions;
 
 namespace Nike.Mediator.Handlers
@@ -52,13 +53,13 @@ namespace Nike.Mediator.Handlers
 
         private async Task<int> PublishEventsByCommitTimeAsync(CommitTime commitTime)
         {
-            var targets = Tracker.GetAllEvents(commitTime);
+            var targets = DomainEventTracker.GetAllEvents(commitTime);
 
             foreach (var @event in targets)
             {
                 if (commitTime.HasFlag(CommitTime.AfterCommit))
                 {
-                    await _mediator.SendAsync(new AfterCommittedEvent<DomainEvent>(@event));
+                    await _mediator.SendAsync(CreateDynamicEvent(@event));
                 }
                 else if (commitTime.HasFlag(CommitTime.BeforeCommit))
                 {
@@ -67,6 +68,14 @@ namespace Nike.Mediator.Handlers
             }
 
             return targets.Count;
+        }
+
+
+        public dynamic CreateDynamicEvent(DomainEvent domainEvent)
+        {
+            var type = typeof(AfterCommittedEvent<>).MakeGenericType(domainEvent.GetType());
+            return Activator.CreateInstance(type, domainEvent);
+            // Activator.CreateInstance<TDomainEvent>();
         }
     }
 }

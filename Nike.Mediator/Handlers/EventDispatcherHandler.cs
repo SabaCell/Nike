@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Nike.Framework.Domain;
+using Nike.Framework.Domain.Events;
 
 namespace Nike.Mediator.Handlers
 {
@@ -16,7 +17,7 @@ namespace Nike.Mediator.Handlers
         public async Task<object> Handle(INextHandler next, object message)
         {
             var result = await next.Handle(message);
-            var events = Tracker.GetAllEvents(CommitTime.BeforeCommit | CommitTime.AfterCommit);
+            var events = DomainEventTracker.GetAllEvents(CommitTime.BeforeCommit | CommitTime.AfterCommit);
 
             foreach (var domainEvent in events)
             {

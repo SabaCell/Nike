@@ -1,4 +1,6 @@
-﻿namespace Nike.Framework.Domain
+﻿using Nike.Framework.Domain.Events;
+
+namespace Nike.Framework.Domain
 {
     public interface IAggregateRoot
     {
@@ -13,7 +15,7 @@
     {
         protected void AddEvent(DomainEvent domainEvent, CommitTime commitTime = CommitTime.BeforeCommit)
         {
-            Tracker.AddEvent(domainEvent, commitTime);
+            DomainEventTracker.AddEvent(domainEvent, commitTime);
         }
     }
 }

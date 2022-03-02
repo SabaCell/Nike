@@ -1,4 +1,4 @@
-﻿using Nike.Framework.Domain;
+﻿using Nike.Framework.Domain.Events;
 
 namespace Nike.Mediator.Events
 {
@@ -7,9 +7,13 @@ namespace Nike.Mediator.Events
     {
         public TDomainEvent Event { get; }
 
-        public AfterCommittedEvent(DomainEvent @event) : base(@event.AggregateRootType)
+
+     
+        public AfterCommittedEvent(TDomainEvent @event) : base(@event.AggregateRootType)
         {
-            Event = (TDomainEvent) @event;
+        
+            Event = @event;
         }
+
     }
 }

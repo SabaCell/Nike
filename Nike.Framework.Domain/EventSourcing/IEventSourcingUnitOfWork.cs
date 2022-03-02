@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Nike.Framework.Domain.Events;
 
 namespace Nike.Framework.Domain.EventSourcing
 {

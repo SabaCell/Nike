@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Nike.Framework.Domain
+namespace Nike.Framework.Domain.Events
 {
-    public static class Tracker
+    public static class DomainEventTracker
     {
         private static readonly List<Tuple<DomainEvent, CommitTime>> _events = new();
 

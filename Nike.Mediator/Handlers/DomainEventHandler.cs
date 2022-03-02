@@ -1,4 +1,5 @@
 using Nike.Framework.Domain;
+using Nike.Framework.Domain.Events;
 
 namespace Nike.Mediator.Handlers
 {
