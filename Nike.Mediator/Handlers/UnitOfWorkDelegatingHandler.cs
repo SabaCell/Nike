@@ -26,9 +26,9 @@ namespace Nike.Mediator.Handlers
             {
                 var result = await next.Handle(message);
 
-                var eventCount = await PublishEventsByCommitTimeAsync(CommitTime.BeforeCommit);
+            //    var eventCount = await PublishEventsByCommitTimeAsync(CommitTime.BeforeCommit);
 
-                if (eventCount <= 0 || !(message is ICommand | message is IntegrationEvent))
+                if (!(message is ICommand | message is IntegrationEvent))
                 {
                     return result;
                 }
