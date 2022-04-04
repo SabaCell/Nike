@@ -33,7 +33,7 @@ namespace Nike.Framework.Domain.Events
 
             events = allEvents.Select(m => m.Item1).ToList();
 
-            allEvents.ForEach(m => _events.Remove(m));
+            allEvents.ForEach(e => _events.Remove(e));
 
             return events;
         }
