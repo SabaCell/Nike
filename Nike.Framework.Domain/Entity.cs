@@ -19,7 +19,7 @@ namespace Nike.Framework.Domain
     {
         public Entity()
         {
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.Now;
         }
 
         public TPrimaryKey Id { get; protected set; } = default;
