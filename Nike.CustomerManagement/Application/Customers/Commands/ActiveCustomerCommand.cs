@@ -1,45 +1,45 @@
-﻿using Enexure.MicroBus;
+﻿using System;
+using System.Threading.Tasks;
+using Enexure.MicroBus;
+using Nike.CustomerManagement.Domain.Customers;
 using Nike.CustomerManagement.Infrastructure.Services.Customers;
 using Nike.Framework.Domain.Persistence;
-using System;
-using System.Threading.Tasks;
-using Nike.CustomerManagement.Domain.Customers;
 
-namespace Nike.CustomerManagement.Application.Customers.Commands
+namespace Nike.CustomerManagement.Application.Customers.Commands;
+
+public class ActiveCustomerCommand : ICommand
 {
-    public class ActiveCustomerCommand : ICommand
+    public Guid CustomerId { get; set; }
+}
+
+public class ActiveCustomerCommandHandler : ICommandHandler<ActiveCustomerCommand>
+{
+    private readonly IRepository<Customer> _customerRepository;
+    private readonly ICustomerStoreService _customerStoreService;
+
+    public ActiveCustomerCommandHandler(IRepository<Customer> customerRepository,
+        ICustomerStoreService customerStoreService)
     {
-        public Guid CustomerId { get; set; }
+        _customerRepository = customerRepository;
+        _customerStoreService = customerStoreService;
     }
 
-    public class ActiveCustomerCommandHandler : ICommandHandler<ActiveCustomerCommand>
+    /// <inheritdoc />
+    public async Task Handle(ActiveCustomerCommand command)
     {
-        private readonly IRepository<Customer> _customerRepository;
-        private readonly ICustomerStoreService _customerStoreService;
+        var customer = await GetCustomerAsync(command.CustomerId);
 
-        public ActiveCustomerCommandHandler(IRepository<Customer> customerRepository, ICustomerStoreService customerStoreService)
-        {
-            _customerRepository = customerRepository;
-            _customerStoreService = customerStoreService;
-        }
+        customer.Active();
 
-        /// <inheritdoc />
-        public async Task Handle(ActiveCustomerCommand command)
-        {
-            var customer = await GetCustomerAsync(command.CustomerId);
+        await _customerStoreService.UpdateAsync(customer);
+    }
 
-            customer.Active();
+    private async Task<Customer> GetCustomerAsync(Guid customerId)
+    {
+        var customer = await _customerRepository.GetByIdAsync(customerId);
+        if (customer is null)
+            throw new NullReferenceException($"Customer with id {customerId} not found .");
 
-            await _customerStoreService.UpdateAsync(customer);
-        }
-
-        private async Task<Customer> GetCustomerAsync(Guid customerId)
-        {
-            var customer = await _customerRepository.GetByIdAsync(customerId);
-            if (customer is null)
-                throw new NullReferenceException($"Customer with id {customerId} not found .");
-
-            return customer;
-        }
+        return customer;
     }
 }

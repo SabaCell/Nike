@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace Nike.OrderManagement.Projections.Framework
+namespace Nike.OrderManagement.Projections.Framework;
+
+public interface IEventBus
 {
-    public interface IEventBus
-    {
-        Task PublishAsync<T>(T @event);
-    }
+    Task PublishAsync<T>(T @event);
 }

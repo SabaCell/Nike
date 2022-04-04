@@ -1,41 +1,32 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 
-namespace Nike.Framework.Domain.Events
+namespace Nike.Framework.Domain.Events;
+
+public static class DomainEventTracker
 {
-    public static class DomainEventTracker
+    private static readonly List<Tuple<DomainEvent, CommitTime>> Events = new();
+
+    public static void AddEvent(DomainEvent domainEvent, CommitTime commitTime)
     {
-        private static readonly List<Tuple<DomainEvent, CommitTime>> _events = new();
+        if (commitTime.HasFlag(CommitTime.BeforeCommit))
+            Events.Add(new Tuple<DomainEvent, CommitTime>(domainEvent, CommitTime.BeforeCommit));
 
-        //  use ConcurrentDictionary
-        // private static object _lock = new();
+        if (commitTime.HasFlag(CommitTime.AfterCommit))
+            Events.Add(new Tuple<DomainEvent, CommitTime>(domainEvent, CommitTime.AfterCommit));
+    }
 
-        public static void AddEvent(DomainEvent domainEvent, CommitTime commitTime)
-        {
-            if (commitTime.HasFlag(CommitTime.BeforeCommit))
-            {
-                _events.Add(new Tuple<DomainEvent, CommitTime>(domainEvent, CommitTime.BeforeCommit));
-            }
+    public static List<DomainEvent> GetAllEvents(CommitTime commitTime = CommitTime.BeforeCommit)
+    {
+        var events = new List<DomainEvent>();
 
-            if (commitTime.HasFlag(CommitTime.AfterCommit))
-            {
-                _events.Add(new Tuple<DomainEvent, CommitTime>(domainEvent, CommitTime.AfterCommit));
-            }
-        }
+        var allEvents = Events.Where(p => p.Item2.HasFlag(commitTime)).ToList();
 
-        public static List<DomainEvent> GetAllEvents(CommitTime commitTime = CommitTime.BeforeCommit)
-        {
-            var events = new List<DomainEvent>();
+        events = allEvents.Select(m => m.Item1).ToList();
 
-            var allEvents = _events.Where(p => p.Item2.HasFlag(commitTime)).ToList();
+        allEvents.ForEach(e => Events.Remove(e));
 
-            events = allEvents.Select(m => m.Item1).ToList();
-
-            allEvents.ForEach(e => _events.Remove(e));
-
-            return events;
-        }
+        return events;
     }
 }

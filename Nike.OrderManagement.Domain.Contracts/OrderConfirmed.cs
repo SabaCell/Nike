@@ -1,15 +1,14 @@
-﻿using Nike.Framework.Domain.EventSourcing;
-using System;
+﻿using System;
+using Nike.Framework.Domain.EventSourcing;
 
-namespace Nike.OrderManagement.Domain.Contracts
+namespace Nike.OrderManagement.Domain.Contracts;
+
+public class OrderConfirmed : DomainEvent
 {
-    public class OrderConfirmed : DomainEvent
+    public OrderConfirmed(Guid orderId)
     {
-        public OrderConfirmed(Guid orderId)
-        {
-            this.OrderId = orderId;
-        }
-
-        public Guid OrderId { get; private set; }
+        OrderId = orderId;
     }
+
+    public Guid OrderId { get; }
 }

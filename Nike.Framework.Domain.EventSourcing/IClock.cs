@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Nike.Framework.Domain.EventSourcing
+namespace Nike.Framework.Domain.EventSourcing;
+
+public interface IClock
 {
-    public interface IClock
-    {
-        DateTime Now();
-    }
+    DateTime Now();
 }

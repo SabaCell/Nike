@@ -1,48 +1,47 @@
-﻿using Enexure.MicroBus;
+﻿using System;
+using System.Threading.Tasks;
+using Enexure.MicroBus;
 using Nike.Api.Activators;
 using Nike.EventBus.Abstractions;
 using Nike.EventBus.Events;
-using System;
-using System.Threading.Tasks;
 
-namespace Nike.Api.Application.Orders.Command
+namespace Nike.Api.Application.Orders.Command;
+
+public class PlaceOrderCommand : CommandBase
 {
-    public class PlaceOrderCommand : CommandBase
+    public Guid CustomerId { get; set; }
+
+    public decimal Price { get; set; }
+
+    public override void Validate()
     {
-        public Guid CustomerId { get; set; }
+    }
+}
 
-        public decimal Price { get; set; }
+public class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand>
+{
+    private readonly IEventBusDispatcher _dispatcher;
 
-        public override void Validate()
-        {
-        }
+    public PlaceOrderCommandHandler(IEventBusDispatcher dispatcher)
+    {
+        _dispatcher = dispatcher;
     }
 
-    public class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand>
+    public async Task Handle(PlaceOrderCommand command)
     {
-        private readonly IEventBusDispatcher _dispatcher;
-
-        public PlaceOrderCommandHandler(IEventBusDispatcher dispatcher)
+        var @event = new PlaceOrderIntegrationEvent
         {
-            _dispatcher = dispatcher;
-        }
+            CustomerId = command.CustomerId,
+            Price = command.Price
+        };
 
-        public async Task Handle(PlaceOrderCommand command)
-        {
-            var @event = new PlaceOrderIntegrationEvent
-            {
-                CustomerId = command.CustomerId,
-                Price = command.Price
-            };
-
-            await _dispatcher.PublishAsync(@event);
-        }
+        await _dispatcher.PublishAsync(@event);
     }
+}
 
-    public class PlaceOrderIntegrationEvent : IntegrationEvent
-    {
-        public Guid CustomerId { get; set; }
+public class PlaceOrderIntegrationEvent : IntegrationEvent
+{
+    public Guid CustomerId { get; set; }
 
-        public decimal Price { get; set; }
-    }
+    public decimal Price { get; set; }
 }

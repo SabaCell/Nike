@@ -1,52 +1,54 @@
-﻿using Enexure.MicroBus;
+﻿using System;
+using System.Threading.Tasks;
+using Enexure.MicroBus;
 using FluentValidation;
 using Nike.Api.Activators;
 using Nike.EventBus.Abstractions;
 using Nike.EventBus.Events;
-using System;
-using System.Threading.Tasks;
 
-namespace Nike.Api.Application.Customers.Command
+namespace Nike.Api.Application.Customers.Command;
+
+public class DeactiveCustomerCommand : CommandBase
 {
-    public class DeactiveCustomerCommand : CommandBase
-    {
-        public Guid CustomerId { get; set; }
+    public Guid CustomerId { get; set; }
 
-        /// <inheritdoc />
-        public override void Validate() => new DeactiveCustomerCommandValidator().Validate(this).RaiseExceptionIfRequired();
+    /// <inheritdoc />
+    public override void Validate()
+    {
+        new DeactiveCustomerCommandValidator().Validate(this).RaiseExceptionIfRequired();
+    }
+}
+
+public class DeactiveCustomerCommandValidator : AbstractValidator<DeactiveCustomerCommand>
+{
+    public DeactiveCustomerCommandValidator()
+    {
+        RuleFor(p => p.CustomerId).NotEmpty();
+    }
+}
+
+public class DeactiveCustomerCommandHandler : ICommandHandler<DeactiveCustomerCommand>
+{
+    private readonly IEventBusDispatcher _dispatcher;
+
+    public DeactiveCustomerCommandHandler(IEventBusDispatcher dispatcher)
+    {
+        _dispatcher = dispatcher;
     }
 
-    public class DeactiveCustomerCommandValidator : AbstractValidator<DeactiveCustomerCommand>
+    /// <inheritdoc />
+    public async Task Handle(DeactiveCustomerCommand command)
     {
-        public DeactiveCustomerCommandValidator()
+        var @event = new DeactiveCustomerIntegrationEvent
         {
-            RuleFor(p => p.CustomerId).NotEmpty();
-        }
+            CustomerId = command.CustomerId
+        };
+
+        await _dispatcher.PublishAsync(@event);
     }
+}
 
-    public class DeactiveCustomerCommandHandler : ICommandHandler<DeactiveCustomerCommand>
-    {
-        private readonly IEventBusDispatcher _dispatcher;
-
-        public DeactiveCustomerCommandHandler(IEventBusDispatcher dispatcher)
-        {
-            _dispatcher = dispatcher;
-        }
-
-        /// <inheritdoc />
-        public async Task Handle(DeactiveCustomerCommand command)
-        {
-            var @event = new DeactiveCustomerIntegrationEvent
-            {
-                CustomerId = command.CustomerId
-            };
-
-            await _dispatcher.PublishAsync(@event);
-        }
-    }
-
-    public class DeactiveCustomerIntegrationEvent : IntegrationEvent
-    {
-        public Guid CustomerId { get; set; }
-    }
+public class DeactiveCustomerIntegrationEvent : IntegrationEvent
+{
+    public Guid CustomerId { get; set; }
 }

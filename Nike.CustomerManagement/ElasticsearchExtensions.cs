@@ -1,22 +1,21 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
-using System;
 
-namespace Nike.CustomerManagement
+namespace Nike.CustomerManagement;
+
+public class ElasticSearchConfiguration
 {
-    public class ElasticSearchConfiguration
-    {
-        public string ConnectionString { get; set; }
-    }
+    public string ConnectionString { get; set; }
+}
 
-    public static class ElasticSearchExtensions
+public static class ElasticSearchExtensions
+{
+    public static void AddElasticSearch(this IServiceCollection services, ElasticSearchConfiguration configuration)
     {
-        public static void AddElasticSearch(this IServiceCollection services, ElasticSearchConfiguration configuration)
-        {
-            var settings = new ConnectionSettings(new Uri(configuration.ConnectionString));
+        var settings = new ConnectionSettings(new Uri(configuration.ConnectionString));
 
-            services.AddSingleton(settings);
-            services.AddTransient<IElasticClient, ElasticClient>(e => new ElasticClient(settings));
-        }
+        services.AddSingleton(settings);
+        services.AddTransient<IElasticClient, ElasticClient>(e => new ElasticClient(settings));
     }
 }

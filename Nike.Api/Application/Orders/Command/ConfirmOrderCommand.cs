@@ -1,43 +1,42 @@
-﻿using Enexure.MicroBus;
+﻿using System;
+using System.Threading.Tasks;
+using Enexure.MicroBus;
 using Nike.Api.Activators;
 using Nike.EventBus.Abstractions;
 using Nike.EventBus.Events;
-using System;
-using System.Threading.Tasks;
 
-namespace Nike.Api.Application.Orders.Command
+namespace Nike.Api.Application.Orders.Command;
+
+public class ConfirmOrderCommand : CommandBase
 {
-    public class ConfirmOrderCommand : CommandBase
-    {
-        public Guid OrderId { get; set; }
+    public Guid OrderId { get; set; }
 
-        public override void Validate()
-        {
-        }
+    public override void Validate()
+    {
+    }
+}
+
+public class ConfirmOrderCommandHandler : ICommandHandler<ConfirmOrderCommand>
+{
+    private readonly IEventBusDispatcher _dispatcher;
+
+    public ConfirmOrderCommandHandler(IEventBusDispatcher dispatcher)
+    {
+        _dispatcher = dispatcher;
     }
 
-    public class ConfirmOrderCommandHandler : ICommandHandler<ConfirmOrderCommand>
+    public async Task Handle(ConfirmOrderCommand command)
     {
-        private readonly IEventBusDispatcher _dispatcher;
-
-        public ConfirmOrderCommandHandler(IEventBusDispatcher dispatcher)
+        var @event = new ConfirmOrderIntegrationEvent
         {
-            _dispatcher = dispatcher;
-        }
+            OrderId = command.OrderId
+        };
 
-        public async Task Handle(ConfirmOrderCommand command)
-        {
-            var @event = new ConfirmOrderIntegrationEvent
-            {
-                OrderId = command.OrderId
-            };
-
-            await _dispatcher.PublishAsync(@event);
-        }
+        await _dispatcher.PublishAsync(@event);
     }
+}
 
-    public class ConfirmOrderIntegrationEvent : IntegrationEvent
-    {
-        public Guid OrderId { get; set; }
-    }
+public class ConfirmOrderIntegrationEvent : IntegrationEvent
+{
+    public Guid OrderId { get; set; }
 }

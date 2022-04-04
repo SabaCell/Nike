@@ -1,97 +1,96 @@
-﻿using Enexure.MicroBus;
+﻿using System;
+using System.Threading.Tasks;
+using Enexure.MicroBus;
 using Microsoft.AspNetCore.Mvc;
 using Nike.Api.Activators;
 using Nike.Api.Application.Customers.Command;
 using Nike.Api.Application.Customers.Query;
-using System;
-using System.Threading.Tasks;
 
-namespace Nike.Api.Controllers
+namespace Nike.Api.Controllers;
+
+[Route("api/[controller]")]
+public class CustomersController : ApiControllerBase
 {
-    [Route("api/[controller]")]
-    public class CustomersController : ApiControllerBase
+    /// <inheritdoc />
+    public CustomersController(IMicroBus bus) : base(bus)
     {
-        /// <inheritdoc />
-        public CustomersController(IMicroBus bus) : base(bus)
+    }
+
+    /// <summary>
+    ///     Get all customers
+    /// </summary>
+    /// <param name="pageIndex">Index of page</param>
+    /// <param name="pageSize">Size of page</param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync(int pageIndex = 1, int pageSize = 10)
+    {
+        var query = new GetAllCustomersQuery
         {
-        }
+            PageIndex = pageIndex,
+            PageSize = pageSize
+        };
 
-        /// <summary>
-        /// Get all customers
-        /// </summary>
-        /// <param name="pageIndex">Index of page</param>
-        /// <param name="pageSize">Size of page</param>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync(int pageIndex = 1, int pageSize = 10)
-        {
-            var query = new GetAllCustomersQuery
-            {
-                PageIndex = pageIndex,
-                PageSize = pageSize
-            };
+        var customers = await Bus.QueryAsync(query);
 
-            var customers = await Bus.QueryAsync(query);
+        return Ok(customers);
+    }
 
-            return Ok(customers);
-        }
+    /// <summary>
+    ///     Get customer details
+    /// </summary>
+    /// <param name="customerId">Customer id</param>
+    /// <returns></returns>
+    [HttpGet("{customerId}")]
+    public async Task<IActionResult> GetDetailsAsync(Guid customerId)
+    {
+        var query = new GetCustomerDetailsQuery {CustomerId = customerId};
 
-        /// <summary>
-        /// Get customer details
-        /// </summary>
-        /// <param name="customerId">Customer id</param>
-        /// <returns></returns>
-        [HttpGet("{customerId}")]
-        public async Task<IActionResult> GetDetailsAsync(Guid customerId)
-        {
-            var query = new GetCustomerDetailsQuery { CustomerId = customerId };
+        var customer = await Bus.QueryAsync(query);
 
-            var customer = await Bus.QueryAsync(query);
+        return Ok(customer);
+    }
 
-            return Ok(customer);
-        }
+    /// <summary>
+    ///     Register new customer
+    /// </summary>
+    /// <param name="command">Customer info</param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<IActionResult> RegisterCustomerAsync(RegisterCustomerCommand command)
+    {
+        await SendCommandAsync(command);
 
-        /// <summary>
-        /// Register new customer
-        /// </summary>
-        /// <param name="command">Customer info</param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> RegisterCustomerAsync(RegisterCustomerCommand command)
-        {
-            await SendCommandAsync(command);
+        return Ok();
+    }
 
-            return Ok();
-        }
+    /// <summary>
+    ///     Deactivate existing customer
+    /// </summary>
+    /// <param name="customerId">Customer id</param>
+    /// <returns></returns>
+    [HttpPut("{customerId}/deactive")]
+    public async Task<IActionResult> DeactiveCustomerAsync(Guid customerId)
+    {
+        var command = new DeactiveCustomerCommand {CustomerId = customerId};
 
-        /// <summary>
-        /// Deactivate existing customer
-        /// </summary>
-        /// <param name="customerId">Customer id</param>
-        /// <returns></returns>
-        [HttpPut("{customerId}/deactive")]
-        public async Task<IActionResult> DeactiveCustomerAsync(Guid customerId)
-        {
-            var command = new DeactiveCustomerCommand { CustomerId = customerId };
+        await SendCommandAsync(command);
 
-            await SendCommandAsync(command);
+        return Ok();
+    }
 
-            return Ok();
-        }
+    /// <summary>
+    ///     Activate existing customer
+    /// </summary>
+    /// <param name="customerId">Customer id</param>
+    /// <returns></returns>
+    [HttpPut("{customerId}/active")]
+    public async Task<IActionResult> ActiveCustomerAsync(Guid customerId)
+    {
+        var command = new ActiveCustomerCommand {CustomerId = customerId};
 
-        /// <summary>
-        /// Activate existing customer
-        /// </summary>
-        /// <param name="customerId">Customer id</param>
-        /// <returns></returns>
-        [HttpPut("{customerId}/active")]
-        public async Task<IActionResult> ActiveCustomerAsync(Guid customerId)
-        {
-            var command = new ActiveCustomerCommand { CustomerId = customerId };
+        await SendCommandAsync(command);
 
-            await SendCommandAsync(command);
-
-            return Ok();
-        }
+        return Ok();
     }
 }

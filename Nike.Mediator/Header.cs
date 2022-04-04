@@ -1,8 +1,7 @@
-﻿namespace Nike.Mediator
+﻿namespace Nike.Mediator;
+
+public class Header
 {
-    public class Header
-    {
-        public string Key { get; set; }
-        public string Value { get; set; }
-    }
+    public string Key { get; set; }
+    public string Value { get; set; }
 }

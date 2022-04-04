@@ -1,35 +1,34 @@
-﻿using Enexure.MicroBus;
+﻿using System;
+using System.Threading.Tasks;
+using Enexure.MicroBus;
 using Nike.CustomerManagement.Application.Customers.Commands;
 using Nike.EventBus.Events;
 using Nike.Mediator.Handlers;
-using System;
-using System.Threading.Tasks;
 
-namespace Nike.CustomerManagement.Application.Customers.IntegrationEvents
+namespace Nike.CustomerManagement.Application.Customers.IntegrationEvents;
+
+public class ActiveCustomerIntegrationEvent : IntegrationEvent
 {
-    public class ActiveCustomerIntegrationEvent : IntegrationEvent
+    public Guid CustomerId { get; set; }
+}
+
+public class ActiveCustomerIntegrationEventHandler : IntegrationEventHandler<ActiveCustomerIntegrationEvent>
+{
+    private readonly IMicroBus _bus;
+
+    public ActiveCustomerIntegrationEventHandler(IMicroBus bus)
     {
-        public Guid CustomerId { get; set; }
+        _bus = bus;
     }
 
-    public class ActiveCustomerIntegrationEventHandler : IntegrationEventHandler<ActiveCustomerIntegrationEvent>
+    /// <inheritdoc />
+    public override async Task HandleAsync(ActiveCustomerIntegrationEvent @event)
     {
-        private readonly IMicroBus _bus;
-
-        public ActiveCustomerIntegrationEventHandler(IMicroBus bus)
+        var command = new ActiveCustomerCommand
         {
-            _bus = bus;
-        }
+            CustomerId = @event.CustomerId
+        };
 
-        /// <inheritdoc />
-        public override async Task HandleAsync(ActiveCustomerIntegrationEvent @event)
-        {
-            var command = new ActiveCustomerCommand
-            {
-                CustomerId = @event.CustomerId
-            };
-
-            await _bus.SendAsync(command);
-        }
+        await _bus.SendAsync(command);
     }
 }

@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace Nike.OrderManagement.Projections.Framework
+namespace Nike.OrderManagement.Projections.Framework;
+
+public interface IEventHandler<T>
 {
-    public interface IEventHandler<T>
-    {
-        Task HandleAsync(T @event);
-    }
+    Task HandleAsync(T @event);
 }

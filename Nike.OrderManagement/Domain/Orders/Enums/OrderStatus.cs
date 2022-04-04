@@ -1,9 +1,8 @@
-﻿namespace Nike.OrderManagement.Domain.Orders.Enums
+﻿namespace Nike.OrderManagement.Domain.Orders.Enums;
+
+public enum OrderStatus
 {
-    public enum OrderStatus
-    {
-        Pending,
-        Confirmed,
-        Canceled
-    }
+    Pending,
+    Confirmed,
+    Canceled
 }

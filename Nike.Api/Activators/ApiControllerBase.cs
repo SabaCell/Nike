@@ -1,29 +1,29 @@
-﻿using Enexure.MicroBus;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Enexure.MicroBus;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Nike.Api.Activators
+namespace Nike.Api.Activators;
+
+[ApiController]
+//[ApiResultFilter]
+public class ApiControllerBase : ControllerBase
 {
-    [ApiController]
-    //[ApiResultFilter]
-    public class ApiControllerBase : ControllerBase
+    protected readonly IMicroBus Bus;
+
+    public ApiControllerBase(IMicroBus bus)
     {
-        protected readonly IMicroBus Bus;
+        Bus = bus;
+    }
 
-        public ApiControllerBase(IMicroBus bus)
-        {
-            Bus = bus;
-        }
+    [NonAction]
+    protected virtual Task SendCommandAsync<TCommand>(TCommand command, Action action = null)
+        where TCommand : CommandBase
+    {
+        CommandValidator.Validate(command);
 
-        [NonAction]
-        protected virtual Task SendCommandAsync<TCommand>(TCommand command, Action action = null) where TCommand : CommandBase
-        {
-            CommandValidator.Validate(command);
+        action?.Invoke();
 
-            action?.Invoke();
-
-            return Bus.SendAsync(command);
-        }
+        return Bus.SendAsync(command);
     }
 }

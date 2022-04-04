@@ -1,32 +1,31 @@
 ﻿using System;
 using Nike.Web.Result.Responses;
 
-namespace Nike.Web.Result
+namespace Nike.Web.Result;
+
+/// <summary>
+///     This interface can be implemented to convert an <see cref="Exception" /> object to an <see cref="ErrorInfo" />
+///     object.
+///     Implements Chain Of Responsibility pattern.
+/// </summary>
+public interface IExceptionToErrorInfoConverter
 {
     /// <summary>
-    ///     This interface can be implemented to convert an <see cref="Exception" /> object to an <see cref="ErrorInfo" />
-    ///     object.
-    ///     Implements Chain Of Responsibility pattern.
+    ///     Next converter. If this converter decide this exception is not known, it can call Next.Convert(...).
     /// </summary>
-    public interface IExceptionToErrorInfoConverter
-    {
-        /// <summary>
-        ///     Next converter. If this converter decide this exception is not known, it can call Next.Convert(...).
-        /// </summary>
-        IExceptionToErrorInfoConverter Next { set; }
+    IExceptionToErrorInfoConverter Next { set; }
 
-        /// <summary>
-        ///     Converter method.
-        /// </summary>
-        /// <param name="exception">The exception</param>
-        /// <returns>Error info or null</returns>
-        ErrorInfo Convert(Exception exception);
+    /// <summary>
+    ///     Converter method.
+    /// </summary>
+    /// <param name="exception">The exception</param>
+    /// <returns>Error info or null</returns>
+    ErrorInfo Convert(Exception exception);
 
-        /// <summary>
-        ///     The reverse conversion method.
-        /// </summary>
-        /// <param name="exception"></param>
-        /// <returns></returns>
-        Exception ReverseConvert(ErrorInfo exception);
-    }
+    /// <summary>
+    ///     The reverse conversion method.
+    /// </summary>
+    /// <param name="exception"></param>
+    /// <returns></returns>
+    Exception ReverseConvert(ErrorInfo exception);
 }

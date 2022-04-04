@@ -1,40 +1,39 @@
-﻿using Enexure.MicroBus;
+﻿using System.Threading.Tasks;
+using Enexure.MicroBus;
 using Nike.CustomerManagement.Application.Customers.Commands;
 using Nike.EventBus.Events;
 using Nike.Mediator.Handlers;
-using System.Threading.Tasks;
 
-namespace Nike.CustomerManagement.Application.Customers.IntegrationEvents
+namespace Nike.CustomerManagement.Application.Customers.IntegrationEvents;
+
+public class RegisterCustomerIntegrationEvent : IntegrationEvent
 {
-    public class RegisterCustomerIntegrationEvent : IntegrationEvent
+    public string FirstName { get; set; }
+
+    public string LastName { get; set; }
+
+    public string NationalCode { get; set; }
+}
+
+public class RegisterCustomerIntegrationEventHandler : IntegrationEventHandler<RegisterCustomerIntegrationEvent>
+{
+    private readonly IMicroBus _bus;
+
+    public RegisterCustomerIntegrationEventHandler(IMicroBus bus)
     {
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public string NationalCode { get; set; }
+        _bus = bus;
     }
 
-    public class RegisterCustomerIntegrationEventHandler : IntegrationEventHandler<RegisterCustomerIntegrationEvent>
+    /// <inheritdoc />
+    public override async Task HandleAsync(RegisterCustomerIntegrationEvent @event)
     {
-        private readonly IMicroBus _bus;
-
-        public RegisterCustomerIntegrationEventHandler(IMicroBus bus)
+        var command = new RegisterCustomerCommand
         {
-            _bus = bus;
-        }
+            FirstName = @event.FirstName,
+            LastName = @event.LastName,
+            NationalCode = @event.NationalCode
+        };
 
-        /// <inheritdoc />
-        public override async Task HandleAsync(RegisterCustomerIntegrationEvent @event)
-        {
-            var command = new RegisterCustomerCommand
-            {
-                FirstName = @event.FirstName,
-                LastName = @event.LastName,
-                NationalCode = @event.NationalCode
-            };
-
-            await _bus.SendAsync(command);
-        }
+        await _bus.SendAsync(command);
     }
 }

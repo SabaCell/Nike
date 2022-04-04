@@ -1,10 +1,9 @@
 ﻿using EasyNetQ;
 
-namespace Nike.EventBus.RabbitMQ
+namespace Nike.EventBus.RabbitMQ;
+
+public interface IRabbitMqConnection
 {
-    public interface IRabbitMqConnection
-    {
-        bool IsConnected { get; }
-        IBus Bus { get; }
-    }
+    bool IsConnected { get; }
+    IBus Bus { get; }
 }

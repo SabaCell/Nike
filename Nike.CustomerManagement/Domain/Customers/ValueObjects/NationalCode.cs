@@ -1,21 +1,24 @@
 ﻿using Nike.Framework.Domain;
 
-namespace Nike.CustomerManagement.Domain.Customers.ValueObjects
+namespace Nike.CustomerManagement.Domain.Customers.ValueObjects;
+
+public class NationalCode : ValueObject<NationalCode>
 {
-    public class NationalCode : ValueObject<NationalCode>
+    /// <inheritdoc />
+    public NationalCode(string code)
     {
-        /// <inheritdoc />
-        public NationalCode(string code)
-        {
-            this.Code = code;
-        }
+        Code = code;
+    }
 
-        public string Code { get; private set; }
+    // FOR ORM !
+    private NationalCode()
+    {
+    }
 
-        /// <inheritdoc />
-        protected override void Validate() { }
+    public string Code { get; }
 
-        // FOR ORM !
-        private NationalCode() { }
+    /// <inheritdoc />
+    protected override void Validate()
+    {
     }
 }

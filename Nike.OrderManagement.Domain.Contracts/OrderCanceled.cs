@@ -1,18 +1,17 @@
-﻿using Nike.Framework.Domain.EventSourcing;
-using System;
+﻿using System;
+using Nike.Framework.Domain.EventSourcing;
 
-namespace Nike.OrderManagement.Domain.Contracts
+namespace Nike.OrderManagement.Domain.Contracts;
+
+public class OrderCanceled : DomainEvent
 {
-    public class OrderCanceled : DomainEvent
+    public OrderCanceled(Guid orderId, string reason)
     {
-        public OrderCanceled(Guid orderId, string reason)
-        {
-            this.OrderId = orderId;
-            this.Reason = reason;
-        }
-
-        public Guid OrderId { get; private set; }
-
-        public string Reason { get; private set; }
+        OrderId = orderId;
+        Reason = reason;
     }
+
+    public Guid OrderId { get; }
+
+    public string Reason { get; }
 }

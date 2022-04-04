@@ -1,9 +1,8 @@
 ﻿using Enexure.MicroBus;
 
-namespace Nike.Api.Activators
+namespace Nike.Api.Activators;
+
+public abstract class CommandBase : ICommand
 {
-    public abstract class CommandBase : ICommand
-    {
-        public abstract void Validate();
-    }
+    public abstract void Validate();
 }

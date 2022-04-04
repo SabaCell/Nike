@@ -1,51 +1,52 @@
-﻿using Nike.Framework.Domain.EventSourcing;
+﻿using System;
+using Nike.Framework.Domain.EventSourcing;
 using Nike.OrderManagement.Domain.Contracts;
 using Nike.OrderManagement.Domain.Orders.Enums;
-using System;
 
-namespace Nike.OrderManagement.Domain.Orders
+namespace Nike.OrderManagement.Domain.Orders;
+
+public class Order : AggregateRoot<Guid>
 {
-    public class Order : AggregateRoot<Guid>
+    public Order(Guid customerId, decimal price) : base(Guid.NewGuid())
     {
-        public Order(Guid customerId, decimal price) : base(Guid.NewGuid())
-        {
-            Causes(new OrderPlaced(this.Id, customerId, price));
-        }
+        Causes(new OrderPlaced(Id, customerId, price));
+    }
 
-        public Guid CustomerId { get; private set; }
+    private Order() : base(Guid.NewGuid())
+    {
+    }
 
-        public decimal Price { get; private set; }
+    public Guid CustomerId { get; private set; }
 
-        public OrderStatus Status { get; private set; }
+    public decimal Price { get; private set; }
 
-        public void Confirm()
-        {
-            Causes(new OrderConfirmed(this.Id));
-        }
+    public OrderStatus Status { get; private set; }
 
-        public void Cancel(string reason)
-        {
-            Causes(new OrderCanceled(this.Id, reason));
-        }
+    public void Confirm()
+    {
+        Causes(new OrderConfirmed(Id));
+    }
 
-        private void When(OrderPlaced @event)
-        {
-            this.Id = @event.OrderId;
-            this.CustomerId = @event.CustomerId;
-            this.Price = @event.Price;
-            this.Status = OrderStatus.Pending;
-        }
+    public void Cancel(string reason)
+    {
+        Causes(new OrderCanceled(Id, reason));
+    }
 
-        private void When(OrderConfirmed @event)
-        {
-            this.Status = OrderStatus.Confirmed;
-        }
+    private void When(OrderPlaced @event)
+    {
+        Id = @event.OrderId;
+        CustomerId = @event.CustomerId;
+        Price = @event.Price;
+        Status = OrderStatus.Pending;
+    }
 
-        private void When(OrderCanceled @event)
-        {
-            this.Status = OrderStatus.Canceled;
-        }
+    private void When(OrderConfirmed @event)
+    {
+        Status = OrderStatus.Confirmed;
+    }
 
-        private Order() : base(Guid.NewGuid()) { }
+    private void When(OrderCanceled @event)
+    {
+        Status = OrderStatus.Canceled;
     }
 }

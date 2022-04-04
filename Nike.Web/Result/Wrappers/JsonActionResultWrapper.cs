@@ -2,14 +2,13 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Nike.Web.Result.Responses;
 
-namespace Nike.Web.Result.Wrappers
+namespace Nike.Web.Result.Wrappers;
+
+public class JsonActionResultWrapper : IActionResultWrapper
 {
-    public class JsonActionResultWrapper : IActionResultWrapper
+    public void Wrap(ResultExecutingContext actionResult)
     {
-        public void Wrap(ResultExecutingContext actionResult)
-        {
-            var apiResult = new ApiResponse<object>();
-            actionResult.Result = new JsonResult(apiResult) { StatusCode = actionResult.HttpContext.Response.StatusCode };
-        }
+        var apiResult = new ApiResponse<object>();
+        actionResult.Result = new JsonResult(apiResult) {StatusCode = actionResult.HttpContext.Response.StatusCode};
     }
 }

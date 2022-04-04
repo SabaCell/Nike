@@ -1,40 +1,36 @@
 ﻿using Confluent.Kafka;
 
-namespace Nike.EventBus.Kafka
+namespace Nike.EventBus.Kafka;
+
+public class KafkaConsumerConnection : IKafkaConsumerConnection
 {
-    public class KafkaConsumerConnection : IKafkaConsumerConnection
+    public KafkaConsumerConnection(string brokers, string groupId, bool allowAutoCreateTopics, bool isAsync)
     {
+        IsAsync = isAsync;
+        MillisecondsTimeout = MillisecondsTimeout == 0 ? 1000 : MillisecondsTimeout;
 
-
-        public KafkaConsumerConnection(string brokers, string groupId, bool allowAutoCreateTopics, bool isAsync)
+        Config = new ConsumerConfig
         {
-            IsAsync = isAsync;
-            MillisecondsTimeout = MillisecondsTimeout == 0 ? 1000 : MillisecondsTimeout;
+            BootstrapServers = brokers,
+            GroupId = groupId,
+            StatisticsIntervalMs = StatisticsIntervalMs == 0 ? 1000 : StatisticsIntervalMs,
+            SessionTimeoutMs = SessionTimeoutMs == 0 ? 6000 : SessionTimeoutMs,
+            EnableAutoCommit = true,
+            EnableAutoOffsetStore = false,
 
-            Config = new ConsumerConfig
-            {
-                BootstrapServers = brokers,
-                GroupId = groupId,
-                StatisticsIntervalMs = StatisticsIntervalMs == 0 ? 1000 : StatisticsIntervalMs,
-                SessionTimeoutMs = SessionTimeoutMs == 0 ? 6000 : SessionTimeoutMs,
-                EnableAutoCommit = true,
-                EnableAutoOffsetStore = false,
+            EnablePartitionEof = true,
+            PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin,
+            AllowAutoCreateTopics = allowAutoCreateTopics
+        };
 
-                EnablePartitionEof = true,
-                PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin,
-                AllowAutoCreateTopics = allowAutoCreateTopics
-            };
-
-            IsConnected = true;
-        }
-
-
-        public bool IsConnected { get; }
-        public int MillisecondsTimeout { get; set; }
-        public ConsumerConfig Config { get; }
-        public int StatisticsIntervalMs { get; set; }
-        public int SessionTimeoutMs { get; set; }
-        public bool IsAsync { get; }
-
+        IsConnected = true;
     }
+
+
+    public bool IsConnected { get; }
+    public int MillisecondsTimeout { get; set; }
+    public ConsumerConfig Config { get; }
+    public int StatisticsIntervalMs { get; set; }
+    public int SessionTimeoutMs { get; set; }
+    public bool IsAsync { get; }
 }

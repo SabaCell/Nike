@@ -1,34 +1,34 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Nike.Mediator.Query;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Nike.Mediator.Handlers
-{
-    public abstract class CachableQueryEventHandler<TQuery, TResult> : ICachableQueryEventHandler<TQuery, TResult>
+namespace Nike.Mediator.Handlers;
+
+public abstract class CachableQueryEventHandler<TQuery, TResult> : ICachableQueryEventHandler<TQuery, TResult>
     where TQuery : CachableQueryBase<TResult> where TResult : class
-    {
-        private readonly IDistributedCache _cache;
-        private readonly ILogger<CachableQueryEventHandler<TQuery, TResult>> _logger;
+{
+    private readonly IDistributedCache _cache;
+    private readonly ILogger<CachableQueryEventHandler<TQuery, TResult>> _logger;
 
-        protected CachableQueryEventHandler(IDistributedCache cache,
+    protected CachableQueryEventHandler(IDistributedCache cache,
         ILogger<CachableQueryEventHandler<TQuery, TResult>> logger)
-        {
-            _cache = cache;
-            _logger = logger;
-        }
+    {
+        _cache = cache;
+        _logger = logger;
+    }
 
-        public Task<TResult> Handle(TQuery query)
-        {
-            var cts = new CancellationTokenSource();
+    public Task<TResult> Handle(TQuery query)
+    {
+        var cts = new CancellationTokenSource();
 #if DEBUG
-            cts.CancelAfter(60 * 1000);
+        cts.CancelAfter(60 * 1000);
 #else
             cts.CancelAfter(3000);
 #endif
 
-            return _cache.GetOrCreateAsync(_logger, query.GetKey(),
+        return _cache.GetOrCreateAsync(_logger, query.GetKey(),
             options =>
             {
                 options.AbsoluteExpiration = query.AbsoluteExpiration;
@@ -38,8 +38,7 @@ namespace Nike.Mediator.Handlers
                 return result;
             },
             cts.Token);
-        }
-
-        public abstract Task<TResult> HandleAsync(TQuery query);
     }
+
+    public abstract Task<TResult> HandleAsync(TQuery query);
 }

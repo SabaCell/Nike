@@ -5,47 +5,47 @@
     </assembly>
     <members>
         <member name="M:Nike.Api.Application.Customers.Command.ActiveCustomerCommand.Validate">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Command.ActiveCustomerCommandHandler.Handle(Nike.Api.Application.Customers.Command.ActiveCustomerCommand)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Command.DeactiveCustomerCommand.Validate">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Command.DeactiveCustomerCommandHandler.Handle(Nike.Api.Application.Customers.Command.DeactiveCustomerCommand)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Command.RegisterCustomerCommand.Validate">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Command.RegisterCustomerCommandHandler.Handle(Nike.Api.Application.Customers.Command.RegisterCustomerCommand)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Query.GetAllCustomersQuery.GetKey">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Query.GetAllCustomersQueryHandler.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Microsoft.Extensions.Logging.ILogger{Nike.Mediator.Handlers.CachableQueryEventHandler{Nike.Api.Application.Customers.Query.GetAllCustomersQuery,System.Collections.Generic.IEnumerable{Nike.Api.Application.Customers.Query.GetAllCustomersQueryResult}}},Nest.IElasticClient)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Query.GetAllCustomersQueryHandler.HandleAsync(Nike.Api.Application.Customers.Query.GetAllCustomersQuery)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Query.GetCustomerDetailsQuery.GetKey">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Query.GetCustomerDetailsQueryHandler.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Microsoft.Extensions.Logging.ILogger{Nike.Mediator.Handlers.CachableQueryEventHandler{Nike.Api.Application.Customers.Query.GetCustomerDetailsQuery,Nike.Api.Application.Customers.Query.GetCustomerDetailsQueryResult}},Nest.IElasticClient)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Application.Customers.Query.GetCustomerDetailsQueryHandler.HandleAsync(Nike.Api.Application.Customers.Query.GetCustomerDetailsQuery)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Controllers.CustomersController.#ctor(Enexure.MicroBus.IMicroBus)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Nike.Api.Controllers.CustomersController.GetAllAsync(System.Int32,System.Int32)">
             <summary>
-            Get all customers
+                Get all customers
             </summary>
             <param name="pageIndex">Index of page</param>
             <param name="pageSize">Size of page</param>
@@ -53,28 +53,28 @@
         </member>
         <member name="M:Nike.Api.Controllers.CustomersController.GetDetailsAsync(System.Guid)">
             <summary>
-            Get customer details
+                Get customer details
             </summary>
             <param name="customerId">Customer id</param>
             <returns></returns>
         </member>
         <member name="M:Nike.Api.Controllers.CustomersController.RegisterCustomerAsync(Nike.Api.Application.Customers.Command.RegisterCustomerCommand)">
             <summary>
-            Register new customer
+                Register new customer
             </summary>
             <param name="command">Customer info</param>
             <returns></returns>
         </member>
         <member name="M:Nike.Api.Controllers.CustomersController.DeactiveCustomerAsync(System.Guid)">
             <summary>
-            Deactivate existing customer
+                Deactivate existing customer
             </summary>
             <param name="customerId">Customer id</param>
             <returns></returns>
         </member>
         <member name="M:Nike.Api.Controllers.CustomersController.ActiveCustomerAsync(System.Guid)">
             <summary>
-            Activate existing customer
+                Activate existing customer
             </summary>
             <param name="customerId">Customer id</param>
             <returns></returns>
