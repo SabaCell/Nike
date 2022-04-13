@@ -17,7 +17,7 @@ public class RedisClientService : IRedisClientService
     private readonly ISubscriber _subscriber;
     private static Lazy<ConnectionMultiplexer> _lazyConnection;
     private readonly ConsumeMessageResult _consumeResult;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider? _serviceProvider;
     private readonly ILogger<RedisClientService> _logger;
     private ConnectionMultiplexer Connection => _lazyConnection.Value;
 
@@ -35,7 +35,7 @@ public class RedisClientService : IRedisClientService
 
         _subscriber.Subscribe("*", HandleApplicationMessageReceivedAsync);
     }
-
+    
     private void HandleApplicationMessageReceivedAsync(RedisChannel channel, RedisValue value)
     {
         var message = new RedisMessage()

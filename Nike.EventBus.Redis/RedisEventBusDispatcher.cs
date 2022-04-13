@@ -19,7 +19,10 @@ namespace Nike.EventBus.Redis
         {
             _redisClientService = provider.RedisClientService;
         }
-
+        public RedisEventBusDispatcher(RedisSetting redisSetting)
+        {
+            _redisClientService = new RedisClientService(redisSetting, null, null);
+        }
         public void Publish<T>(T message) where T : IntegrationEvent
         {
             var topic = GetKey<T>();

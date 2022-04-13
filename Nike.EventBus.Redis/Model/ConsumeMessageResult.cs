@@ -54,7 +54,7 @@ namespace Nike.EventBus.Redis.Model
         }
 
 
-        public Task PublishToDomainAsync(IServiceProvider serviceProvider, ILogger logger,
+        public Task PublishToDomainAsync(IServiceProvider? serviceProvider, ILogger logger,
             CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(async () =>
