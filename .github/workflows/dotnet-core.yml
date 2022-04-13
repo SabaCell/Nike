@@ -86,6 +86,8 @@ jobs:
       run: dotnet pack ./Nike.Logging/Nike.Logging.csproj  -c Release -o ./nuget
     - name: Build Nike.EventBus.Mqtt
       run: dotnet pack ./Nike.EventBus.Mqtt/Nike.EventBus.Mqtt.csproj  -c Release -o ./nuget
+    - name: Build Nike.EventBus.Redis
+      run: dotnet pack ./Nike.EventBus.Mqtt/Nike.EventBus.Redis.csproj  -c Release -o ./nuget
       
     - name: ls
       run: ls -lah ./nuget 
@@ -117,4 +119,7 @@ jobs:
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.Logging*.nupkg  -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EventBus.Mqtt
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.Mqtt*.nupkg  -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      
+    - name: Deploy Nike.EventBus.Redis
+      run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EventBus.Redis*.nupkg  -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+

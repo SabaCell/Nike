@@ -38,6 +38,10 @@ namespace Nike.Api
     }
     public class SwitchScanResponseIntegrationEventHandler : IntegrationEventHandler<SwitchScanResponseIntegrationEvent>
     {
+        public SwitchScanResponseIntegrationEventHandler()
+        {
+        }
+
         public override Task HandleAsync(SwitchScanResponseIntegrationEvent @event)
         {
             Console.WriteLine("hello worlkd");

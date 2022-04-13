@@ -19,6 +19,8 @@ using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using Nike.EventBus.Redis.Model;
+using Nike.EventBus.Redis.Services;
 
 namespace Nike.Api
 {
@@ -36,13 +38,16 @@ namespace Nike.Api
         {
             services.AddControllers();
             services.AddWrappingApiResult();
-
-            ConfigureKafka(services);
-            ConfigureElasticSearch(services);
-            ConfigureRedis(services);
-            ConfigureSwagger(services);
             ConfigureMicroBus(services);
-            ConfigureCors(services);
+            //ConfigureKafka(services);
+            //ConfigureElasticSearch(services);
+            ConfigureRedis(services);
+            // ConfigureSwagger(services);
+      
+            // ConfigureCors(services);
+           var sss =  services.BuildServiceProvider();
+        var dispacher =    sss.GetService<IEventBusDispatcher>();
+        dispacher.Publish(new SwitchScanResponseIntegrationEvent {});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,7 +67,7 @@ namespace Nike.Api
                 endpoints.MapControllers();
                 endpoints.MapGet("/", async context =>
                 {
-                    context.Response.StatusCode = (int)HttpStatusCode.Redirect;
+                    context.Response.StatusCode = (int) HttpStatusCode.Redirect;
                     context.Response.Redirect("/swagger");
                 });
             });
@@ -88,13 +93,19 @@ namespace Nike.Api
 
         private void ConfigureElasticSearch(IServiceCollection services)
         {
-            services.AddElasticSearch(Configuration.GetSection("ElasticSearch").Get<ElasticSearchExtensions.ElasticSearchConfiguration>());
+            services.AddElasticSearch(Configuration.GetSection("ElasticSearch")
+                .Get<ElasticSearchExtensions.ElasticSearchConfiguration>());
         }
 
         private void ConfigureRedis(IServiceCollection services)
         {
-            var redisConfig = Configuration.GetSection("Cache").Get<RedisConfig>();
-            services.AddRedis(redisConfig.ConnectionString);
+           // var redisConfig = Configuration.GetSection("Cache").Get<RedisConfig>();
+           // services.AddRedis(redisConfig.ConnectionString);
+            var redis = new RedisSetting
+            {
+                ConnectionString = "192.168.101.22:6379,password=sdfhjg3457fgbSDFf"
+            };
+            services.AddRedisClientServiceWithConfig(redis);
         }
 
         private static void ConfigureSwagger(IServiceCollection services)
