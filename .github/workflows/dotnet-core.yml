@@ -87,7 +87,7 @@ jobs:
     - name: Build Nike.EventBus.Mqtt
       run: dotnet pack ./Nike.EventBus.Mqtt/Nike.EventBus.Mqtt.csproj  -c Release -o ./nuget
     - name: Build Nike.EventBus.Redis
-      run: dotnet pack ./Nike.EventBus.Mqtt/Nike.EventBus.Redis.csproj  -c Release -o ./nuget
+      run: dotnet pack ./Nike.EventBus.Redis/Nike.EventBus.Redis.csproj  -c Release -o ./nuget
       
     - name: ls
       run: ls -lah ./nuget 
