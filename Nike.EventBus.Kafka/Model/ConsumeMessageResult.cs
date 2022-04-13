@@ -1,99 +1,97 @@
 using System;
-using Confluent.Kafka;
-using Enexure.MicroBus;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Confluent.Kafka;
+using Enexure.MicroBus;
 using Microsoft.Extensions.Logging;
 using Nike.EventBus.Abstractions;
 
+namespace Nike.EventBus.Kafka.Model;
 
-namespace Nike.EventBus.Kafka.Model
+public class ConsumeMessageResult
 {
-    public class ConsumeMessageResult
+    private readonly Dictionary<string, Type> _types;
+    private dynamic _message;
+    private Type _messageType;
+
+    private Task _serializationTask;
+
+    //private readonly Dictionary<string, double> _times;
+    private string _topic;
+
+    public ConsumeMessageResult(Dictionary<string, Type> types)
     {
-        private readonly Dictionary<string, Type> _types;
-        private dynamic _message;
-        private Type _messageType;
+        _types = types;
+        //   _times = new Dictionary<string, double>();
+    }
 
-        private Task _serializationTask;
+    public ConsumeResult<Ignore, string> Result { get; private set; }
 
-        //private readonly Dictionary<string, double> _times;
-        private string _topic;
+    public Task SetMessageAsync(ConsumeResult<Ignore, string> result)
+    {
+        Result = result;
+        _topic = result.Topic;
+        _messageType = _types[result.Topic];
+        _serializationTask = Task.Run(ToDeserializeAsync);
 
-        public ConsumeMessageResult(Dictionary<string, Type> types)
+        return _serializationTask;
+    }
+
+    private dynamic GetMessage()
+    {
+        if (!_serializationTask.IsCompleted)
+            _serializationTask.Wait();
+        return _message;
+    }
+
+    private Task ToDeserializeAsync()
+    {
+        _message = JsonSerializer.Deserialize(Result.Message.Value, _messageType);
+        return Task.CompletedTask;
+    }
+
+    // public void SetProcessTime(double elapsedTotalMilliseconds)
+    // {
+    //     _times.Add("process-async", elapsedTotalMilliseconds);
+    // }
+    //
+    // public void SetMediatorProcess(double elapsedTotalMilliseconds)
+    // {
+    //     _times.Add("meditor-message", elapsedTotalMilliseconds);
+    // }
+    //
+    // public void SetOffsetTime(double elapsedTotalMilliseconds)
+    // {
+    //     _times.Add("offset-message", elapsedTotalMilliseconds);
+    // }
+
+    // public Dictionary<string, double> GetTimes()
+    // {
+    //     return _times;
+    // }
+
+    public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, IEventBusDispatcher bus,
+        CancellationToken cancellationToken)
+    {
+        return Task.Factory.StartNew(async () =>
         {
-            _types = types;
-            //   _times = new Dictionary<string, double>();
-        }
+            var message = GetMessage();
 
-        public ConsumeResult<Ignore, string> Result { get; private set; }
-
-        public Task SetMessageAsync(ConsumeResult<Ignore, string> result)
-        {
-            Result = result;
-            _topic = result.Topic;
-            _messageType = _types[result.Topic];
-            _serializationTask = Task.Run(ToDeserializeAsync);
-
-            return _serializationTask;
-        }
-
-        private dynamic GetMessage()
-        {
-            if (!_serializationTask.IsCompleted)
-                _serializationTask.Wait();
-            return _message;
-        }
-
-        private Task ToDeserializeAsync()
-        {
-            _message = JsonSerializer.Deserialize(Result.Message.Value, _messageType);
-            return Task.CompletedTask;
-        }
-
-        // public void SetProcessTime(double elapsedTotalMilliseconds)
-        // {
-        //     _times.Add("process-async", elapsedTotalMilliseconds);
-        // }
-        //
-        // public void SetMediatorProcess(double elapsedTotalMilliseconds)
-        // {
-        //     _times.Add("meditor-message", elapsedTotalMilliseconds);
-        // }
-        //
-        // public void SetOffsetTime(double elapsedTotalMilliseconds)
-        // {
-        //     _times.Add("offset-message", elapsedTotalMilliseconds);
-        // }
-
-        // public Dictionary<string, double> GetTimes()
-        // {
-        //     return _times;
-        // }
-
-        public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, IEventBusDispatcher bus,
-            CancellationToken cancellationToken)
-        {
-            return Task.Factory.StartNew(async () =>
+            try
             {
-                var message = GetMessage();
+                await mediator.PublishAsync(message);
+            }
+            catch (Exception exception)
+            {
+                logger.LogError($"Consumed a message : {_topic} failed : {exception.Message}", exception);
+            }
 
-                try
-                {
-                    await mediator.PublishAsync(message);
-                }
-                catch (Exception exception)
-                {
-                    logger.LogError($"Consumed a message : {_topic} failed : {exception.Message}", exception);
-                }
-
-                finally
-                {
-                    await Task.CompletedTask;
-                }
-            }, cancellationToken);
-        }
+            finally
+            {
+                await Task.CompletedTask;
+            }
+        }, cancellationToken);
     }
 }

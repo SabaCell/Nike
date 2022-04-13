@@ -2,16 +2,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nike.Swagger
+namespace Nike.Swagger;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
-    {
-        public static IServiceCollection AddSwagger(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddSwagger(this IServiceCollection serviceCollection,
         Action<SwaggerGenOptions> options = null)
-        {
-            serviceCollection.AddSwaggerGen(options);
-            serviceCollection.AddSwaggerGenNewtonsoftSupport();
-            return serviceCollection;
-        }
+    {
+        serviceCollection.AddSwaggerGen(options);
+        serviceCollection.AddSwaggerGenNewtonsoftSupport();
+        return serviceCollection;
     }
 }

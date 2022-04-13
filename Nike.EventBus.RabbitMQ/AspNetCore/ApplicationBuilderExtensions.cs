@@ -5,35 +5,36 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Nike.EventBus.RabbitMQ.AspNetCore
+namespace Nike.EventBus.RabbitMQ.AspNetCore;
+
+public static class ApplicationBuilderExtensions
 {
-    public static class ApplicationBuilderExtensions
+    public static IApplicationBuilder UseRabbitMq(this IApplicationBuilder applicationBuilder,
+        string subscriptionIdPrefix = null, Assembly consumerAssembly = null)
     {
-        public static IApplicationBuilder UseRabbitMq(this IApplicationBuilder applicationBuilder, string subscriptionIdPrefix = null, Assembly consumerAssembly = null)
+        consumerAssembly ??= Assembly.GetEntryAssembly();
+
+        if (consumerAssembly is null) throw new ArgumentNullException(nameof(consumerAssembly));
+
+        var services = applicationBuilder.ApplicationServices;
+
+        var lifeTime = services.GetService<IApplicationLifetime>();
+        var rabbitMqConnection = services.GetService<IRabbitMqConnection>();
+
+        lifeTime.ApplicationStarted.Register(() =>
         {
-            consumerAssembly ??= Assembly.GetEntryAssembly();
-            
-            if (consumerAssembly is null) throw new ArgumentNullException(nameof(consumerAssembly));
-            
-            var services = applicationBuilder.ApplicationServices;
-
-            var lifeTime = services.GetService<IApplicationLifetime>();
-            var rabbitMqConnection = services.GetService<IRabbitMqConnection>();
-            
-            lifeTime.ApplicationStarted.Register(() =>
+            var subscriber = new AutoSubscriber(rabbitMqConnection.Bus, subscriptionIdPrefix)
             {
-                var subscriber = new AutoSubscriber(rabbitMqConnection.Bus, subscriptionIdPrefix)
-                {
-                    AutoSubscriberMessageDispatcher = new MicrosoftDependencyInjectionMessageDispatcher(applicationBuilder.ApplicationServices)
-                };
-                
-                subscriber.Subscribe(new[] {consumerAssembly});
-                subscriber.SubscribeAsync(new[] {consumerAssembly});
-            });
+                AutoSubscriberMessageDispatcher =
+                    new MicrosoftDependencyInjectionMessageDispatcher(applicationBuilder.ApplicationServices)
+            };
 
-            lifeTime.ApplicationStopped.Register(() => rabbitMqConnection.Bus.Dispose());
+            subscriber.Subscribe(new[] {consumerAssembly});
+            subscriber.SubscribeAsync(new[] {consumerAssembly});
+        });
 
-            return applicationBuilder;
-        }
+        lifeTime.ApplicationStopped.Register(() => rabbitMqConnection.Bus.Dispose());
+
+        return applicationBuilder;
     }
 }

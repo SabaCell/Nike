@@ -3,29 +3,28 @@ using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Nike.OrderManagement.Domain.Orders;
 
-namespace Nike.OrderManagement.Application.Commands
+namespace Nike.OrderManagement.Application.Commands;
+
+public class ConfirmOrderCommand : ICommand
 {
-    public class ConfirmOrderCommand : ICommand
+    public Guid OrderId { get; set; }
+}
+
+public class ConfirmOrderCommandHandler : ICommandHandler<ConfirmOrderCommand>
+{
+    private readonly IOrderRepository _orderRepository;
+
+    public ConfirmOrderCommandHandler(IOrderRepository orderRepository)
     {
-        public Guid OrderId { get; set; }
+        _orderRepository = orderRepository;
     }
 
-    public class ConfirmOrderCommandHandler : ICommandHandler<ConfirmOrderCommand>
+    public async Task Handle(ConfirmOrderCommand command)
     {
-        private readonly IOrderRepository _orderRepository;
+        var order = await _orderRepository.GetByIdAsync(command.OrderId);
 
-        public ConfirmOrderCommandHandler(IOrderRepository orderRepository)
-        {
-            _orderRepository = orderRepository;
-        }
+        order.Confirm();
 
-        public async Task Handle(ConfirmOrderCommand command)
-        {
-            var order = await _orderRepository.GetByIdAsync(command.OrderId);
-
-            order.Confirm();
-
-            await _orderRepository.UpdateAsync(order);
-        }
+        await _orderRepository.UpdateAsync(order);
     }
 }

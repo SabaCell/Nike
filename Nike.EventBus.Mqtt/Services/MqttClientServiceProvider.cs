@@ -1,12 +1,11 @@
-﻿namespace Nike.EventBus.Mqtt.Services
-{
-    public class MqttClientServiceProvider
-    {
-        public readonly IMqttClientService MqttClientService;
+﻿namespace Nike.EventBus.Mqtt.Services;
 
-        public MqttClientServiceProvider(IMqttClientService mqttClientService)
-        {
-            MqttClientService = mqttClientService;
-        }
+public class MqttClientServiceProvider
+{
+    public readonly IMqttClientService MqttClientService;
+
+    public MqttClientServiceProvider(IMqttClientService mqttClientService)
+    {
+        MqttClientService = mqttClientService;
     }
 }

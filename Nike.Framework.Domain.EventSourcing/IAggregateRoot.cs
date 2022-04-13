@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Nike.Framework.Domain.EventSourcing
+namespace Nike.Framework.Domain.EventSourcing;
+
+public interface IAggregateRoot
 {
-    public interface IAggregateRoot
-    {
-        void LoadFromHistory(IEnumerable<DomainEvent> events);
-    }
+    void LoadFromHistory(IEnumerable<DomainEvent> events);
 }

@@ -1,21 +1,20 @@
-﻿using Nike.Framework.Domain.EventSourcing;
-using System;
+﻿using System;
+using Nike.Framework.Domain.EventSourcing;
 
-namespace Nike.OrderManagement.Domain.Contracts
+namespace Nike.OrderManagement.Domain.Contracts;
+
+public class OrderPlaced : DomainEvent
 {
-    public class OrderPlaced : DomainEvent
+    public OrderPlaced(Guid orderId, Guid customerId, decimal price)
     {
-        public OrderPlaced(Guid orderId, Guid customerId, decimal price)
-        {
-            this.OrderId = orderId;
-            this.CustomerId = customerId;
-            this.Price = price;
-        }
-
-        public Guid OrderId { get; private set; }
-
-        public Guid CustomerId { get; private set; }
-
-        public decimal Price { get; private set; }
+        OrderId = orderId;
+        CustomerId = customerId;
+        Price = price;
     }
+
+    public Guid OrderId { get; }
+
+    public Guid CustomerId { get; }
+
+    public decimal Price { get; }
 }

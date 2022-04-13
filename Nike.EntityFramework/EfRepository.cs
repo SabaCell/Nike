@@ -5,84 +5,83 @@ using Microsoft.EntityFrameworkCore;
 using Nike.Framework.Domain.Persistence;
 using Nike.Framework.Domain.Specifications;
 
-namespace Nike.EntityFramework
+namespace Nike.EntityFramework;
+
+public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
 {
-    public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
+    protected readonly DbContext Context;
+    protected readonly DbSet<TEntity> DbSet;
+
+    public EfRepository(IDbContextAccessor contextAccessor)
     {
-        protected readonly DbContext Context;
-        protected readonly DbSet<TEntity> DbSet;
+        Context = contextAccessor.Context;
+        DbSet = Context.Set<TEntity>();
+    }
 
-        public EfRepository(IDbContextAccessor contextAccessor)
-        {
-            Context = contextAccessor.Context;
-            DbSet = Context.Set<TEntity>();
-        }
+    public void Add(TEntity entity)
+    {
+        DbSet.Add(entity);
+    }
 
-        public void Add(TEntity entity)
-        {
-            DbSet.Add(entity);
-        }
+    public async Task<TEntity> GetByIdAsync<TPrimaryKey>(TPrimaryKey primaryKey)
+    {
+        return await DbSet.FindAsync(primaryKey);
+    }
 
-        public async Task<TEntity> GetByIdAsync<TPrimaryKey>(TPrimaryKey primaryKey)
-        {
-            return await DbSet.FindAsync(primaryKey);
-        }
+    public void Update(TEntity entity)
+    {
+        DbSet.Update(entity);
+    }
 
-        public void Update(TEntity entity)
-        {
-            DbSet.Update(entity);
-        }
+    public void Delete(TEntity entity)
+    {
+        DbSet.Remove(entity);
+    }
 
-        public void Delete(TEntity entity)
-        {
-            DbSet.Remove(entity);
-        }
+    public Task<TEntity> GetSingleAsync(ISpecification<TEntity> specification)
+    {
+        var query = ApplySpecification(specification);
 
-        public Task<TEntity> GetSingleAsync(ISpecification<TEntity> specification)
-        {
-            var query = ApplySpecification(specification);
+        return query.SingleOrDefaultAsync();
+    }
 
-            return query.SingleOrDefaultAsync();
-        }
+    public IAsyncEnumerable<TEntity> GetAsyncEnumerable(ISpecification<TEntity> specification)
+    {
+        var query = ApplySpecification(specification);
 
-        public IAsyncEnumerable<TEntity> GetAsyncEnumerable(ISpecification<TEntity> specification)
-        {
-            var query = ApplySpecification(specification);
+        return query.AsAsyncEnumerable();
+    }
 
-            return query.AsAsyncEnumerable();
-        }
+    public async Task<IEnumerable<TEntity>> GetAsync(ISpecification<TEntity> specification)
+    {
+        var query = ApplySpecification(specification);
 
-        public async Task<IEnumerable<TEntity>> GetAsync(ISpecification<TEntity> specification)
-        {
-            var query = ApplySpecification(specification);
+        return await query.ToListAsync();
+    }
 
-            return await query.ToListAsync();
-        }
+    public Task<int> GetCountAsync(ISpecification<TEntity> specification)
+    {
+        var query = ApplySpecification(specification);
 
-        public Task<int> GetCountAsync(ISpecification<TEntity> specification)
-        {
-            var query = ApplySpecification(specification);
+        return query.CountAsync();
+    }
 
-            return query.CountAsync();
-        }
+    public Task<bool> IsExistAsync(ISpecification<TEntity> specification)
+    {
+        var query = ApplySpecification(specification);
 
-        public Task<bool> IsExistAsync(ISpecification<TEntity> specification)
-        {
-            var query = ApplySpecification(specification);
+        return query.AnyAsync();
+    }
 
-            return query.AnyAsync();
-        }
+    private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification)
+    {
+        var query = DbSet.AsQueryable();
 
-        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification)
-        {
-            var query = DbSet.AsQueryable();
+        query = query.Where(specification.Criteria);
 
-            query = query.Where(specification.Criteria);
+        if (specification is IRelationalSpecification<TEntity> relationalSpecification)
+            query = query.Specify(relationalSpecification);
 
-            if (specification is IRelationalSpecification<TEntity> relationalSpecification)
-                query = query.Specify(relationalSpecification);
-
-            return query;
-        }
+        return query;
     }
 }

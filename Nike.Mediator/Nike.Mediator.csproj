@@ -10,15 +10,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Enexure.MicroBus" Version="3.7.0" />
-        <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Enexure.MicroBus" Version="3.7.0"/>
+        <PackageReference Include="System.Reactive.Linq" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
-        <ProjectReference Include="..\Nike.Framework.Domain\Nike.Framework.Domain.csproj" />
+        <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj"/>
+        <ProjectReference Include="..\Nike.Framework.Domain\Nike.Framework.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

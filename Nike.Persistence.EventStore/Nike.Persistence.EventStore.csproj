@@ -1,20 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-      <PackageVersion>1.1.0.0</PackageVersion>
-	  <TargetFramework>net6.0</TargetFramework>
-	  <Copyright>SabaCell</Copyright>
-	  <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
-	  <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
-	  <PackageTags>microservice, netcore, kafka, ef, reactive, DDD, EventSourcing</PackageTags>
-  </PropertyGroup>
+    <PropertyGroup>
+        <PackageVersion>1.1.0.0</PackageVersion>
+        <TargetFramework>net6.0</TargetFramework>
+        <Copyright>SabaCell</Copyright>
+        <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
+        <PackageTags>microservice, netcore, kafka, ef, reactive, DDD, EventSourcing</PackageTags>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="EventStore.Client" Version="21.2.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="EventStore.Client" Version="21.2.2"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Nike.Framework.Domain.EventSourcing\Nike.Framework.Domain.EventSourcing.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Nike.Framework.Domain.EventSourcing\Nike.Framework.Domain.EventSourcing.csproj"/>
+    </ItemGroup>
 
 </Project>

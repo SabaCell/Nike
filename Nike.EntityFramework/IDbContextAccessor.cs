@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Nike.EntityFramework
+namespace Nike.EntityFramework;
+
+public interface IDbContextAccessor
 {
-    public interface IDbContextAccessor
-    {
-         DbContext Context { get; }
-    }
+    DbContext Context { get; }
 }

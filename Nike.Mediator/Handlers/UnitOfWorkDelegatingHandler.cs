@@ -1,80 +1,79 @@
 ﻿using System;
-using Enexure.MicroBus;
-using Nike.EventBus.Events;
-using Nike.Mediator.Events;
-using Nike.Framework.Domain;
 using System.Threading.Tasks;
+using Enexure.MicroBus;
+using Microsoft.Extensions.Logging;
+using Nike.EventBus.Events;
+using Nike.Framework.Domain;
 using Nike.Framework.Domain.Events;
 using Nike.Framework.Domain.Exceptions;
+using Nike.Mediator.Events;
 
-namespace Nike.Mediator.Handlers
+namespace Nike.Mediator.Handlers;
+
+public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
 {
-    public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
+    private readonly ILogger<UnitOfWorkDelegatingHandler> _logger;
+    private readonly IMicroMediator _mediator;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UnitOfWorkDelegatingHandler(IUnitOfWork unitOfWork, IMicroMediator mediator,
+        ILogger<UnitOfWorkDelegatingHandler> logger)
     {
-        private readonly IMicroMediator _mediator;
-        private readonly IUnitOfWork _unitOfWork;
+        _unitOfWork = unitOfWork;
+        _mediator = mediator;
+        _logger = logger;
+    }
 
-        public UnitOfWorkDelegatingHandler(IUnitOfWork unitOfWork, IMicroMediator mediator)
+    public async Task<object> Handle(INextHandler next, object message)
+    {
+        try
         {
-            _unitOfWork = unitOfWork;
-            _mediator = mediator;
-        }
+            var result = await next.Handle(message);
 
-        public async Task<object> Handle(INextHandler next, object message)
+            await PublishEventsByCommitTimeAsync(CommitTime.BeforeCommit);
+
+            if (!(message is ICommand | message is IntegrationEvent)) return result;
+
+            await _unitOfWork.CommitAsync();
+
+            await PublishEventsByCommitTimeAsync(CommitTime.AfterCommit);
+
+            return result;
+        }
+        catch (DomainException domainException)
         {
-            try
-            {
-                var result = await next.Handle(message);
-
-                await PublishEventsByCommitTimeAsync(CommitTime.BeforeCommit);
-
-                if (!(message is ICommand | message is IntegrationEvent))
-                {
-                    return result;
-                }
-
-                await _unitOfWork.CommitAsync();
-
-                await PublishEventsByCommitTimeAsync(CommitTime.AfterCommit);
-
-                return result;
-            }
-            catch (DomainException)
-            {
-                _unitOfWork.Rollback();
-                throw;
-            }
-            catch (Exception)
-            {
-                _unitOfWork.Rollback();
-                throw;
-            }
+            _unitOfWork.Rollback();
+            _logger.LogError(domainException, domainException.Message);
+            throw;
         }
-
-        private async Task<int> PublishEventsByCommitTimeAsync(CommitTime commitTime)
+        catch (Exception exception)
         {
-            var targets = DomainEventTracker.GetAllEvents(commitTime);
-
-            foreach (var @event in targets)
-            {
-                if (commitTime.HasFlag(CommitTime.AfterCommit))
-                {
-                    await _mediator.SendAsync(CreateDynamicEvent(@event));
-                }
-                else if (commitTime.HasFlag(CommitTime.BeforeCommit))
-                {
-                    await _mediator.SendAsync(@event);
-                }
-            }
-
-            return targets.Count;
+            _unitOfWork.Rollback();
+            _logger.LogError(exception, exception.Message);
+            throw;
         }
+    }
 
-        public dynamic CreateDynamicEvent(DomainEvent domainEvent)
+    private async Task PublishEventsByCommitTimeAsync(CommitTime commitTime)
+    {
+        var targets = DomainEventTracker.GetAllEvents(commitTime);
+
+        foreach (var @event in targets)
         {
-            var type = typeof(AfterCommittedEvent<>).MakeGenericType(domainEvent.GetType());
-            return Activator.CreateInstance(type, domainEvent);
-            // Activator.CreateInstance<TDomainEvent>();
-        }
+            if (commitTime.HasFlag(CommitTime.AfterCommit))
+            {
+                await _mediator.SendAsync(CreateDynamicEvent(@event));
+            }
+            else if (commitTime.HasFlag(CommitTime.BeforeCommit))
+            {
+                await _mediator.SendAsync(@event);
+            }}
+    }
+
+    private static dynamic CreateDynamicEvent(DomainEvent domainEvent)
+    {
+        var type = typeof(AfterCommittedEvent<>).MakeGenericType(domainEvent.GetType());
+        return Activator.CreateInstance(type, domainEvent);
+        // Activator.CreateInstance<TDomainEvent>();
     }
 }

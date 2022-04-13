@@ -2,24 +2,23 @@
 
     <PropertyGroup>
         <PackageVersion>1.1.0.0</PackageVersion>
-		<TargetFramework>net6.0</TargetFramework>
-		<Copyright>SabaCell</Copyright>
-		<PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
-		<PackageTags>microservice, netcore, kafka, ef, reactive, DDD, EventSourcing</PackageTags>
-	</PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Copyright>SabaCell</Copyright>
+        <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
+        <PackageTags>microservice, netcore, kafka, ef, reactive, DDD, EventSourcing</PackageTags>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.7.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-        <PackageReference Include="MQTTnet" Version="3.1.2" />
-        <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.1.2" />
+        <PackageReference Include="Enexure.MicroBus.InfrastructureContracts" Version="3.7.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0"/>
+        <PackageReference Include="MQTTnet" Version="3.1.2"/>
+        <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.1.2"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj" />
+        <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj"/>
     </ItemGroup>
-
 
 
 </Project>

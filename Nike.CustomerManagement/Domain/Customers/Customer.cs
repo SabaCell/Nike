@@ -1,45 +1,46 @@
-﻿using Nike.CustomerManagement.Domain.Customers.Exception;
+﻿using System;
+using Nike.CustomerManagement.Domain.Customers.Exception;
 using Nike.CustomerManagement.Domain.Customers.ValueObjects;
 using Nike.Framework.Domain;
-using System;
 
-namespace Nike.CustomerManagement.Domain.Customers
+namespace Nike.CustomerManagement.Domain.Customers;
+
+public class Customer : AggregateRoot<Guid>
 {
-    public class Customer : AggregateRoot<Guid>
+    /// <inheritdoc />
+    public Customer(FullName fullName, NationalCode nationalCode, IClock clock)
     {
-        /// <inheritdoc />
-        public Customer(FullName fullName, NationalCode nationalCode, IClock clock)
-        {
-            this.Id = Guid.NewGuid();
-            this.FullName = fullName;
-            this.NationalCode = nationalCode;
-            this.IsActive = true;
-            this.CreatedAt = clock.Now();
-        }
+        Id = Guid.NewGuid();
+        FullName = fullName;
+        NationalCode = nationalCode;
+        IsActive = true;
+        CreatedAt = clock.Now();
+    }
 
-        public FullName FullName { get; private set; }
+    // FOR ORM!
+    private Customer()
+    {
+    }
 
-        public NationalCode NationalCode { get; private set; }
+    public FullName FullName { get; }
 
-        public bool IsActive { get; private set; }
+    public NationalCode NationalCode { get; }
 
-        public void Deactive()
-        {
-            if (!this.IsActive)
-                throw new CustomerAlreadyDeactivatedException();
+    public bool IsActive { get; private set; }
 
-            this.IsActive = false;
-        }
+    public void Deactive()
+    {
+        if (!IsActive)
+            throw new CustomerAlreadyDeactivatedException();
 
-        public void Active()
-        {
-            if (this.IsActive)
-                throw new CustomerAlreadyActivatedException();
+        IsActive = false;
+    }
 
-            this.IsActive = true;
-        }
+    public void Active()
+    {
+        if (IsActive)
+            throw new CustomerAlreadyActivatedException();
 
-        // FOR ORM!
-        private Customer() { }
+        IsActive = true;
     }
 }

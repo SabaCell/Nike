@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Nike.Persistence.EventStore
+namespace Nike.Persistence.EventStore;
+
+public interface IEventTypeResolver
 {
-    public interface IEventTypeResolver
-    {
-        void AddTypesFromAssembly(Assembly assembly);
-        Type GetType(string typeName);
-    }
+    void AddTypesFromAssembly(Assembly assembly);
+    Type GetType(string typeName);
 }

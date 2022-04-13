@@ -1,24 +1,27 @@
 ﻿using Nike.Framework.Domain;
 
-namespace Nike.CustomerManagement.Domain.Customers.ValueObjects
+namespace Nike.CustomerManagement.Domain.Customers.ValueObjects;
+
+public class FullName : ValueObject<FullName>
 {
-    public class FullName : ValueObject<FullName>
+    /// <inheritdoc />
+    public FullName(string firstName, string lastName)
     {
-        /// <inheritdoc />
-        public FullName(string firstName, string lastName)
-        {
-            this.FirstName = firstName;
-            this.LastName = lastName;
-        }
+        FirstName = firstName;
+        LastName = lastName;
+    }
 
-        public string FirstName { get; private set; }
+    // FOR ORM !
+    private FullName()
+    {
+    }
 
-        public string LastName { get; private set; }
+    public string FirstName { get; }
 
-        /// <inheritdoc />
-        protected override void Validate() { }
+    public string LastName { get; }
 
-        // FOR ORM !
-        private FullName() { }
+    /// <inheritdoc />
+    protected override void Validate()
+    {
     }
 }

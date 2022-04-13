@@ -42,8 +42,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.Web.DependencyInjectio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.CustomerManagement", "Nike.CustomerManagement\Nike.CustomerManagement.csproj", "{DA920F67-B53F-4228-8F72-1A32AB82AD71}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.Api", "Nike.Api\Nike.Api.csproj", "{6A3E3C4D-8D9F-43BC-98CE-905B352935FB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.CustomerManagement.Tests.Units", "Nike.CustomerManagement.Tests.Units\Nike.CustomerManagement.Tests.Units.csproj", "{DD465C70-669F-498D-8A3F-89AAEBCE4559}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nike.Redis", "Nike.Redis\Nike.Redis.csproj", "{4E9C9135-0E3F-445A-9CA6-FFDD94953628}"
@@ -132,10 +130,6 @@ Global
 		{DA920F67-B53F-4228-8F72-1A32AB82AD71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA920F67-B53F-4228-8F72-1A32AB82AD71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA920F67-B53F-4228-8F72-1A32AB82AD71}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A3E3C4D-8D9F-43BC-98CE-905B352935FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A3E3C4D-8D9F-43BC-98CE-905B352935FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A3E3C4D-8D9F-43BC-98CE-905B352935FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A3E3C4D-8D9F-43BC-98CE-905B352935FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DD465C70-669F-498D-8A3F-89AAEBCE4559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DD465C70-669F-498D-8A3F-89AAEBCE4559}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD465C70-669F-498D-8A3F-89AAEBCE4559}.Release|Any CPU.ActiveCfg = Release|Any CPU

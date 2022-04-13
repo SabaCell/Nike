@@ -1,12 +1,11 @@
 ﻿using System;
 
-namespace Nike.Framework.Domain.Events
+namespace Nike.Framework.Domain.Events;
+
+[Flags]
+public enum CommitTime
 {
-    [Flags]
-    public enum CommitTime
-    {
-        None = 0,
-        BeforeCommit = 2,
-        AfterCommit = 4,
-    }
+    None = 0,
+    BeforeCommit = 2,
+    AfterCommit = 4
 }

@@ -1,40 +1,39 @@
-﻿using Nike.OrderManagement.Domain.Contracts;
-using Nike.OrderManagement.Projections.Framework;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Nike.OrderManagement.Domain.Contracts;
+using Nike.OrderManagement.Projections.Framework;
 
-namespace Nike.OrderManagement.Projections.Handlers
+namespace Nike.OrderManagement.Projections.Handlers;
+
+public class OrderEventHandlers :
+    IEventHandler<OrderPlaced>,
+    IEventHandler<OrderConfirmed>,
+    IEventHandler<OrderCanceled>
 {
-    public class OrderEventHandlers :
-            IEventHandler<OrderPlaced>,
-            IEventHandler<OrderConfirmed>,
-            IEventHandler<OrderCanceled>
+    public Task HandleAsync(OrderCanceled @event)
     {
-        public Task HandleAsync(OrderPlaced @event)
-        {
-            // Save In Query Db
+        // Save In Query Db
 
-            Console.WriteLine("Order Placed");
+        Console.WriteLine("Order Canceled");
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
+    }
 
-        public Task HandleAsync(OrderConfirmed @event)
-        {
-            // Save In Query Db
+    public Task HandleAsync(OrderConfirmed @event)
+    {
+        // Save In Query Db
 
-            Console.WriteLine("Order Confirmed");
+        Console.WriteLine("Order Confirmed");
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
+    }
 
-        public Task HandleAsync(OrderCanceled @event)
-        {
-            // Save In Query Db
+    public Task HandleAsync(OrderPlaced @event)
+    {
+        // Save In Query Db
 
-            Console.WriteLine("Order Canceled");
+        Console.WriteLine("Order Placed");
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

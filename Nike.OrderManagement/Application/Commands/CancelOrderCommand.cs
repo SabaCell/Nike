@@ -3,31 +3,30 @@ using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Nike.OrderManagement.Domain.Orders;
 
-namespace Nike.OrderManagement.Application.Commands
-{
-    public class CancelOrderCommand : ICommand
-    {
-        public Guid OrderId { get; set; }
+namespace Nike.OrderManagement.Application.Commands;
 
-        public string Reason { get; set; }
+public class CancelOrderCommand : ICommand
+{
+    public Guid OrderId { get; set; }
+
+    public string Reason { get; set; }
+}
+
+public class CancelOrderCommandHandler : ICommandHandler<CancelOrderCommand>
+{
+    private readonly IOrderRepository _orderRepository;
+
+    public CancelOrderCommandHandler(IOrderRepository orderRepository)
+    {
+        _orderRepository = orderRepository;
     }
 
-    public class CancelOrderCommandHandler : ICommandHandler<CancelOrderCommand>
+    public async Task Handle(CancelOrderCommand command)
     {
-        private readonly IOrderRepository _orderRepository;
+        var order = await _orderRepository.GetByIdAsync(command.OrderId);
 
-        public CancelOrderCommandHandler(IOrderRepository orderRepository)
-        {
-            _orderRepository = orderRepository;
-        }
+        order.Cancel(command.Reason);
 
-        public async Task Handle(CancelOrderCommand command)
-        {
-            var order = await _orderRepository.GetByIdAsync(command.OrderId);
-
-            order.Cancel(command.Reason);
-
-            await _orderRepository.UpdateAsync(order);
-        }
+        await _orderRepository.UpdateAsync(order);
     }
 }

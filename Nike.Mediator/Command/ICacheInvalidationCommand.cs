@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Enexure.MicroBus;
 
-namespace Nike.Mediator.Command
+namespace Nike.Mediator.Command;
+
+public interface ICacheInvalidationCommand : ICommand
 {
-    public interface ICacheInvalidationCommand : ICommand
-    {
-        IEnumerable<string> GetKeys();
-    }
+    IEnumerable<string> GetKeys();
 }

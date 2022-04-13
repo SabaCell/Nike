@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Nike.OrderManagement.Domain.Orders
+namespace Nike.OrderManagement.Domain.Orders;
+
+public interface IOrderRepository
 {
-    public interface IOrderRepository
-    {
-        Task<Order> GetByIdAsync(Guid id);
+    Task<Order> GetByIdAsync(Guid id);
 
-        Task AddAsync(Order order);
+    Task AddAsync(Order order);
 
-        Task UpdateAsync(Order order);
-    }
+    Task UpdateAsync(Order order);
 }
