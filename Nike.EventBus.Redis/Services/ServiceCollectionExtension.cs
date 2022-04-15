@@ -8,16 +8,14 @@ namespace Nike.EventBus.Redis.Services
 {
     public static class ServiceCollectionExtension
     {
-     
-
-        public static IServiceCollection AddEventBusRedis(this IServiceCollection services,RedisSetting setting)
+        public static IServiceCollection AddEventBusRedis(this IServiceCollection services, RedisSetting setting)
 
         {
             services.AddSingleton(setting);
             services.AddSingleton<IEventBusDispatcher, RedisEventBusDispatcher>();
             services.AddSingleton<RedisClientService>();
             services.AddSingleton<IHostedService>(serviceProvider => serviceProvider.GetService<RedisClientService>());
-          
+
             services.AddSingleton(serviceProvider =>
             {
                 var mqttClientService = serviceProvider.GetService<RedisClientService>();
