@@ -10,7 +10,7 @@ namespace Nike.EventBus.Redis.Services
     {
      
 
-        public static IServiceCollection AddRedisClientServiceWithConfig(this IServiceCollection services,RedisSetting setting)
+        public static IServiceCollection AddEventBusRedis(this IServiceCollection services,RedisSetting setting)
 
         {
             services.AddSingleton(setting);
