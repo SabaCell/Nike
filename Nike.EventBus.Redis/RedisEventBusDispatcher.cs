@@ -60,7 +60,7 @@ namespace Nike.EventBus.Redis
 
         public Task PublishAsync(string typeName, string message, CancellationToken cancellationToken = default)
         {
-            var body = ToBytes(JsonSerializer.Serialize(message));
+            var body = Encoding.UTF8.GetBytes(message);
             return PublishAsync(typeName, typeName, body, cancellationToken);
         }
 
