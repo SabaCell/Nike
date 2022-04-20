@@ -26,14 +26,18 @@ public class RedisClientService : IRedisClientService
     public RedisClientService(RedisSetting setting, IServiceProvider serviceProvider,
         ILogger<RedisClientService> logger)
     {
-        _consumeResult = new ConsumeMessageResult(GetTopicDictionary());
+        var topics = GetTopicDictionary();
+        _consumeResult = new ConsumeMessageResult(topics);
         _serviceProvider = serviceProvider;
         _logger = logger;
         _lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
             ConnectionMultiplexer.Connect(setting.ConnectionString));
         _subscriber = RedisCache.Multiplexer.GetSubscriber();
+        foreach (var topic in topics)
+        {
+            _subscriber.Subscribe(topic.Key, HandleApplicationMessageReceivedAsync);   
+        }
 
-        _subscriber.Subscribe("*", HandleApplicationMessageReceivedAsync);
     }
     
     private void HandleApplicationMessageReceivedAsync(RedisChannel channel, RedisValue value)
