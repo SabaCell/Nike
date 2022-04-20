@@ -32,7 +32,7 @@ public class MqttClientService : IMqttClientService
         ILogger<MqttClientService> logger)
     {
         _topics = GetTopicDictionary();
-        _consumeResult = new ConsumeMessageResult(_topics);
+   
         _options = options;
         _serviceProvider = serviceProvider;
 
@@ -43,8 +43,9 @@ public class MqttClientService : IMqttClientService
 
     public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
-        _consumeResult.SetMessageAsync(eventArgs.ApplicationMessage);
-        _consumeResult.PublishToDomainAsync(_serviceProvider, _logger, CancellationToken.None);
+        var consumeResult = new ConsumeMessageResult(_topics);
+        consumeResult.SetMessageAsync(eventArgs.ApplicationMessage);
+        consumeResult.PublishToDomainAsync(_serviceProvider, _logger, CancellationToken.None);
     }
 
     public Task PublishAsync(MqttApplicationMessage msg)

@@ -19,6 +19,7 @@ public class RedisClientService : IRedisClientService
     private readonly ConsumeMessageResult _consumeResult;
     private readonly IServiceProvider? _serviceProvider;
     private readonly ILogger<RedisClientService> _logger;
+    private readonly Dictionary<string, Type> _topics;
     private ConnectionMultiplexer Connection => _lazyConnection.Value;
 
     public IDatabase RedisCache => Connection.GetDatabase();
@@ -26,14 +27,14 @@ public class RedisClientService : IRedisClientService
     public RedisClientService(RedisSetting setting, IServiceProvider serviceProvider,
         ILogger<RedisClientService> logger)
     {
-        var topics = GetTopicDictionary();
-        _consumeResult = new ConsumeMessageResult(topics);
+         _topics = GetTopicDictionary();
+
         _serviceProvider = serviceProvider;
         _logger = logger;
         _lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
             ConnectionMultiplexer.Connect(setting.ConnectionString));
         _subscriber = RedisCache.Multiplexer.GetSubscriber();
-        foreach (var topic in topics)
+        foreach (var topic in _topics)
         {
             _subscriber.Subscribe(topic.Key, HandleApplicationMessageReceivedAsync);   
         }
@@ -42,13 +43,15 @@ public class RedisClientService : IRedisClientService
     
     private void HandleApplicationMessageReceivedAsync(RedisChannel channel, RedisValue value)
     {
+        
+        var consumeResult = new ConsumeMessageResult(_topics);
         var message = new RedisMessage()
         {
             Payload = value,
             Topic = channel
         };
-        _consumeResult.SetMessageAsync(message);
-        _consumeResult.PublishToDomainAsync(_serviceProvider, _logger, CancellationToken.None);
+        consumeResult.SetMessageAsync(message);
+        consumeResult.PublishToDomainAsync(_serviceProvider, _logger, CancellationToken.None);
     }
 
     private Dictionary<string, Type> GetTopicDictionary()
