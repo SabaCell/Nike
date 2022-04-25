@@ -7,37 +7,33 @@ namespace Nike.Framework.Domain.Events;
 
 public static class DomainEventTracker
 {
-    private static readonly ConcurrentQueue<Tuple<DomainEvent, CommitTime>> Events= new();
+    private static readonly ConcurrentQueue<DomainEvent> AfterEvents = new();
+    private static readonly ConcurrentQueue<DomainEvent> BeforeEvents = new();
 
     public static void AddEvent(DomainEvent domainEvent, CommitTime commitTime)
     {
         if (commitTime.HasFlag(CommitTime.BeforeCommit))
-            Events.Enqueue(new Tuple<DomainEvent, CommitTime>(domainEvent, CommitTime.BeforeCommit));
+            BeforeEvents.Enqueue(domainEvent);
 
         if (commitTime.HasFlag(CommitTime.AfterCommit))
-            Events.Enqueue(new Tuple<DomainEvent, CommitTime>(domainEvent, CommitTime.AfterCommit));
+            AfterEvents.Enqueue(domainEvent);
     }
 
     public static List<DomainEvent> GetAllEvents(CommitTime commitTime = CommitTime.BeforeCommit)
     {
         var events = new List<DomainEvent>();
 
+        var tempQueue = commitTime == CommitTime.AfterCommit ? AfterEvents : BeforeEvents;
         while (true)
         {
-            if (!Events.TryDequeue(out Tuple<DomainEvent, CommitTime> @event))
+            if (!tempQueue.TryDequeue(out var @event))
             {
                 break;
             }
 
-            if (@event.Item2.HasFlag(commitTime))
-            {
-                events.Add(@event.Item1);
-            }
-            else
-            {
-                Events.Enqueue(@event);
-            }
+            events.Add(@event);
         }
+
         // var allEvents = Events.Where(p => p.Item2.HasFlag(commitTime)).ToList();
         // events = allEvents.Select(m => m.Item1).ToList();
         // allEvents.ForEach(e => Events.Remove(e));
