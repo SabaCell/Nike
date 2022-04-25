@@ -89,7 +89,7 @@ public class ConsumeMessageResult
             }
             catch (Exception exception)
             {
-                logger.LogError($"Consumed a message : {_topic} failed : {exception.Message}", exception);
+                logger.LogError(exception, $"Consumed a message : {_topic} failed : {exception.Message} Trace: {exception.StackTrace}");
             }
 
             finally
