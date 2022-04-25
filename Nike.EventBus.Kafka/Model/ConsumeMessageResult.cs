@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Enexure.MicroBus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nike.EventBus.Abstractions;
 
@@ -72,7 +73,7 @@ public class ConsumeMessageResult
     //     return _times;
     // }
 
-    public Task PublishToDomainAsync(IMicroMediator mediator, ILogger logger, IEventBusDispatcher bus,
+    public Task PublishToDomainAsync(IServiceProvider provider, ILogger logger,
         CancellationToken cancellationToken)
     {
         return Task.Factory.StartNew(async () =>
@@ -81,6 +82,9 @@ public class ConsumeMessageResult
 
             try
             {
+                using var scope = provider.CreateScope();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
+               // var bus = scope.ServiceProvider.GetRequiredService<IEventBusDispatcher>();
                 await mediator.PublishAsync(message);
             }
             catch (Exception exception)

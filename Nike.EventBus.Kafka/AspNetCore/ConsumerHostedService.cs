@@ -55,10 +55,9 @@ public class ConsumerHostedService : BackgroundService
         using var consumer = MakeConsumer();
         consumer.Subscribe(_topics.Keys);
 
-        using var scope = _services.CreateScope();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
-        var bus = scope.ServiceProvider.GetRequiredService<IEventBusDispatcher>();
+
         while (!stoppingToken.IsCancellationRequested)
+        {
             try
             {
                 var consumeResult = new ConsumeMessageResult(_topics);
@@ -75,11 +74,11 @@ public class ConsumerHostedService : BackgroundService
 
                 if (_connection.IsAsync)
                 {
-                    var processTask = consumeResult.PublishToDomainAsync(mediator, _logger, bus, stoppingToken);
+                    var processTask = consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
                 }
                 else
                 {
-                    await consumeResult.PublishToDomainAsync(mediator, _logger, bus, stoppingToken);
+                    await consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
                 }
 
 
@@ -99,6 +98,8 @@ public class ConsumerHostedService : BackgroundService
                 _logger.LogError(ex,
                     "Error occurred executing {WorkItem}.", nameof(_connection));
             }
+        }
+
 
         consumer.Close();
 
