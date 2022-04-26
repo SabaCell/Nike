@@ -60,14 +60,25 @@ public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
 
         foreach (var @event in targets)
         {
-            if (commitTime.HasFlag(CommitTime.AfterCommit))
+            try
             {
-                await _mediator.SendAsync(CreateDynamicEvent(@event));
+                if (commitTime.HasFlag(CommitTime.AfterCommit))
+                {
+                    await _mediator.SendAsync(CreateDynamicEvent(@event));
+                }
+                else if (commitTime.HasFlag(CommitTime.BeforeCommit))
+                {
+                    await _mediator.SendAsync(@event);
+                }
             }
-            else if (commitTime.HasFlag(CommitTime.BeforeCommit))
+            catch (Exception exception)
             {
-                await _mediator.SendAsync(@event);
-            }}
+                _logger.LogError(exception,
+                    @event.AggregateRootType.FullName + " has exception. " + exception.Message + " ### " +
+                    exception.StackTrace);
+                throw new DomainException(exception.Message, exception);
+            }
+        }
     }
 
     private static dynamic CreateDynamicEvent(DomainEvent domainEvent)
