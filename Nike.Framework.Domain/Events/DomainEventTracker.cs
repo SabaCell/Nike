@@ -7,16 +7,16 @@ namespace Nike.Framework.Domain.Events;
 
 public static class DomainEventTracker
 {
-    private static readonly ConcurrentQueue<DomainEvent> AfterEvents = new();
-    private static readonly ConcurrentQueue<DomainEvent> BeforeEvents = new();
+    private static readonly ConcurrentStack<DomainEvent> AfterEvents = new();
+    private static readonly ConcurrentStack<DomainEvent> BeforeEvents = new();
 
     public static void AddEvent(DomainEvent domainEvent, CommitTime commitTime)
     {
         if (commitTime.HasFlag(CommitTime.BeforeCommit))
-            BeforeEvents.Enqueue(domainEvent);
+            BeforeEvents.Push(domainEvent);
 
         if (commitTime.HasFlag(CommitTime.AfterCommit))
-            AfterEvents.Enqueue(domainEvent);
+            AfterEvents.Push(domainEvent);
     }
 
     public static List<DomainEvent> GetAllEvents(CommitTime commitTime = CommitTime.BeforeCommit)
@@ -26,7 +26,7 @@ public static class DomainEventTracker
         var tempQueue = commitTime == CommitTime.AfterCommit ? AfterEvents : BeforeEvents;
         while (true)
         {
-            if (!tempQueue.TryDequeue(out var @event))
+            if (!tempQueue.TryPop(out var @event))
             {
                 break;
             }
