@@ -66,7 +66,7 @@ public abstract class DbContextBase<TContext> : DbContext where TContext : DbCon
         if (e.NewState == EntityState.Modified && implementsIEntity)
         {
             var modifiedProperty = entityType.GetProperty(nameof(IEntity<object>.EditAt));
-            modifiedProperty.SetValue(entity, DateTime.UtcNow);
+            modifiedProperty.SetValue(entity, DateTime.Now);
         }
     }
 
@@ -81,10 +81,10 @@ public abstract class DbContextBase<TContext> : DbContext where TContext : DbCon
         if (!e.FromQuery && e.Entry.State == EntityState.Added && implementsIEntity)
         {
             var modifiedProperty = entityType.GetProperty(nameof(IEntity<object>.EditAt));
-            modifiedProperty.SetValue(entity, DateTime.UtcNow);
+            modifiedProperty.SetValue(entity, DateTime.Now);
 
             var createdAtProperty = entityType.GetProperty(nameof(IEntity<object>.CreatedAt));
-            createdAtProperty.SetValue(entity, DateTime.UtcNow);
+            createdAtProperty.SetValue(entity, DateTime.Now);
         }
     }
 

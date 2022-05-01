@@ -129,7 +129,7 @@ public static class DbContextExtensions
         var updateAtProperty = entity.GetType().GetProperty(nameof(IAuditedEntity.UpdatedAt));
         if (updateAtProperty is null)
             throw new Exception($"{nameof(IAuditedEntity.UpdatedAt)} property is not found.");
-        updateAtProperty.SetValue(entity, DateTime.UtcNow);
+        updateAtProperty.SetValue(entity, DateTime.Now);
     }
 
     private static void SetCreatedAtProperty(object entity)
@@ -137,6 +137,6 @@ public static class DbContextExtensions
         var createdAtProperty = entity.GetType().GetProperty(nameof(IAuditedEntity.CreatedAt));
         if (createdAtProperty is null)
             throw new Exception($"{nameof(IAuditedEntity.CreatedAt)} property is not found.");
-        createdAtProperty.SetValue(entity, DateTime.UtcNow);
+        createdAtProperty.SetValue(entity, DateTime.Now);
     }
 }
