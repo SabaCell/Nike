@@ -1,4 +1,5 @@
 using System;
+using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Nike.EventBus.Abstractions;
 
@@ -14,7 +15,14 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IEventBusDispatcher, KafkaEventBusDispatcher>();
         return serviceCollection;
     }
-
+    public static IServiceCollection AddKafkaProducer(this IServiceCollection serviceCollection, ProducerConfig producerConfig)
+    {
+        if (producerConfig == null)
+            throw new ArgumentNullException(nameof(producerConfig));
+        serviceCollection.AddSingleton<IKafkaProducerConnection>(factory => new KafkaProducerConnection(producerConfig));
+        serviceCollection.AddSingleton<IEventBusDispatcher, KafkaEventBusDispatcher>();
+        return serviceCollection;
+    }
     public static IServiceCollection AddKafkaConsumer(this IServiceCollection serviceCollection, string brokers,
         string groupId, bool allowAutoCreateTopics = true, bool isAsync = true)
     {

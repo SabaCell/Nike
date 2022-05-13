@@ -15,6 +15,12 @@ public class KafkaProducerConnection : IKafkaProducerConnection
         IsConnected = true;
     }
 
+    public KafkaProducerConnection(ProducerConfig producerConfig)
+    {
+        Config = producerConfig;
+        IsConnected = true;
+    }
+
     public bool IsConnected { get; }
     public ProducerConfig Config { get; }
 }

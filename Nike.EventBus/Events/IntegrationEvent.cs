@@ -8,7 +8,7 @@ public class IntegrationEvent
     public IntegrationEvent()
     {
         Id = Guid.NewGuid();
-        CreationAt = DateTime.UtcNow;
+        CreationAt = DateTime.Now;
     }
 
     public IntegrationEvent(Guid id, DateTime createDate)
