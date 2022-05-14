@@ -16,86 +16,65 @@ public class ConsumeMessageResult
     private readonly Dictionary<string, Type> _types;
     private dynamic _message;
     private Type _messageType;
-
     private Task _serializationTask;
-
-    //private readonly Dictionary<string, double> _times;
     private string _topic;
+    public ConsumeResult<Ignore, string> Result { get; private set; }
 
     public ConsumeMessageResult(Dictionary<string, Type> types)
     {
         _types = types;
-        //   _times = new Dictionary<string, double>();
     }
 
-    public ConsumeResult<Ignore, string> Result { get; private set; }
-
-    public Task SetMessageAsync(ConsumeResult<Ignore, string> result)
+    public void SetMessage(ConsumeResult<Ignore, string> result, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         Result = result;
         _topic = result.Topic;
         _messageType = _types[result.Topic];
-        _serializationTask = Task.Run(ToDeserializeAsync);
-
-        return _serializationTask;
+        _serializationTask = ToDeserializeAsync(cancellationToken);
     }
 
-    private dynamic GetMessage()
+    private bool TryGetMessage(ILogger logger, out dynamic serializedMessage, CancellationToken cancellationToken)
     {
-        if (!_serializationTask.IsCompleted)
-            _serializationTask.Wait();
-        return _message;
-    }
-
-    private Task ToDeserializeAsync()
-    {
-        _message = JsonSerializer.Deserialize(Result.Message.Value, _messageType);
-        return Task.CompletedTask;
-    }
-
-    // public void SetProcessTime(double elapsedTotalMilliseconds)
-    // {
-    //     _times.Add("process-async", elapsedTotalMilliseconds);
-    // }
-    //
-    // public void SetMediatorProcess(double elapsedTotalMilliseconds)
-    // {
-    //     _times.Add("meditor-message", elapsedTotalMilliseconds);
-    // }
-    //
-    // public void SetOffsetTime(double elapsedTotalMilliseconds)
-    // {
-    //     _times.Add("offset-message", elapsedTotalMilliseconds);
-    // }
-
-    // public Dictionary<string, double> GetTimes()
-    // {
-    //     return _times;
-    // }
-
-    public Task PublishToDomainAsync(IServiceProvider provider, ILogger logger,
-        CancellationToken cancellationToken)
-    {
-        return Task.Factory.StartNew(async () =>
+        try
         {
-            var message = GetMessage();
-
-            try
+            if (_serializationTask.IsCompleted)
             {
-                using var scope = provider.CreateScope();
-                var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
-               // var bus = scope.ServiceProvider.GetRequiredService<IEventBusDispatcher>();
-                await mediator.PublishAsync(message);
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, $"Consumed a message : {_topic} failed : {exception.Message} Trace: {exception.StackTrace}");
+                serializedMessage = _message;
+                return true;
             }
 
-            finally
-            {
-                await Task.CompletedTask;
-            }
-        }, cancellationToken);
+            _serializationTask.Wait(cancellationToken);
+
+            serializedMessage = _message;
+            return true;
+        }
+        catch (Exception e)
+        {
+            serializedMessage = null;
+            logger.LogCritical(
+                $"{GetType().FullName} can't serialize payload of a topic and can not move to domainEvent mediator handler. exception message {e.Message} - stacktrace: {e.StackTrace}");
+            return false;
+        }
+    }
+
+    private Task ToDeserializeAsync(CancellationToken cancellationToken)
+    {
+        return Task.Run(
+            () => { _message = JsonSerializer.Deserialize(json: Result.Message.Value, returnType: _messageType); },
+            cancellationToken);
+    }
+
+    public Task PublishToDomainAsync(IServiceProvider provider, ILogger logger, CancellationToken cancellationToken)
+    {
+        if (!TryGetMessage(logger, out var message, cancellationToken))
+        {
+            return Task.CompletedTask;
+        }
+
+        using var scope = provider.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
+        return mediator.PublishAsync(message);
     }
 }

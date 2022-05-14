@@ -23,7 +23,6 @@ public class ConsumerHostedService : BackgroundService
     private readonly IServiceProvider _services;
     private readonly Dictionary<string, Type> _topics;
 
-
     public ConsumerHostedService(
         ILogger<ConsumerHostedService> logger,
         IKafkaConsumerConnection connection,
@@ -31,7 +30,6 @@ public class ConsumerHostedService : BackgroundService
     {
         _logger = logger;
         _services = services;
-
         _connection = connection;
         _topics = GetTopicDictionary();
     }
@@ -50,11 +48,12 @@ public class ConsumerHostedService : BackgroundService
         return base.StartAsync(cancellationToken);
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        stoppingToken.ThrowIfCancellationRequested();
+
         using var consumer = MakeConsumer();
         consumer.Subscribe(_topics.Keys);
-
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -62,49 +61,41 @@ public class ConsumerHostedService : BackgroundService
             {
                 var consumeResult = new ConsumeMessageResult(_topics);
 
-                if (!consumer.TryConsumeMessage(_connection.MillisecondsTimeout, consumeResult, stoppingToken))
+                if (!consumer.TryConsumeMessage(consumeResult, _logger, stoppingToken))
                 {
-                    await Task.Delay(1, stoppingToken);
                     continue;
                 }
 
                 _logger.LogTrace(
                     $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
-
-                if (_connection.IsAsync)
-                {
-                    var processTask = consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
-                }
-                else
-                {
-                    await consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
-                }
-
+                var task = consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
 
                 consumer.StoreOffset(consumeResult.Result);
-                // sw.Stop();
-
-                // consumeResult.SetProcessTime(sw.Elapsed.TotalMilliseconds);
+            }
+            catch (TaskCanceledException ex) when (stoppingToken.IsCancellationRequested)
+            {
+                _logger.LogError(ex,
+                    $"Error occurred executing {ex.Source} {ex.Message}. {ex.Source}");
             }
             catch (OperationCanceledException ex) when (stoppingToken.IsCancellationRequested)
             {
                 _logger.LogError(ex,
                     "Error occurred executing {WorkItem}.", nameof(_connection));
-                if (stoppingToken.IsCancellationRequested) throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
                     "Error occurred executing {WorkItem}.", nameof(_connection));
+                stoppingToken.ThrowIfCancellationRequested();
             }
         }
-
 
         consumer.Close();
 
         _logger.LogWarning(
             $"Stopping conusmer request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
+        return Task.CompletedTask;
     }
 
     public override async Task StopAsync(CancellationToken stoppingToken)
@@ -113,7 +104,7 @@ public class ConsumerHostedService : BackgroundService
 
         await base.StopAsync(stoppingToken);
 
-        _logger.LogWarning($"Kafka-Consumer-Hosted-Service {GetType().FullName} has been stoped.");
+        _logger.LogWarning($"Kafka-Consumer-Hosted-Service {GetType().FullName} has been stopped.");
     }
 
     private IConsumer<Ignore, string> MakeConsumer()

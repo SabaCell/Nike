@@ -4,9 +4,8 @@ namespace Nike.EventBus.Kafka;
 
 public class KafkaConsumerConnection : IKafkaConsumerConnection
 {
-    public KafkaConsumerConnection(string brokers, string groupId, bool allowAutoCreateTopics, bool isAsync)
+    public KafkaConsumerConnection(string brokers, string groupId, bool allowAutoCreateTopics)
     {
-        IsAsync = isAsync;
         MillisecondsTimeout = MillisecondsTimeout == 0 ? 1000 : MillisecondsTimeout;
 
         Config = new ConsumerConfig
@@ -17,7 +16,6 @@ public class KafkaConsumerConnection : IKafkaConsumerConnection
             SessionTimeoutMs = SessionTimeoutMs == 0 ? 6000 : SessionTimeoutMs,
             EnableAutoCommit = true,
             EnableAutoOffsetStore = false,
-
             EnablePartitionEof = true,
             PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin,
             AllowAutoCreateTopics = allowAutoCreateTopics

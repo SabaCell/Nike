@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
     {
         if (string.IsNullOrEmpty(brokers))
             throw new ArgumentNullException(nameof(brokers));
-        var consumer = new KafkaConsumerConnection(brokers, groupId, allowAutoCreateTopics, isAsync);
+        var consumer = new KafkaConsumerConnection(brokers, groupId, allowAutoCreateTopics);
         serviceCollection.AddSingleton<IKafkaConsumerConnection>(factory => consumer);
         return serviceCollection;
     }

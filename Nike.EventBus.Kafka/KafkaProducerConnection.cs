@@ -6,12 +6,13 @@ public class KafkaProducerConnection : IKafkaProducerConnection
 {
     public KafkaProducerConnection(string brokers)
     {
-        Config = new ProducerConfig();
-        // Config.QueueBufferingMaxMessages = 1000000;
-        // Config.LingerMs = 10;
+        Config = new ProducerConfig
+        {
+            BootstrapServers = brokers,
+            Partitioner = Partitioner.Random,
+            LogThreadName = true
+        };
 
-        Config.BootstrapServers = brokers;
-        Config.Partitioner = Partitioner.Murmur2Random;
         IsConnected = true;
     }
 
