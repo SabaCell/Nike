@@ -48,7 +48,7 @@ public class ConsumerHostedService : BackgroundService
         return base.StartAsync(cancellationToken);
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
 
@@ -61,17 +61,17 @@ public class ConsumerHostedService : BackgroundService
             {
                 var consumeResult = new ConsumeMessageResult(_topics);
 
-                if (!consumer.TryConsumeMessage(consumeResult, _logger, stoppingToken))
+                if (consumer.TryConsumeMessage(consumeResult, _logger, stoppingToken))
                 {
-                    continue;
+                    _logger.LogTrace(
+                        $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
+
+                    var task = consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
+
+                    consumer.StoreOffset(consumeResult.Result);
                 }
 
-                _logger.LogTrace(
-                    $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
-
-                var task = consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
-
-                consumer.StoreOffset(consumeResult.Result);
+                await Task.Delay(1, stoppingToken);
             }
             catch (TaskCanceledException ex) when (stoppingToken.IsCancellationRequested)
             {
@@ -95,7 +95,6 @@ public class ConsumerHostedService : BackgroundService
 
         _logger.LogWarning(
             $"Stopping conusmer request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
-        return Task.CompletedTask;
     }
 
     public override async Task StopAsync(CancellationToken stoppingToken)
