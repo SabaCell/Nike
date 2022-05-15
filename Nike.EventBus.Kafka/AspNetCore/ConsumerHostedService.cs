@@ -60,7 +60,6 @@ public class ConsumerHostedService : BackgroundService
             try
             {
                 var consumeResult = new ConsumeMessageResult(_topics);
-
                 if (consumer.TryConsumeMessage(consumeResult, _logger, stoppingToken))
                 {
                     _logger.LogTrace(
