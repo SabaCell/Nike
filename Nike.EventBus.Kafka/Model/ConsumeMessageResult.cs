@@ -78,7 +78,7 @@ public class ConsumeMessageResult
         {
             try
             {
-                mediator.PublishAsync(message);
+               await mediator.PublishAsync(message);
             }
             finally
             {

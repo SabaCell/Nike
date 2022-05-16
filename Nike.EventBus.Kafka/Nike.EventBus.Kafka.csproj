@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageVersion>1.1.0.7</PackageVersion>
+        <PackageVersion>1.1.0.8</PackageVersion>
         <TargetFramework>net6.0</TargetFramework>
         <Copyright>SabaCell</Copyright>
         <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>

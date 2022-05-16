@@ -64,7 +64,7 @@ public class ConsumerHostedService : BackgroundService
                     _logger.LogTrace(
                         $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
-                    await _throttler.WaitAsync();
+                    await _throttler.WaitAsync(stoppingToken);
                     consumeResult.PublishToDomainAsync(_services, _logger,_throttler, stoppingToken);
 
                     consumer.StoreOffset(consumeResult.Result);
