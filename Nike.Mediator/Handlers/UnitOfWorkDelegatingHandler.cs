@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Enexure.MicroBus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nike.EventBus.Events;
 using Nike.Framework.Domain;
@@ -14,14 +15,14 @@ public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
 {
     private readonly ILogger<UnitOfWorkDelegatingHandler> _logger;
     private readonly IMicroMediator _mediator;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceProvider _provider;
 
-    public UnitOfWorkDelegatingHandler(IUnitOfWork unitOfWork, IMicroMediator mediator,
-        ILogger<UnitOfWorkDelegatingHandler> logger)
+    public UnitOfWorkDelegatingHandler(IMicroMediator mediator, ILogger<UnitOfWorkDelegatingHandler> logger,
+        IServiceProvider provider)
     {
-        _unitOfWork = unitOfWork;
         _mediator = mediator;
         _logger = logger;
+        _provider = provider;
     }
 
     public async Task<object> Handle(INextHandler next, object message)
@@ -34,22 +35,39 @@ public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
 
             if (!(message is ICommand | message is IntegrationEvent)) return result;
 
-            await _unitOfWork.CommitAsync();
+            using var scope = _provider.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
 
-            await PublishEventsByCommitTimeAsync(CommitTime.AfterCommit);
+            if (unitOfWork == null)
+            {
+                var exception = new NullReferenceException("IUnitOfWork is null on UnitOfWorkDelegatingHandler");
+                _logger.LogError(exception, "IUnitOfWork is null on UnitOfWorkDelegatingHandler");
+                throw exception;
+            }
+
+            try
+            {
+                await unitOfWork.CommitAsync();
+                await PublishEventsByCommitTimeAsync(CommitTime.AfterCommit);
+            }
+            catch (DomainException domainException)
+            {
+                unitOfWork.Rollback();
+                _logger.LogError(domainException, domainException.Message);
+                throw;
+            }
+            catch (Exception exception)
+            {
+                unitOfWork.Rollback();
+                _logger.LogError(exception, exception.Message);
+                throw;
+            }
 
             return result;
         }
-        catch (DomainException domainException)
+        catch (Exception e)
         {
-            _unitOfWork.Rollback();
-            _logger.LogError(domainException, domainException.Message);
-            throw;
-        }
-        catch (Exception exception)
-        {
-            _unitOfWork.Rollback();
-            _logger.LogError(exception, exception.Message);
+            _logger.LogError(e, "GENERAL EXCEPTION! " + e.Message);
             throw;
         }
     }
