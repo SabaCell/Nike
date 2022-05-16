@@ -5,8 +5,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
-using Enexure.MicroBus;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nike.EventBus.Abstractions;
@@ -65,7 +63,7 @@ public class ConsumerHostedService : BackgroundService
                     _logger.LogTrace(
                         $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
-                    var task = consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
+                    await consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
 
                     consumer.StoreOffset(consumeResult.Result);
                 }
@@ -75,18 +73,17 @@ public class ConsumerHostedService : BackgroundService
             catch (TaskCanceledException ex) when (stoppingToken.IsCancellationRequested)
             {
                 _logger.LogError(ex,
-                    $"Error occurred executing {ex.Source} {ex.Message}. {ex.Source}");
+                    $"(TaskCanceledException) Error occurred executing {ex.Source} {ex.Message}. {ex.Source}");
             }
             catch (OperationCanceledException ex) when (stoppingToken.IsCancellationRequested)
             {
                 _logger.LogError(ex,
-                    "Error occurred executing {WorkItem}.", nameof(_connection));
+                    "(OperationCanceledException) Error occurred executing {WorkItem}.", nameof(_connection));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
-                    "Error occurred executing {WorkItem}.", nameof(_connection));
-                stoppingToken.ThrowIfCancellationRequested();
+                    "(Exception) Error occurred executing {WorkItem}.", nameof(_connection));
             }
         }
 

@@ -7,7 +7,6 @@ using Confluent.Kafka;
 using Enexure.MicroBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Nike.EventBus.Abstractions;
 
 namespace Nike.EventBus.Kafka.Model;
 
