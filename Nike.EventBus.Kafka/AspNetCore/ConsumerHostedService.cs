@@ -20,6 +20,7 @@ public class ConsumerHostedService : BackgroundService
     private readonly ILogger<ConsumerHostedService> _logger;
     private readonly IServiceProvider _services;
     private readonly Dictionary<string, Type> _topics;
+    private readonly SemaphoreSlim _throttler = new SemaphoreSlim(initialCount: 50);
 
     public ConsumerHostedService(
         ILogger<ConsumerHostedService> logger,
@@ -63,7 +64,8 @@ public class ConsumerHostedService : BackgroundService
                     _logger.LogTrace(
                         $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
-                    await consumeResult.PublishToDomainAsync(_services, _logger, stoppingToken);
+                    await _throttler.WaitAsync();
+                    consumeResult.PublishToDomainAsync(_services, _logger,_throttler, stoppingToken);
 
                     consumer.StoreOffset(consumeResult.Result);
                 }

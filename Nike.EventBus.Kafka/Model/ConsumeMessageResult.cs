@@ -7,7 +7,7 @@ using Confluent.Kafka;
 using Enexure.MicroBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
+using static System.Threading.Tasks.Task;
 namespace Nike.EventBus.Kafka.Model;
 
 public class ConsumeMessageResult
@@ -16,7 +16,6 @@ public class ConsumeMessageResult
     private dynamic _message;
     private Type _messageType;
     private Task _serializationTask;
-    private string _topic;
     public ConsumeResult<Ignore, string> Result { get; private set; }
 
     public ConsumeMessageResult(Dictionary<string, Type> types)
@@ -29,7 +28,6 @@ public class ConsumeMessageResult
         cancellationToken.ThrowIfCancellationRequested();
 
         Result = result;
-        _topic = result.Topic;
         _messageType = _types[result.Topic];
         _serializationTask = ToDeserializeAsync(cancellationToken);
     }
@@ -60,20 +58,33 @@ public class ConsumeMessageResult
 
     private Task ToDeserializeAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(
+        return Run(
             () => { _message = JsonSerializer.Deserialize(json: Result.Message.Value, returnType: _messageType); },
             cancellationToken);
     }
 
-    public Task PublishToDomainAsync(IServiceProvider provider, ILogger logger, CancellationToken cancellationToken)
+    public Task PublishToDomainAsync(IServiceProvider provider, ILogger logger, SemaphoreSlim throttler,
+        CancellationToken cancellationToken)
     {
         if (!TryGetMessage(logger, out var message, cancellationToken))
         {
-            return Task.CompletedTask;
+            return CompletedTask;
         }
 
         using var scope = provider.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
-        return mediator.PublishAsync(message);
+        
+       return Run(async () =>
+        {
+            try
+            {
+                mediator.PublishAsync(message);
+            }
+            finally
+            {
+                throttler.Release();
+            }
+        }, cancellationToken);
+        // return mediator.PublishAsync(message);
     }
 }
