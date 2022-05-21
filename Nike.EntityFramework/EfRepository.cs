@@ -73,6 +73,16 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
         return query.AnyAsync();
     }
 
+    public Task<IQueryable<TEntity>> GetQueryable()
+    {
+        return Task.FromResult(DbSet.AsQueryable());
+    }
+
+    public Task<List<TEntity>> GetAllAsync()
+    {
+        return DbSet.ToListAsync();
+    }
+
     private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification)
     {
         var query = DbSet.AsQueryable();

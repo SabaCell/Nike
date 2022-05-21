@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Enexure.MicroBus.Messages;
 using Enexure.MicroBus.MicrosoftDependencyInjection;
@@ -7,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nike.CustomerManagement.Application.Customers.Commands;
+using Nike.CustomerManagement.Domain.Customers;
 using Nike.CustomerManagement.Infrastructure;
 using Nike.CustomerManagement.Infrastructure.Services.Customers;
 using Nike.EntityFramework;
@@ -14,6 +18,7 @@ using Nike.EntityFramework.Microsoft.DependencyInjection;
 using Nike.EventBus.Abstractions;
 using Nike.EventBus.Kafka.AspNetCore;
 using Nike.Framework.Domain;
+using Nike.Framework.Domain.Persistence;
 using Nike.Mediator.Handlers;
 using Nike.Redis.Microsoft.DependencyInjection;
 
@@ -21,10 +26,25 @@ namespace Nike.CustomerManagement;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var host = CreateHostBuilder(args).Build();
-        //host.Services.Migrate();
+
+        var scop = host.Services.CreateScope();
+
+        var bus = scop.ServiceProvider.GetService<IMicroMediator>();
+        var I = 1;
+        while (true)
+        {
+            var command = new RegisterCustomerCommand
+            {
+                FirstName = $"Name {I}",
+                LastName = $"Name {I}",
+                NationalCode = I.ToString()
+            };
+            bus.SendAsync(command);
+            Thread.Sleep(1);
+        }
         host.Run();
     }
 
@@ -49,8 +69,9 @@ internal class Program
         ConfigureStoreServices(services);
 
         services.AddSingleton<IClock, SystemClock>();
+        //  services.AddHostedService<ConsumerHostedService>();
 
-        services.AddHostedService<ConsumerHostedService>();
+    
     }
 
 
@@ -76,6 +97,7 @@ internal class Program
 
     private static void ConfigureEntityFrameWork(HostBuilderContext hostContext, IServiceCollection services)
     {
+
         services.AddEntityFrameworkSqlServer()
             .AddEntityFrameworkUnitOfWork()
             .AddEntityFrameworkDefaultRepository()
@@ -89,6 +111,7 @@ internal class Program
                     });
             })
             .AddScoped<IDbContextAccessor>(s => new DbContextAccessor(s.GetRequiredService<DatabaseContext>()));
+
     }
 
     private static void ConfigureMicroBus(IServiceCollection services)

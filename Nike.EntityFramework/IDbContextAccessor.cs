@@ -4,5 +4,5 @@ namespace Nike.EntityFramework;
 
 public interface IDbContextAccessor
 {
-    DbContext Context { get; }
+    DbContextBase Context { get; }
 }

@@ -35,8 +35,8 @@ public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
 
             if (!(message is ICommand | message is IntegrationEvent)) return result;
 
-            using var scope = _provider.CreateScope();
-            var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
+  
+            var unitOfWork = _provider.GetService<IUnitOfWork>();
 
             if (unitOfWork == null)
             {

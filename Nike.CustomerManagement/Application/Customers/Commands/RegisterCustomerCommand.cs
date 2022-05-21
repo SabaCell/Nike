@@ -40,7 +40,7 @@ public class RegisterCustomerCommandHandler : ICommandHandler<RegisterCustomerCo
 
         _customerRepository.Add(customer);
 
-        await _customerStoreService.CreateAsync(customer);
+     //   await _customerStoreService.CreateAsync(customer);
     }
 
     private Customer MapToCustomer(RegisterCustomerCommand command)

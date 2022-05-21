@@ -13,15 +13,15 @@ namespace Nike.EntityFramework;
 
 public class DbContextAccessor : IDbContextAccessor
 {
-    public DbContextAccessor(DbContext context)
+    public DbContextAccessor(DbContextBase context)
     {
         Context = context;
     }
 
-    public DbContext Context { get; }
+    public DbContextBase Context { get; }
 }
 
-public abstract class DbContextBase<TContext> : DbContext where TContext : DbContext
+public abstract class DbContextBase : DbContext
 {
     private IDbContextTransaction _currentTransaction;
 
@@ -29,7 +29,7 @@ public abstract class DbContextBase<TContext> : DbContext where TContext : DbCon
     {
     }
 
-    protected DbContextBase(DbContextOptions<TContext> options) : base(options)
+    protected DbContextBase(DbContextOptions options) : base(options)
     {
         //   ChangeTracker.Tracked += OnEntityCreate;
         //   ChangeTracker.StateChanged += OnEntityUpdate;
@@ -54,6 +54,7 @@ public abstract class DbContextBase<TContext> : DbContext where TContext : DbCon
 
         builder.ApplyConfigurationsFromAssembly(ConfigurationsAssembly);
     }
+ 
 
     protected virtual void OnEntityUpdate(object sender, EntityStateChangedEventArgs e)
     {

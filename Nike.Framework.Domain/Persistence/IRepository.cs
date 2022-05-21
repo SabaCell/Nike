@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Nike.Framework.Domain.Specifications;
 
@@ -16,6 +17,8 @@ public interface IRepository<TEntity> where TEntity : class
     void Update(TEntity entity);
     void Delete(TEntity entity);
     Task<TEntity> GetSingleAsync(ISpecification<TEntity> specification);
+    Task<List<TEntity>> GetAllAsync();
+    Task<IQueryable<TEntity>> GetQueryable();
     IAsyncEnumerable<TEntity> GetAsyncEnumerable(ISpecification<TEntity> specification);
     Task<IEnumerable<TEntity>> GetAsync(ISpecification<TEntity> specification);
     Task<bool> IsExistAsync(ISpecification<TEntity> specification);

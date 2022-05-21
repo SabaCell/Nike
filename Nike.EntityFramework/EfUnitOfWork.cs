@@ -6,7 +6,7 @@ namespace Nike.EntityFramework;
 
 public class EfUnitOfWork : IUnitOfWork
 {
-    private readonly DbContext _dbContext;
+    private readonly DbContextBase _dbContext;
 
 
     public EfUnitOfWork(IDbContextAccessor dbContextAccessor)
