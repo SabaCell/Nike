@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Enexure.MicroBus;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Nike.Mediator.Events;
 using Nike.EventBus.Events;
 using Nike.Framework.Domain;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Nike.Framework.Domain.Events;
 using Nike.Framework.Domain.Exceptions;
-using Nike.Mediator.Events;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Nike.Mediator.Handlers;
 
@@ -32,10 +32,7 @@ public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
             var result = await next.Handle(message);
 
             await PublishEventsByCommitTimeAsync(CommitTime.BeforeCommit);
-
             if (!(message is ICommand | message is IntegrationEvent)) return result;
-
-  
             var unitOfWork = _provider.GetService<IUnitOfWork>();
 
             if (unitOfWork == null)
@@ -103,6 +100,5 @@ public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
     {
         var type = typeof(AfterCommittedEvent<>).MakeGenericType(domainEvent.GetType());
         return Activator.CreateInstance(type, domainEvent);
-        // Activator.CreateInstance<TDomainEvent>();
     }
 }
