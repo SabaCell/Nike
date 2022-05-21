@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,18 +11,16 @@ public static class ServiceProviderExtensions
     public static void Migrate(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
-
-        var dbContext = scope.ServiceProvider.GetService<IDbContextAccessor>().Context;
-
-        dbContext.Database.Migrate();
+        var contextAccessor = scope.ServiceProvider.GetService<IDbContextAccessor>();
+        contextAccessor?.Context.Database.Migrate();
     }
 
     public static async Task MigrateAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+        var contextAccessor = scope.ServiceProvider.GetService<IDbContextAccessor>();
+        var context = contextAccessor?.Context;
 
-        var dbContext = scope.ServiceProvider.GetService<IDbContextAccessor>().Context;
-
-        await dbContext.Database.MigrateAsync();
+        await context?.Database.MigrateAsync(CancellationToken.None);
     }
 }
