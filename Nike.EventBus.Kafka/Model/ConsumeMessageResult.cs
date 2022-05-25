@@ -8,6 +8,7 @@ using Enexure.MicroBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static System.Threading.Tasks.Task;
+
 namespace Nike.EventBus.Kafka.Model;
 
 public class ConsumeMessageResult
@@ -71,14 +72,14 @@ public class ConsumeMessageResult
             return CompletedTask;
         }
 
-        using var scope = provider.CreateScope();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
-        
-       return Run(async () =>
+
+        return Run(async () =>
         {
             try
             {
-               await mediator.PublishAsync(message);
+                using var scope = provider.CreateScope();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
+                await mediator.PublishAsync(message);
             }
             finally
             {
