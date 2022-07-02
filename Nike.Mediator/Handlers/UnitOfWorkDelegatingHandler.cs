@@ -72,28 +72,33 @@ public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
     private async Task PublishEventsByCommitTimeAsync(CommitTime commitTime)
     {
         var targets = DomainEventTracker.GetAllEvents(commitTime);
-
-        foreach (var @event in targets)
+        while (targets.TryDequeue(out var domainEvent))
         {
-            try
+            if (commitTime.HasFlag(CommitTime.AfterCommit))
             {
-                if (commitTime.HasFlag(CommitTime.AfterCommit))
-                {
-                    await _mediator.SendAsync(CreateDynamicEvent(@event));
-                }
-                else if (commitTime.HasFlag(CommitTime.BeforeCommit))
-                {
-                    await _mediator.SendAsync(@event);
-                }
+                await _mediator.SendAsync(CreateDynamicEvent(domainEvent));
             }
-            catch (Exception exception)
+            else if (commitTime.HasFlag(CommitTime.BeforeCommit))
             {
-                _logger.LogError(exception,
-                    @event.AggregateRootType.FullName + " has exception. " + exception.Message + " ### " +
-                    exception.StackTrace);
-                throw new DomainException(exception.Message, exception);
+                await _mediator.SendAsync(domainEvent);
             }
         }
+
+        // await _mediator.SendAsync(domainEvent);
+        // foreach (var @event in targets)
+        // {
+        //     try
+        //     {
+        //      
+        //     }
+        //     catch (Exception exception)
+        //     {
+        //         _logger.LogError(exception,
+        //             @event.AggregateRootType.FullName + " has exception. " + exception.Message + " ### " +
+        //             exception.StackTrace);
+        //         throw new DomainException(exception.Message, exception);
+        //     }
+        // }
     }
 
     private static dynamic CreateDynamicEvent(DomainEvent domainEvent)
