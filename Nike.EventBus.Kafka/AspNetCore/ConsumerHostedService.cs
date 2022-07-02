@@ -20,7 +20,7 @@ public class ConsumerHostedService : BackgroundService
     private readonly ILogger<ConsumerHostedService> _logger;
     private readonly IServiceProvider _services;
     private readonly Dictionary<string, Type> _topics;
-    private readonly SemaphoreSlim _throttler = new SemaphoreSlim(initialCount: 50);
+    private readonly SemaphoreSlim _throttler = new(30);
 
     public ConsumerHostedService(
         ILogger<ConsumerHostedService> logger,
