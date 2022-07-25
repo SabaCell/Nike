@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.EventBus.Mqtt", "Nike.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.EventBus.Redis", "Nike.EventBus.Redis\Nike.EventBus.Redis.csproj", "{11C9A437-5846-45E3-9EB0-574166FCE442}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7599}") = "Nike.Benchmark.ConsumerPerformance", "Nike.Benchmark.ConsumerPerformance\Nike.Benchmark.ConsumerPerformance.csproj", "{11C9A437-5846-45E3-9EB0-574166FCE442}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
