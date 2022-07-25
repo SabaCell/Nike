@@ -1,4 +1,6 @@
-﻿namespace Nike.Mediator.Query;
+﻿using Nike.Mediator.Models;
+
+namespace Nike.Mediator.Query;
 
 public abstract class UserDataQueryBase<T> : QueryBase<T> where T : class
 {

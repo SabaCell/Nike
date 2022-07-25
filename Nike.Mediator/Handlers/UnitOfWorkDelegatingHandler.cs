@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Nike.Mediator.Handlers;
 
+//TODO Remove it in the next version
 public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
 {
     private readonly ILogger<UnitOfWorkDelegatingHandler> _logger;

@@ -1,4 +1,5 @@
 ﻿using Enexure.MicroBus;
+using Nike.Mediator.Models;
 
 namespace Nike.Mediator.Command;
 
