@@ -30,6 +30,8 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(brokers));
         var consumer = new KafkaConsumerConnection(brokers, groupId, allowAutoCreateTopics);
         serviceCollection.AddSingleton<IKafkaConsumerConnection>(factory => consumer);
+
+        serviceCollection.AddHostedService<KafkaConsumerBackgroundService>();
         return serviceCollection;
     }
 }
