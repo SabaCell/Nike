@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nike.EventBus.Abstractions;
+using Nike.EventBus.Handlers;
 using Nike.EventBus.Redis.Model;
 using Nike.Mediator.Handlers;
 using StackExchange.Redis;
@@ -27,7 +28,7 @@ public class RedisClientService : IRedisClientService
     public RedisClientService(RedisSetting setting, IServiceProvider serviceProvider,
         ILogger<RedisClientService> logger)
     {
-         _topics = GetTopicDictionary();
+         _topics = TopicHelper.GetLiveTopics();
 
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -52,59 +53,6 @@ public class RedisClientService : IRedisClientService
         };
         consumeResult.SetMessageAsync(message);
         consumeResult.PublishToDomainAsync(_serviceProvider, _logger, CancellationToken.None);
-    }
-
-    private Dictionary<string, Type> GetTopicDictionary()
-    {
-        var topics = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(x => x.GetTypes().Where(p =>
-                p.IsGenericType == false && IsSubclassOfRawGeneric(typeof(IntegrationEventHandler<>), p)))
-            .ToList();
-
-        var results = new Dictionary<string, Type>();
-        foreach (var topic in topics)
-        {
-            var topicName = "";
-            var type = topic.BaseType?.GetGenericArguments();
-
-            if (type == null) continue;
-            var attribute = GetAttribute(type[0]);
-            topicName = attribute == null ? type[0].Name : attribute.TopicName;
-            results.Add(topicName, type[0]);
-        }
-
-        return results;
-    }
-
-    private TopicAttribute GetAttribute(Type type)
-    {
-        var attributes = type.GetCustomAttributes();
-
-        foreach (var attribute in attributes)
-        {
-            if (attribute is TopicAttribute topicAttribute)
-            {
-                return topicAttribute;
-            }
-        }
-
-        return null;
-    }
-
-    private bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
-    {
-        while (toCheck != null && toCheck != typeof(object))
-        {
-            var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-            if (generic == cur)
-            {
-                return true;
-            }
-
-            toCheck = toCheck.BaseType;
-        }
-
-        return false;
     }
 
     public async Task PublishAsync(RedisMessage msg)

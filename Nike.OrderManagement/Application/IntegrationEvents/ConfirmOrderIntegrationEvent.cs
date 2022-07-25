@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Nike.EventBus.Events;
+using Nike.EventBus.Handlers;
 using Nike.Mediator.Handlers;
 using Nike.OrderManagement.Application.Commands;
 

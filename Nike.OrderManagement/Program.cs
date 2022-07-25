@@ -42,8 +42,7 @@ internal class Program
         ConfigureKafka(hostContext, services);
         ConfigureMicroBus(services);
         ConfigurePersistence(hostContext, services);
-
-        services.AddHostedService<ConsumerHostedService>();
+        services.AddHostedService<KafkaConsumerBackgroundService>();
     }
 
     #region PrivateMethods

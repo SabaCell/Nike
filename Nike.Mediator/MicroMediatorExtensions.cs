@@ -24,7 +24,7 @@ namespace Nike.Mediator
                 }
             }
         }
-        
+
         private static dynamic CreateDynamicEvent(DomainEvent domainEvent)
         {
             var type = typeof(AfterCommittedEvent<>).MakeGenericType(domainEvent.GetType());

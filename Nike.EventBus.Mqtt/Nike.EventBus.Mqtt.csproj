@@ -18,6 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj"/>
+        <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj"/>
     </ItemGroup>
 
 

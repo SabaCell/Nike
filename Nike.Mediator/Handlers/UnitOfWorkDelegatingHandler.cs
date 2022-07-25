@@ -1,7 +1,6 @@
 ﻿using System;
 using Enexure.MicroBus;
 using Nike.Mediator.Events;
-using Nike.EventBus.Events;
 using Nike.Framework.Domain;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -13,7 +12,7 @@ namespace Nike.Mediator.Handlers;
 
 [Obsolete(@"Why comment this delegation?
 We had so problem in concurrency and storing unwanted entities
-So we implemented this works in a <i>IUnitOfWork</i> and you can use it on the next 
+So we implemented this works in a <see cref='IUnitOfWork' /> and you can use it on the next 
 ", true)]
 public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
 {
@@ -36,7 +35,7 @@ public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
             var result = await next.Handle(message);
 
             await PublishEventsByCommitTimeAsync(CommitTime.BeforeCommit);
-            if (!(message is ICommand | message is IntegrationEvent)) return result;
+            if (!(message is ICommand | message.GetType().BaseType.Name == "IntegrationEvent")) return result;
             var unitOfWork = _provider.GetService<IUnitOfWork>();
 
             if (unitOfWork == null)

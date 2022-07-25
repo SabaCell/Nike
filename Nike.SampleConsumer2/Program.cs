@@ -40,9 +40,7 @@ internal class Program
         ConfigureMicroBus(services);
         services.AddSingleton<IClock, SystemClock>();
 
-        services.AddHostedService<ConsumerHostedService22>();
-        services.AddHostedService<ConsumerHostedService22>();
-        services.AddHostedService<ConsumerHostedService22>();
+        services.AddHostedService<KafkaConsumerBackgroundService>();
     }
 
 

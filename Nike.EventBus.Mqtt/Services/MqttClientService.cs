@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -11,9 +10,7 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Protocol;
-using Nike.EventBus.Abstractions;
 using Nike.EventBus.Mqtt.Model;
-using Nike.Mediator.Handlers;
 
 namespace Nike.EventBus.Mqtt.Services;
 
@@ -31,7 +28,7 @@ public class MqttClientService : IMqttClientService
     public MqttClientService(IMqttClientOptions options, IServiceProvider serviceProvider,
         ILogger<MqttClientService> logger)
     {
-        _topics = GetTopicDictionary();
+        _topics = TopicHelper.GetLiveTopics();
    
         _options = options;
         _serviceProvider = serviceProvider;
@@ -57,7 +54,7 @@ public class MqttClientService : IMqttClientService
     {
         _logger.LogInformation("connected");
         var topics = (from topic in _topics
-            let attribute = GetAttribute(topic.Value)
+            let attribute = TopicHelper.GetAttribute(topic.Value)
             select new MqttTopicFilter
             {
                 Topic = attribute != null ? attribute.TopicName : topic.Key,
@@ -114,52 +111,6 @@ public class MqttClientService : IMqttClientService
 
 
     #region PrivateMethod
-
-    private Dictionary<string, Type> GetTopicDictionary()
-    {
-        var topics = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(x => x.GetTypes().Where(p =>
-                p.IsGenericType == false && IsSubclassOfRawGeneric(typeof(IntegrationEventHandler<>), p)))
-            .ToList();
-
-        var results = new Dictionary<string, Type>();
-        foreach (var topic in topics)
-        {
-            var topicName = "";
-            var type = topic.BaseType?.GetGenericArguments();
-
-            if (type == null) continue;
-            var attribute = GetAttribute(type[0]);
-            topicName = attribute == null ? type[0].Name : attribute.TopicName;
-            results.Add(topicName, type[0]);
-        }
-
-        return results;
-    }
-
-    private bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
-    {
-        while (toCheck != null && toCheck != typeof(object))
-        {
-            var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-            if (generic == cur) return true;
-
-            toCheck = toCheck.BaseType;
-        }
-
-        return false;
-    }
-
-    private TopicAttribute GetAttribute(Type type)
-    {
-        var attributes = type.GetCustomAttributes();
-
-        foreach (var attribute in attributes)
-            if (attribute is TopicAttribute topicAttribute)
-                return topicAttribute;
-
-        return null;
-    }
 
     private MqttQualityOfServiceLevel GetMqttQualityOfServiceLevel(QualityOfServiceLevel serviceLevel)
     {

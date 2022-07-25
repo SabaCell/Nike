@@ -18,7 +18,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
         <ProjectReference Include="..\Nike.Framework.Domain\Nike.Framework.Domain.csproj" />
     </ItemGroup>
 

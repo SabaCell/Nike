@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nike.EventBus.Abstractions;
 using Nike.EventBus.Events;
+using Nike.EventBus.Handlers;
 using Nike.EventBus.Kafka;
 using Nike.EventBus.Kafka.AspNetCore;
 using Nike.Mediator.Handlers;
@@ -86,30 +87,5 @@ public class Msg5IntegrationEventHandler : IntegrationEventHandler<Msg5>
     {
         //            Console.WriteLine($"Consumer1: {@event.Count} - {@event.Id} - {@event.GetType().Name} ");
         return Task.CompletedTask;
-    }
-}
-
-public class ConsumerHostedService1 : ConsumerHostedService
-{
-    public ConsumerHostedService1(ILogger<ConsumerHostedService1> logger, IKafkaConsumerConnection connection,
-        IServiceProvider services, IEventBusDispatcher bus) : base(logger, connection, services)
-    {
-    }
-}
-
-public class ConsumerHostedService2 : ConsumerHostedService
-{
-    public ConsumerHostedService2(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,
-        IServiceProvider services,
-        IEventBusDispatcher bus) : base(logger, connection, services)
-    {
-    }
-}
-
-public class ConsumerHostedService3 : ConsumerHostedService
-{
-    public ConsumerHostedService3(ILogger<ConsumerHostedService3> logger, IKafkaConsumerConnection connection,
-        IServiceProvider services, IEventBusDispatcher bus) : base(logger, connection, services)
-    {
     }
 }

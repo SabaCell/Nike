@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Enexure.MicroBus;
 using Nike.CustomerManagement.Application.Customers.Commands;
 using Nike.EventBus.Events;
+using Nike.EventBus.Handlers;
 using Nike.Mediator.Handlers;
 
 namespace Nike.CustomerManagement.Application.Customers.IntegrationEvents;

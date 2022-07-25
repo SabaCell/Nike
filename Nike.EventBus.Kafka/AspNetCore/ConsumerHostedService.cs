@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using Confluent.Kafka;
 using System.Threading;
 using System.Threading.Tasks;
-using Confluent.Kafka;
+using Nike.EventBus.Kafka.Model;
+using System.Collections.Generic;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nike.EventBus.Abstractions;
 using Nike.EventBus.Kafka.Extenstion;
-using Nike.EventBus.Kafka.Model;
-using Nike.Mediator.Handlers;
 
 namespace Nike.EventBus.Kafka.AspNetCore;
 
+[Obsolete(@"The ConsumerHostedService is no longer used. Please use <see cref='KafkaConsumerBackgroundService' /> instead from now!", true)]
 public class ConsumerHostedService : BackgroundService
 {
     private readonly IKafkaConsumerConnection _connection;
@@ -30,7 +28,7 @@ public class ConsumerHostedService : BackgroundService
         _logger = logger;
         _services = services;
         _connection = connection;
-        _topics = GetTopicDictionary();
+        _topics = TopicHelper.GetLiveTopics();
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
@@ -65,7 +63,7 @@ public class ConsumerHostedService : BackgroundService
                         $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
 
                     await _throttler.WaitAsync(stoppingToken);
-                    consumeResult.PublishToDomainAsync(_services, _logger,_throttler, stoppingToken);
+                    consumeResult.PublishToDomainAsync(_services, _logger, _throttler, stoppingToken);
 
                     consumer.StoreOffset(consumeResult.Result);
                 }
@@ -136,51 +134,5 @@ public class ConsumerHostedService : BackgroundService
         _logger.LogInformation($"Consumer {consumer.Name} has been constructed...");
 
         return consumer;
-    }
-
-    private Dictionary<string, Type> GetTopicDictionary()
-    {
-        var topics = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(x => x.GetTypes().Where(p =>
-                p.IsGenericType == false && IsSubclassOfRawGeneric(typeof(IntegrationEventHandler<>), p))).Distinct()
-            .ToList();
-
-        var results = new Dictionary<string, Type>();
-        foreach (var topic in topics)
-        {
-            var topicName = "";
-            var type = topic.BaseType?.GetGenericArguments();
-
-            if (type == null) continue;
-            var attribute = GetAttribute(type[0]);
-            topicName = attribute == null ? type[0].Name : attribute.TopicName;
-            results.Add(topicName, type[0]);
-        }
-
-        return results;
-    }
-
-    private bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
-    {
-        while (toCheck != null && toCheck != typeof(object))
-        {
-            var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-            if (generic == cur) return true;
-
-            toCheck = toCheck.BaseType;
-        }
-
-        return false;
-    }
-
-    private TopicAttribute GetAttribute(Type type)
-    {
-        var attributes = type.GetCustomAttributes();
-
-        foreach (var attribute in attributes)
-            if (attribute is TopicAttribute topicAttribute)
-                return topicAttribute;
-
-        return null;
     }
 }
