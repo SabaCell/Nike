@@ -11,7 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Nike.Mediator.Handlers;
 
-//TODO Remove it in the next version
+[Obsolete(@"Why comment this delegation?
+We had so problem in concurrency and storing unwanted entities
+So we implemented this works in a <i>IUnitOfWork</i> and you can use it on the next 
+", true)]
 public sealed class UnitOfWorkDelegatingHandler : IDelegatingHandler
 {
     private readonly ILogger<UnitOfWorkDelegatingHandler> _logger;

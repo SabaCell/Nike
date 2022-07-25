@@ -116,7 +116,7 @@ internal class Program
 
     private static void ConfigureMicroBus(IServiceCollection services)
     {
-        services.RegisterMicroBus(new BusBuilder().RegisterGlobalHandler<UnitOfWorkDelegatingHandler>()
+        services.RegisterMicroBus(new BusBuilder()
             .RegisterGlobalHandler<CacheInvalidationDelegatingHandler>()
             .RegisterEventHandler<NoMatchingRegistrationEvent, NoMatchingRegistrationEventHandler>()
             .RegisterHandlers(typeof(Program).Assembly));

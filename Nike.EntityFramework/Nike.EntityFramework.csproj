@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageVersion>1.1.0.4</PackageVersion>
+        <PackageVersion>1.1.0.4-preview.2</PackageVersion>
         <TargetFramework>net6.0</TargetFramework>
         <Copyright>SabaCell</Copyright>
         <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
@@ -12,10 +12,12 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.6"/>
+        <PackageReference Include="Enexure.MicroBus" Version="3.7.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Nike.Framework.Domain\Nike.Framework.Domain.csproj"/>
+        <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj"/>
     </ItemGroup>
 
 </Project>
