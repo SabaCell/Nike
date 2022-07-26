@@ -91,8 +91,6 @@ internal class TopicConsumer : IDisposable
         _connection.Config.PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin;
 
         var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
-            // Note: All handlers are called on the main .Consume thread.
-            // .SetValueDeserializer(new DefaultDeserializer<string>())
             .SetErrorHandler((_, e) =>
                 _logger.LogError($"TopicConsumer has error on Topic: ({topic}) {e.Code} - {e.Reason}"))
             .SetStatisticsHandler((_, json) =>
@@ -104,10 +102,6 @@ internal class TopicConsumer : IDisposable
             {
                 _logger.LogTrace($"Assigned partitions: [{string.Join(", ", partitions)}]");
 
-                // possibly manually specify start offsets or override the partition assignment provided by
-                // the consumer group by returning a list of topic/partition/offsets to assign to, e.g.:
-                // 
-                // return partitions.Select(tp => new TopicPartitionOffset(tp, externalOffsets[tp]));
             })
             .SetPartitionsRevokedHandler((c, partitions) =>
             {

@@ -33,13 +33,13 @@ public class EfUnitOfWork : IUnitOfWork
         try
         {
             _logger.LogTrace("Start Committing by publish before events...");
-            await PublishEventsAsync(CommitTime.BeforeCommit);
+            await PublishEventsAsync(CommitTime.BeforeCommit, cancellationToken);
 
             _logger.LogTrace("Apply all before events...");
             var result = await SaveChangeAsync(cancellationToken);
-            _logger.LogTrace("save all changes in database ...");
+            //_logger.LogTrace("save all changes in database ...");
 
-            await PublishEventsAsync(CommitTime.AfterCommit);
+            await PublishEventsAsync(CommitTime.AfterCommit, cancellationToken);
             _logger.LogTrace("applied all after events and finished");
             return result;
         }
@@ -65,7 +65,7 @@ public class EfUnitOfWork : IUnitOfWork
 
     public Task<int> SaveChangeAsync(CancellationToken cancellationToken = default)
     {
-        return _dbContext.SaveChangesAsync();
+        return _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task PublishEventsAsync(CommitTime commitTime = CommitTime.BeforeCommit | CommitTime.AfterCommit, CancellationToken cancellationToken = default)

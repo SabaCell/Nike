@@ -11,7 +11,7 @@ using Nike.EventBus.Kafka.Extenstion;
 
 namespace Nike.EventBus.Kafka.AspNetCore;
 
-[Obsolete(@"The ConsumerHostedService is no longer used. Please use <see cref='KafkaConsumerBackgroundService' /> instead from now!", true)]
+//[Obsolete(@"The ConsumerHostedService is no longer used. Please use <see cref='KafkaConsumerBackgroundService' /> instead from now!", true)]
 public class ConsumerHostedService : BackgroundService
 {
     private readonly IKafkaConsumerConnection _connection;

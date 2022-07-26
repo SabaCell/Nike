@@ -56,7 +56,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.EventBus.Mqtt", "Nike.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.EventBus.Redis", "Nike.EventBus.Redis\Nike.EventBus.Redis.csproj", "{11C9A437-5846-45E3-9EB0-574166FCE442}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7599}") = "Nike.Benchmark.ConsumerPerformance", "Nike.Benchmark.ConsumerPerformance\Nike.Benchmark.ConsumerPerformance.csproj", "{11C9A437-5846-45E3-9EB0-574166FCE442}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nike.Benchmark.ConsumerPerformance", "Nike.Benchmark.ConsumerPerformance\Nike.Benchmark.ConsumerPerformance.csproj", "{E47DDF0D-2CF1-4F1E-BBB6-D6227368905B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -164,10 +164,10 @@ Global
 		{BD58ECBD-B6F9-4EE5-9E8D-3C3E8C7F98DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD58ECBD-B6F9-4EE5-9E8D-3C3E8C7F98DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD58ECBD-B6F9-4EE5-9E8D-3C3E8C7F98DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{11C9A437-5846-45E3-9EB0-574166FCE442}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11C9A437-5846-45E3-9EB0-574166FCE442}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11C9A437-5846-45E3-9EB0-574166FCE442}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11C9A437-5846-45E3-9EB0-574166FCE442}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E47DDF0D-2CF1-4F1E-BBB6-D6227368905B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E47DDF0D-2CF1-4F1E-BBB6-D6227368905B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E47DDF0D-2CF1-4F1E-BBB6-D6227368905B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E47DDF0D-2CF1-4F1E-BBB6-D6227368905B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,7 +189,8 @@ Global
 		{BCE8EA84-D33C-479F-8D6E-F1B815F5AF32} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
 		{9B678E0C-4447-4848-BA68-8B4340431384} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
 		{BD58ECBD-B6F9-4EE5-9E8D-3C3E8C7F98DA} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
-		{11C9A437-5846-45E3-9EB0-574166FCE442} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
+		{4E9C9135-0E3F-445A-9CA6-FFDD94953628} = {94473427-470B-4654-8BD4-7FF0C2091FAA}
+		{E47DDF0D-2CF1-4F1E-BBB6-D6227368905B} = {65C20A32-B2BE-4B69-9742-B742C3E3AA9E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95B1279-A117-420E-931A-DEE26521BD82}
