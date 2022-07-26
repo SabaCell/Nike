@@ -16,7 +16,6 @@ namespace Nike.Benchmark.ConsumerPerformance.Handler
             _unitOfWork = unitOfWork;
 
         }
-
         public override async Task HandleAsync(MyRequestMessage2 @event)
         {
             var domain = new Message2AggregateRoot(@event.Identifier, @event.Name, @event.InstantiateAt,
