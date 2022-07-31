@@ -73,9 +73,14 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
         return query.AnyAsync();
     }
 
-    public Task<IQueryable<TEntity>> GetQueryable()
+    public IQueryable<TEntity> GetQueryable()
     {
-        return Task.FromResult(DbSet.AsQueryable());
+        return DbSet;
+    }
+
+    public IQueryable<TEntity> Pagination(int pageIndex, int pageSize)
+    {
+        return DbSet.Skip((pageIndex - 1) * pageSize).Take(pageSize);
     }
 
     public Task<List<TEntity>> GetAllAsync()
