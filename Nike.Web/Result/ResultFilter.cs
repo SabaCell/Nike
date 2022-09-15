@@ -40,7 +40,7 @@ public class ResultFilter : IResultFilter
             methodInfo.GetCustomAttributes(true).OfType<WrapResultAttribute>().FirstOrDefault()
             ?? methodInfo.DeclaringType?.GetTypeInfo().GetCustomAttributes(true).OfType<WrapResultAttribute>()
                 .FirstOrDefault()
-            ?? new WrapResultAttribute();
+            ?? new WrapResultAttribute(false);
 
         return wrapResultAttribute.WrapOnSuccess;
     }
