@@ -17,7 +17,7 @@ public interface IEventBusDispatcher : IDisposable
     void Publish(string exchange, string typeName, byte[] body);
     void Publish(string typeName, string message);
     Task PublishAsync<T>(T message, CancellationToken cancellationToken = default) where T : IntegrationEvent;
-
+        
     Task PublishAsync<T>(T message, string topic, CancellationToken cancellationToken = default)
         where T : IntegrationEvent;
 

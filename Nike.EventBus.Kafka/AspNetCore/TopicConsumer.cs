@@ -16,17 +16,17 @@ internal class TopicConsumer : IDisposable
     private readonly IMicroMediator _microMediator;
     private readonly Type _typeOfPayload;
     private readonly string _topic;
-    public TopicConsumer(IKafkaConsumerConnection connection, IMicroMediator microMediator, string topic, Type typeOfPayload, ILogger logger)
+
+    public TopicConsumer(IKafkaConsumerConnection connection, IMicroMediator microMediator, string topic,
+        Type typeOfPayload, ILogger logger)
     {
         _connection = connection;
         _microMediator = microMediator;
         _typeOfPayload = typeOfPayload;
         _logger = logger;
         _topic = topic;
-
-        _consumer = MakeConsumer(topic);
-        _consumer.Subscribe(topic);
-
+        _consumer = MakeConsumer(_topic);
+        _consumer.Subscribe(_topic);
         _logger.LogInformation($"Consumer {_consumer.Name} on topic [{topic}] has been constructed...");
     }
 
@@ -34,7 +34,7 @@ internal class TopicConsumer : IDisposable
     {
         return Task.Factory.StartNew(async () =>
         {
-            while (!cancellationToken.IsCancellationRequested)
+            while (true)
             {
                 try
                 {
@@ -65,7 +65,7 @@ internal class TopicConsumer : IDisposable
                 catch (OperationCanceledException ex) when (cancellationToken.IsCancellationRequested)
                 {
                     _logger.LogError(ex,
-                        $"(OperationCanceledException) Error occurred executing on Topic ({_topic}) => {nameof(_connection)}.");
+                        $"(OperationCanceledException) Error occurred executing on Topic ({_topic}) => {nameof(_connection)}) => {ex.Source} {ex.Message}. {ex.StackTrace}.");
                 }
                 catch (Exception ex)
                 {
@@ -78,7 +78,7 @@ internal class TopicConsumer : IDisposable
 
             _logger.LogWarning(
                 $"Stopping conusmer request has been raised on Topic ({_topic}) => IsCancellationRequested=[{cancellationToken.IsCancellationRequested}]");
-        }, cancellationToken);
+        }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
     public void Dispose()
@@ -116,5 +116,4 @@ internal class TopicConsumer : IDisposable
             .Build();
         return consumer;
     }
-
 }
