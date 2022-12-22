@@ -20,7 +20,6 @@ public class EventStoreRepository<TEntity, TKey> : IRepository<TEntity, TKey>
     public async Task AddAsync(TEntity aggregateRoot)
     {
         var events = EventDataFactory.CreateFromDomainEvents(aggregateRoot.GetChanges());
-
         var streamId = GenerateStreamId(aggregateRoot.Id);
         await _connection.AppendToStreamAsync(streamId, ExpectedVersion.Any, events);
     }

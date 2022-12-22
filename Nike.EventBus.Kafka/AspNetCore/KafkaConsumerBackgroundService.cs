@@ -17,7 +17,8 @@ public class KafkaConsumerBackgroundService : BackgroundService
     private readonly ILogger<KafkaConsumerBackgroundService> _logger;
     private readonly Dictionary<string, Type> _topics;
 
-    public KafkaConsumerBackgroundService(IKafkaConsumerConnection connection, IServiceProvider  serviceProvider, ILogger<KafkaConsumerBackgroundService> logger)
+    public KafkaConsumerBackgroundService(IKafkaConsumerConnection connection, IServiceProvider serviceProvider,
+        ILogger<KafkaConsumerBackgroundService> logger)
     {
         _connection = connection;
         _serviceProvider = serviceProvider;
@@ -25,6 +26,7 @@ public class KafkaConsumerBackgroundService : BackgroundService
         _logger = logger;
         _topics = TopicHelper.GetLiveTopics();
     }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
@@ -33,14 +35,13 @@ public class KafkaConsumerBackgroundService : BackgroundService
 
         foreach (var topic in _topics)
         {
-            
             var scope = _serviceProvider.CreateScope();
             var microMediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
             var consumer = new TopicConsumer(_connection, microMediator, topic.Key, topic.Value, _logger);
             consumerTasks.Add(consumer.ExecuteAsync(stoppingToken));
         }
 
-        await Task.WhenAll(consumerTasks.ToArray());
+        Task.WhenAll(consumerTasks.ToArray());
         _logger.LogWarning(
             $"Stopping All conusmers request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
     }
