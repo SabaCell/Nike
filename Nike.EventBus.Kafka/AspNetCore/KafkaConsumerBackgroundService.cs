@@ -27,22 +27,18 @@ public class KafkaConsumerBackgroundService : BackgroundService
         _topics = TopicHelper.GetLiveTopics();
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
-
         var consumerTasks = new List<Task>();
-
         foreach (var topic in _topics)
         {
-            var scope = _serviceProvider.CreateScope();
-            var microMediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
-            var consumer = new TopicConsumer(_connection, microMediator, topic.Key, topic.Value, _logger);
+            var consumer = new TopicConsumer(_connection, _serviceProvider, topic.Key, topic.Value, _logger);
             consumerTasks.Add(consumer.ExecuteAsync(stoppingToken));
         }
-
-        Task.WhenAll(consumerTasks.ToArray());
-        _logger.LogWarning(
-            $"Stopping All conusmers request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
+        return Task.WhenAll(consumerTasks.ToArray());
+        // _logger.LogWarning(
+        //     $"Stopping All conusmers request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");
+        // return Task.CompletedTask;
     }
 }

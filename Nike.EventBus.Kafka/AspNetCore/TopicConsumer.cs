@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using Enexure.MicroBus;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Nike.EventBus.Kafka.AspNetCore;
@@ -12,16 +13,20 @@ internal class TopicConsumer : IDisposable
 {
     private readonly ILogger _logger;
     private readonly IKafkaConsumerConnection _connection;
+    private readonly IServiceProvider _serviceProvider;
+
     private readonly IConsumer<Ignore, string> _consumer;
-    private readonly IMicroMediator _microMediator;
+
+    // private readonly IMicroMediator _microMediator;
     private readonly Type _typeOfPayload;
     private readonly string _topic;
 
-    public TopicConsumer(IKafkaConsumerConnection connection, IMicroMediator microMediator, string topic,
+    public TopicConsumer(IKafkaConsumerConnection connection, IServiceProvider serviceProvider, string topic,
         Type typeOfPayload, ILogger logger)
     {
         _connection = connection;
-        _microMediator = microMediator;
+        _serviceProvider = serviceProvider;
+
         _typeOfPayload = typeOfPayload;
         _logger = logger;
         _topic = topic;
@@ -49,13 +54,18 @@ internal class TopicConsumer : IDisposable
                     if (result.Message == null)
                     {
                         _logger.LogTrace($"CONSUMED NULL RESULT.MESSAGE! ON TOPIC:({_consumer.Subscription[0]})");
+                        await Task.Delay(50, cancellationToken);
                         continue;
                     }
 
                     _logger.LogTrace($"CONSUMED A RESULT SUCCESSFULLY ON TOPIC:({_consumer.Subscription[0]})");
 
                     var message = JsonSerializer.Deserialize(result.Message.Value, _typeOfPayload);
-                    await _microMediator.PublishAsync(message);
+
+                    using var scope = _serviceProvider.CreateScope();
+                    var microMediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
+                    await microMediator.PublishAsync(message);
+                    await Task.Delay(2, cancellationToken);
                 }
                 catch (TaskCanceledException ex) when (cancellationToken.IsCancellationRequested)
                 {
