@@ -45,7 +45,7 @@ public class GlobalExceptionFilter : IExceptionFilter
     private void HandleWrapException(ExceptionContext context)
     {
         context.HttpContext.Response.StatusCode = GetStatusCode(context);
-        var unathorized = context.HttpContext.Response.StatusCode == (int) HttpStatusCode.Unauthorized;
+        var unathorized = context.HttpContext.Response.StatusCode == (int)HttpStatusCode.Unauthorized;
 
         context.Result = new ObjectResult(
             new ApiResponse(_errorInfoBuilder.BuildForException(context.Exception, _serviceInfo?.NameVersion),
@@ -66,19 +66,21 @@ public class GlobalExceptionFilter : IExceptionFilter
 
         if (context.Exception is AuthorizationException)
             return context.HttpContext.User.Identity.IsAuthenticated
-                ? (int) HttpStatusCode.Forbidden
-                : (int) HttpStatusCode.Unauthorized;
+                ? (int)HttpStatusCode.Forbidden
+                : (int)HttpStatusCode.Unauthorized;
 
-        if (context.Exception is ValidationException) return (int) HttpStatusCode.BadRequest;
+        if (context.Exception is ValidationException) return (int)HttpStatusCode.BadRequest;
 
-        if (context.Exception is EntityNotFoundException) return (int) HttpStatusCode.NotFound;
+        if (context.Exception is EntityNotFoundException) return (int)HttpStatusCode.NotFound;
 
-        if (context.Exception is InvalidOperationException) return (int) HttpStatusCode.BadRequest;
+        if (context.Exception is InvalidOperationException) return (int)HttpStatusCode.BadRequest;
 
-        if (context.Exception is DuplicateRequestException) return (int) HttpStatusCode.BadRequest;
+        if (context.Exception is DuplicateRequestException) return (int)HttpStatusCode.BadRequest;
 
+        if (context.Exception is GeneralException exception)
+            return exception.ErrorCode ?? (int)HttpStatusCode.InternalServerError;
         // کد خطا، نبود؟
-        return (int) HttpStatusCode.InternalServerError;
+        return (int)HttpStatusCode.InternalServerError;
     }
 
     private void HandleLog(Exception exception)
