@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Microsoft.Extensions.Logging;
+
 
 namespace Nike.Exceptions;
 
@@ -18,7 +20,8 @@ public class ValidationException : GeneralException
     /// <param name="message">The error message</param>
     /// <param name="validationErrors">
     ///     The list of <</param>
-    public ValidationException(string message, IList<ValidationResult> validationErrors) : base(message)
+    public ValidationException(string message, IList<ValidationResult> validationErrors) : base(message, "",
+        HttpStatusCode.BadRequest)
     {
         ValidationErrors = validationErrors ?? new List<ValidationResult>();
         ErrorCode = ExceptionCode;
@@ -30,8 +33,9 @@ public class ValidationException : GeneralException
     /// <param name="message">The error message</param>
     /// <param name="innerException">The underlying exception which caused this instance of ParooValidationException</param>
     public ValidationException(string message, Exception innerException = null) : base(message, "",
-        innerException)
+        innerException, HttpStatusCode.BadRequest)
     {
+        ValidationErrors =  new List<ValidationResult>(){new(message)};
         ErrorCode = ExceptionCode;
         Level = LogLevel.Warning;
     }

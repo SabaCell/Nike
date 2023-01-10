@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+
 
 namespace Nike.Exceptions;
 
@@ -12,13 +14,14 @@ public class DuplicateRequestException : GeneralException
     public const int ExceptionCode = 3;
 
     public DuplicateRequestException(object requestData, string message, string technicalMessage = "") : base(
-        message, technicalMessage, ExceptionCode)
+        message, technicalMessage, HttpStatusCode.Conflict, ExceptionCode)
     {
         RequestData = requestData;
     }
 
     public DuplicateRequestException(object requestData, string message, string technicalMessage,
-        Exception innerException) : base(message, technicalMessage, innerException, ExceptionCode)
+        Exception innerException) : base(message, technicalMessage, innerException, HttpStatusCode.Conflict,
+        ExceptionCode)
     {
         RequestData = requestData;
     }

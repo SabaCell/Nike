@@ -69,16 +69,10 @@ public class GlobalExceptionFilter : IExceptionFilter
                 ? (int)HttpStatusCode.Forbidden
                 : (int)HttpStatusCode.Unauthorized;
 
-        if (context.Exception is ValidationException) return (int)HttpStatusCode.BadRequest;
 
-        if (context.Exception is EntityNotFoundException) return (int)HttpStatusCode.NotFound;
-
-        if (context.Exception is InvalidOperationException) return (int)HttpStatusCode.BadRequest;
-
-        if (context.Exception is DuplicateRequestException) return (int)HttpStatusCode.BadRequest;
 
         if (context.Exception is GeneralException exception)
-            return exception.ErrorCode ?? (int)HttpStatusCode.InternalServerError;
+            return (int)exception.StatusCode;
         // کد خطا، نبود؟
         return (int)HttpStatusCode.InternalServerError;
     }
