@@ -23,6 +23,7 @@ namespace Nike.Swagger
             foreach (var description in _provider.ApiVersionDescriptions)
             {
                 options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
+                options.SchemaFilter<EnumSchemaFilter>();
                 //     options.CustomSchemaIds(x => x.FullName);
                 options.CustomOperationIds(apiDescription =>
                     apiDescription.TryGetMethodInfo(out var apiMethodInfo)

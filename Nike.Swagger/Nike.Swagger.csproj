@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageVersion>1.1.0.3</PackageVersion>
+        <PackageVersion>1.1.0.4</PackageVersion>
         <TargetFramework>net6.0</TargetFramework>
         <Copyright>SabaCell</Copyright>
         <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
@@ -11,10 +11,10 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.3"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.3" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
 
 </Project>
