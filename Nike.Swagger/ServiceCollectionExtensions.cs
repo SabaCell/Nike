@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
         });
         serviceCollection.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         serviceCollection.AddSwaggerGen(options);
-        serviceCollection.AddSwaggerGenNewtonsoftSupport();
+   //     serviceCollection.AddSwaggerGenNewtonsoftSupport();
         return serviceCollection;
     }
 }
