@@ -73,15 +73,6 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
         return query.AnyAsync();
     }
 
-    public IQueryable<TEntity> GetQueryable()
-    {
-        return DbSet;
-    }
-
-    public IQueryable<TEntity> Pagination(int pageIndex, int pageSize)
-    {
-        return DbSet.Skip((pageIndex - 1) * pageSize).Take(pageSize);
-    }
 
     public Task<List<TEntity>> GetAllAsync()
     {
@@ -92,7 +83,8 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         var query = DbSet.AsQueryable();
 
-        query = query.Where(specification.Criteria);
+        if (specification.Criteria != null)
+            query = query.Where(specification.Criteria);
 
         if (specification is IRelationalSpecification<TEntity> relationalSpecification)
             query = query.Specify(relationalSpecification);

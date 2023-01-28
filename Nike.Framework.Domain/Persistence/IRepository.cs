@@ -18,9 +18,9 @@ public interface IRepository<TEntity> where TEntity : class
     void Delete(TEntity entity);
     Task<TEntity> GetSingleAsync(ISpecification<TEntity> specification);
     Task<List<TEntity>> GetAllAsync();
-    IQueryable<TEntity> GetQueryable();
+    // IQueryable<TEntity> GetQueryable();
 
-    IQueryable<TEntity> Pagination(int pageIndex, int pageSize);
+    // IQueryable<TEntity> Pagination(int pageIndex, int pageSize);
     IAsyncEnumerable<TEntity> GetAsyncEnumerable(ISpecification<TEntity> specification);
     Task<IEnumerable<TEntity>> GetAsync(ISpecification<TEntity> specification);
     Task<bool> IsExistAsync(ISpecification<TEntity> specification);
