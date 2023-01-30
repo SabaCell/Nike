@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Nike.Framework.Domain.EventSourcing;
+namespace Nike.Framework.Domain.EventSourcing{
 
 public abstract class AggregateRoot<T> : EntityBase<T>, IAggregateRoot where T : IEquatable<T>
 {
@@ -39,4 +39,5 @@ public abstract class AggregateRoot<T> : EntityBase<T>, IAggregateRoot where T :
     {
         this.AsDynamic().When((dynamic) @event);
     }
+}
 }

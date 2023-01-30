@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Nike.Framework.Domain.EventSourcing.Equality;
+namespace Nike.Framework.Domain.EventSourcing.Equality{
 
 #region Usings
 
@@ -921,4 +921,5 @@ public class EqualsBuilder
     {
         return (fieldInfo.Attributes & FieldAttributes.NotSerialized) == FieldAttributes.NotSerialized;
     }
+}
 }

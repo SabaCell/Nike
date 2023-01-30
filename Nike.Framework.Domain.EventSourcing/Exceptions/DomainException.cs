@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Nike.Framework.Domain.EventSourcing.Exceptions;
+namespace Nike.Framework.Domain.EventSourcing.Exceptions{
 
 [Serializable]
 public class DomainException : Exception
@@ -24,4 +24,5 @@ public class DomainException : Exception
     }
 
     public Type AggregateRootType { get; }
+}
 }

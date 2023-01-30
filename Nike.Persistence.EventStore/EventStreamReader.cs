@@ -2,23 +2,24 @@
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 
-namespace Nike.Persistence.EventStore;
-
-internal static class EventStreamReader
+namespace Nike.Persistence.EventStore
 {
-    public static async Task<List<ResolvedEvent>> Read(IEventStoreConnection connection, string streamId, int start,
-        int end)
+    internal static class EventStreamReader
     {
-        var streamEvents = new List<ResolvedEvent>();
-        StreamEventsSlice currentSlice;
-        long nextSliceStart = start;
-        do
+        public static async Task<List<ResolvedEvent>> Read(IEventStoreConnection connection, string streamId, int start,
+            int end)
         {
-            currentSlice = await connection.ReadStreamEventsForwardAsync(streamId, nextSliceStart, 200, false);
-            nextSliceStart = currentSlice.NextEventNumber;
-            streamEvents.AddRange(currentSlice.Events);
-        } while (!currentSlice.IsEndOfStream);
+            var streamEvents = new List<ResolvedEvent>();
+            StreamEventsSlice currentSlice;
+            long nextSliceStart = start;
+            do
+            {
+                currentSlice = await connection.ReadStreamEventsForwardAsync(streamId, nextSliceStart, 200, false);
+                nextSliceStart = currentSlice.NextEventNumber;
+                streamEvents.AddRange(currentSlice.Events);
+            } while (!currentSlice.IsEndOfStream);
 
-        return streamEvents;
+            return streamEvents;
+        }
     }
 }

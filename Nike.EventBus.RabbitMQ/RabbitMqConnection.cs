@@ -1,19 +1,20 @@
 ﻿using EasyNetQ;
 
-namespace Nike.EventBus.RabbitMQ;
-
-public class RabbitMqConnection : IRabbitMqConnection
+namespace Nike.EventBus.RabbitMQ
 {
-    public RabbitMqConnection(string rabbitMqConnectionString)
+    public class RabbitMqConnection : IRabbitMqConnection
     {
-        Bus = RabbitHutch.CreateBus(rabbitMqConnectionString, r =>
+        public RabbitMqConnection(string rabbitMqConnectionString)
         {
-            r.Register<ITypeNameSerializer, FullNameCustomTypeNameSerializer>();
-            r.Register<ISerializer, ProtobufSerializer>();
-        });
+            Bus = RabbitHutch.CreateBus(rabbitMqConnectionString, r =>
+            {
+                r.Register<ITypeNameSerializer, FullNameCustomTypeNameSerializer>();
+                r.Register<ISerializer, ProtobufSerializer>();
+            });
+        }
+
+        public IBus Bus { get; }
+
+        public bool IsConnected => Bus.Advanced.IsConnected;
     }
-
-    public IBus Bus { get; }
-
-    public bool IsConnected => Bus.Advanced.IsConnected;
 }

@@ -1,9 +1,10 @@
 using System;
 
-namespace Nike.Framework.Domain;
-
-public interface IAuditedEntity
+namespace Nike.Framework.Domain
 {
-    DateTime CreatedAt { get; }
-    DateTime UpdatedAt { get; }
+    public interface IAuditedEntity
+    {
+        DateTime CreatedAt { get; }
+        DateTime UpdatedAt { get; }
+    }
 }

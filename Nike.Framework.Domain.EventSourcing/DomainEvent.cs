@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nike.Framework.Domain.EventSourcing;
+namespace Nike.Framework.Domain.EventSourcing{
 
 public abstract class DomainEvent
 {
@@ -12,4 +12,5 @@ public abstract class DomainEvent
 
     public Guid EventId { get; }
     public DateTime OccuredAt { get; }
+}
 }

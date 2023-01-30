@@ -5,19 +5,20 @@ using EventStore.ClientAPI;
 using Newtonsoft.Json;
 using Nike.Framework.Domain.EventSourcing;
 
-namespace Nike.Persistence.EventStore;
-
-internal static class DomainEventFactory
+namespace Nike.Persistence.EventStore
 {
-    public static List<DomainEvent> Create(List<ResolvedEvent> events, IEventTypeResolver typeResolver)
+    internal static class DomainEventFactory
     {
-        return events.Select(a => Create(a, typeResolver)).ToList();
-    }
+        public static List<DomainEvent> Create(List<ResolvedEvent> events, IEventTypeResolver typeResolver)
+        {
+            return events.Select(a => Create(a, typeResolver)).ToList();
+        }
 
-    public static DomainEvent Create(ResolvedEvent @event, IEventTypeResolver typeResolver)
-    {
-        var type = typeResolver.GetType(@event.Event.EventType);
-        var body = Encoding.UTF8.GetString(@event.Event.Data);
-        return (DomainEvent) JsonConvert.DeserializeObject(body, type);
+        public static DomainEvent Create(ResolvedEvent @event, IEventTypeResolver typeResolver)
+        {
+            var type = typeResolver.GetType(@event.Event.EventType);
+            var body = Encoding.UTF8.GetString(@event.Event.Data);
+            return (DomainEvent)JsonConvert.DeserializeObject(body, type);
+        }
     }
 }

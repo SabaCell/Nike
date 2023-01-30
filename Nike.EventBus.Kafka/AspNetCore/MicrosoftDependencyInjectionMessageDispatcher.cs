@@ -1,4 +1,4 @@
-namespace Nike.EventBus.Kafka.AspNetCore;
+ 
 
 
 // public class MicrosoftDependencyInjectionMessageDispatcher : IAutoSubscriberMessageDispatcher

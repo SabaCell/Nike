@@ -6,7 +6,7 @@ using Nike.CustomerManagement.Infrastructure.Services.Customers;
 using Nike.Framework.Domain;
 using Nike.Framework.Domain.Persistence;
 
-namespace Nike.CustomerManagement.Application.Customers.Commands;
+namespace Nike.CustomerManagement.Application.Customers.Commands{
 
 public class RegisterCustomerCommand : ICommand
 {
@@ -50,4 +50,5 @@ public class RegisterCustomerCommandHandler : ICommandHandler<RegisterCustomerCo
 
         return new Customer(fullName, nationalCode, _clock);
     }
+}
 }

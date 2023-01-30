@@ -1,20 +1,21 @@
 ﻿using Nike.Framework.Domain.Events;
 
-namespace Nike.Framework.Domain;
-
-public interface IAggregateRoot
+namespace Nike.Framework.Domain
 {
-}
-
-public interface IAggregateRoot<out TPrimaryKey> : IAggregateRoot, IEntity<TPrimaryKey>
-{
-}
-
-public class
-    AggregateRoot<TPrimaryKey> : Entity<TPrimaryKey>, IAggregateRoot<TPrimaryKey>
-{
-    protected void AddEvent(DomainEvent domainEvent, CommitTime commitTime = CommitTime.BeforeCommit)
+    public interface IAggregateRoot
     {
-        DomainEventTracker.AddEvent(domainEvent, commitTime);
+    }
+
+    public interface IAggregateRoot<out TPrimaryKey> : IAggregateRoot, IEntity<TPrimaryKey>
+    {
+    }
+
+    public class
+        AggregateRoot<TPrimaryKey> : Entity<TPrimaryKey>, IAggregateRoot<TPrimaryKey>
+    {
+        protected void AddEvent(DomainEvent domainEvent, CommitTime commitTime = CommitTime.BeforeCommit)
+        {
+            DomainEventTracker.AddEvent(domainEvent, commitTime);
+        }
     }
 }

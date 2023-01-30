@@ -1,4 +1,4 @@
-﻿namespace Nike.Framework.Domain.EventSourcing;
+﻿namespace Nike.Framework.Domain.EventSourcing{
 
 public static class PrivateReflectionDynamicObjectExtensions
 {
@@ -6,4 +6,5 @@ public static class PrivateReflectionDynamicObjectExtensions
     {
         return PrivateReflectionDynamicObject.WrapObjectIfNeeded(o);
     }
+}
 }

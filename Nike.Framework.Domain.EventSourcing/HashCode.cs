@@ -1,59 +1,60 @@
 ﻿using System.Collections.Generic;
 
-namespace Nike.Framework.Domain.EventSourcing;
-
-public struct HashCode
+namespace Nike.Framework.Domain.EventSourcing
 {
-    public const int InitialValue = 31;
-
-    public const int MultiplyerValue = 59;
-
-    public const int AlternativeMultiplyerValue = 114;
-
-    private readonly int hashCode;
-
-    public HashCode(int hashCode)
+    public struct HashCode
     {
-        this.hashCode = hashCode;
-    }
+        public const int InitialValue = 31;
 
-    public static HashCode Start { get; } = new(InitialValue);
+        public const int MultiplyerValue = 59;
 
-    public static implicit operator int(HashCode hashCode)
-    {
-        return hashCode.GetHashCode();
-    }
+        public const int AlternativeMultiplyerValue = 114;
 
-    public HashCode WithHash<T>(T item, bool useAlternativeMultiplyerValue = false)
-    {
-        var hashValue = EqualityComparer<T>.Default.GetHashCode(item);
-        unchecked
+        private readonly int hashCode;
+
+        public HashCode(int hashCode)
         {
-            var multiplyerValue = useAlternativeMultiplyerValue ? AlternativeMultiplyerValue : MultiplyerValue;
-            hashValue += hashCode * multiplyerValue;
+            this.hashCode = hashCode;
         }
 
-        var result = new HashCode(hashValue);
-        return result;
-    }
+        public static HashCode Start { get; } = new HashCode(InitialValue);
 
-    public HashCode WithHashProperties<T>(T item, bool useAlternativeMultiplyer = false,
-        bool changeMultiplyerValues = false)
-    {
-        var properties = GetType().GetProperties();
-        var result = this;
-        foreach (var property in properties)
+        public static implicit operator int(HashCode hashCode)
         {
-            var obj = property.GetValue(item);
-            result = result.WithHash(obj, useAlternativeMultiplyer);
-            if (changeMultiplyerValues) useAlternativeMultiplyer = !useAlternativeMultiplyer;
+            return hashCode.GetHashCode();
         }
 
-        return result;
-    }
+        public HashCode WithHash<T>(T item, bool useAlternativeMultiplyerValue = false)
+        {
+            var hashValue = EqualityComparer<T>.Default.GetHashCode(item);
+            unchecked
+            {
+                var multiplyerValue = useAlternativeMultiplyerValue ? AlternativeMultiplyerValue : MultiplyerValue;
+                hashValue += hashCode * multiplyerValue;
+            }
 
-    public override int GetHashCode()
-    {
-        return hashCode;
+            var result = new HashCode(hashValue);
+            return result;
+        }
+
+        public HashCode WithHashProperties<T>(T item, bool useAlternativeMultiplyer = false,
+            bool changeMultiplyerValues = false)
+        {
+            var properties = GetType().GetProperties();
+            var result = this;
+            foreach (var property in properties)
+            {
+                var obj = property.GetValue(item);
+                result = result.WithHash(obj, useAlternativeMultiplyer);
+                if (changeMultiplyerValues) useAlternativeMultiplyer = !useAlternativeMultiplyer;
+            }
+
+            return result;
+        }
+
+        public override int GetHashCode()
+        {
+            return hashCode;
+        }
     }
 }

@@ -3,44 +3,45 @@ using Nike.CustomerManagement.Domain.Customers.Exception;
 using Nike.CustomerManagement.Domain.Customers.ValueObjects;
 using Nike.Framework.Domain;
 
-namespace Nike.CustomerManagement.Domain.Customers;
-
-public class Customer : AggregateRoot<Guid>
+namespace Nike.CustomerManagement.Domain.Customers
 {
-    /// <inheritdoc />
-    public Customer(FullName fullName, NationalCode nationalCode, IClock clock)
+    public class Customer : AggregateRoot<Guid>
     {
-        Id = Guid.NewGuid();
-        FullName = fullName;
-        NationalCode = nationalCode;
-        IsActive = true;
-        CreatedAt = clock.Now();
-    }
+        /// <inheritdoc />
+        public Customer(FullName fullName, NationalCode nationalCode, IClock clock)
+        {
+            Id = Guid.NewGuid();
+            FullName = fullName;
+            NationalCode = nationalCode;
+            IsActive = true;
+            CreatedAt = clock.Now();
+        }
 
-    // FOR ORM!
-    private Customer()
-    {
-    }
+        // FOR ORM!
+        private Customer()
+        {
+        }
 
-    public FullName FullName { get; }
+        public FullName FullName { get; }
 
-    public NationalCode NationalCode { get; }
+        public NationalCode NationalCode { get; }
 
-    public bool IsActive { get; private set; }
+        public bool IsActive { get; private set; }
 
-    public void Deactive()
-    {
-        if (!IsActive)
-            throw new CustomerAlreadyDeactivatedException();
+        public void Deactive()
+        {
+            if (!IsActive)
+                throw new CustomerAlreadyDeactivatedException();
 
-        IsActive = false;
-    }
+            IsActive = false;
+        }
 
-    public void Active()
-    {
-        if (IsActive)
-            throw new CustomerAlreadyActivatedException();
+        public void Active()
+        {
+            if (IsActive)
+                throw new CustomerAlreadyActivatedException();
 
-        IsActive = true;
+            IsActive = true;
+        }
     }
 }

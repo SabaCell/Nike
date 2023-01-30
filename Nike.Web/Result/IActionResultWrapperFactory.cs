@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Nike.Web.Result;
-
-public interface IActionResultWrapperFactory
+namespace Nike.Web.Result
 {
-    IActionResultWrapper CreateFor(ResultExecutingContext actionResult);
+    public interface IActionResultWrapperFactory
+    {
+        IActionResultWrapper CreateFor(ResultExecutingContext actionResult);
+    }
 }

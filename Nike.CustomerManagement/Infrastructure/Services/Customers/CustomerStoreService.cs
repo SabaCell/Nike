@@ -3,7 +3,7 @@ using Nest;
 using Nike.CustomerManagement.Domain.Customers;
 using Nike.CustomerManagement.Infrastructure.Services.Customers.QueryModels;
 
-namespace Nike.CustomerManagement.Infrastructure.Services.Customers;
+namespace Nike.CustomerManagement.Infrastructure.Services.Customers{
 
 public class CustomerStoreService : ICustomerStoreService
 {
@@ -34,4 +34,5 @@ public class CustomerStoreService : ICustomerStoreService
                 .Index(IndexName)
                 .Doc(queryModel));
     }
+}
 }

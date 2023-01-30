@@ -22,110 +22,108 @@ using Nike.Framework.Domain.Persistence;
 using Nike.Mediator.Handlers;
 using Nike.Redis.Microsoft.DependencyInjection;
 
-namespace Nike.CustomerManagement;
-
-internal class Program
+namespace Nike.CustomerManagement
 {
-    private static async Task Main(string[] args)
+    internal class Program
     {
-        var host = CreateHostBuilder(args).Build();
-
-        var scop = host.Services.CreateScope();
-
-        var bus = scop.ServiceProvider.GetService<IMicroMediator>();
-        var I = 1;
-        while (true)
+        private static async Task Main(string[] args)
         {
-            var command = new RegisterCustomerCommand
+            var host = CreateHostBuilder(args).Build();
+
+            var scop = host.Services.CreateScope();
+
+            var bus = scop.ServiceProvider.GetService<IMicroMediator>();
+            var I = 1;
+            while (true)
             {
-                FirstName = $"Name {I}",
-                LastName = $"Name {I}",
-                NationalCode = I.ToString()
-            };
-            bus.SendAsync(command);
-            Thread.Sleep(1);
+                var command = new RegisterCustomerCommand
+                {
+                    FirstName = $"Name {I}",
+                    LastName = $"Name {I}",
+                    NationalCode = I.ToString()
+                };
+                bus.SendAsync(command);
+                Thread.Sleep(1);
+            }
+
+            host.Run();
         }
-        host.Run();
+
+        private static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                })
+                .ConfigureServices(Configuration);
+        }
+
+        private static void Configuration(HostBuilderContext hostContext, IServiceCollection services)
+        {
+            ConfigureRedis(hostContext, services);
+            ConfigureElasticSearch(hostContext, services);
+            ConfigureKafka(hostContext, services);
+            ConfigureEntityFrameWork(hostContext, services);
+            ConfigureMicroBus(services);
+            ConfigureStoreServices(services);
+
+            services.AddSingleton<IClock, SystemClock>();
+            //  services.AddHostedService<ConsumerHostedService>();
+        }
+
+
+        #region PrivateMethods
+
+        private static void ConfigureRedis(HostBuilderContext hostContext, IServiceCollection services)
+        {
+            services.AddRedis(hostContext.Configuration.GetSection("Cache").Get<RedisConfig>());
+        }
+
+        private static void ConfigureElasticSearch(HostBuilderContext hostContext, IServiceCollection services)
+        {
+            var configuration = hostContext.Configuration.GetSection("ElasticSearch").Get<ElasticSearchConfiguration>();
+            services.AddElasticSearch(configuration);
+        }
+
+        private static void ConfigureKafka(HostBuilderContext hostContext, IServiceCollection services)
+        {
+            var busConfig = hostContext.Configuration.GetSection("EventBus").Get<EventBusConfig>();
+            services.AddKafkaProducer(busConfig.ConnectionString);
+            services.AddKafkaConsumer(busConfig.ConnectionString, typeof(Program).Namespace);
+        }
+
+        private static void ConfigureEntityFrameWork(HostBuilderContext hostContext, IServiceCollection services)
+        {
+            services.AddEntityFrameworkSqlServer()
+                .AddEntityFrameworkUnitOfWork()
+                .AddEntityFrameworkDefaultRepository()
+                .AddDbContext<DatabaseContext>(options =>
+                {
+                    options.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection"),
+                        sqlOptions =>
+                        {
+                            sqlOptions.MigrationsAssembly(typeof(Program).Assembly.GetName().Name);
+                            sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
+                        });
+                })
+                .AddScoped<IDbContextAccessor>(s => new DbContextAccessor(s.GetRequiredService<DatabaseContext>()));
+        }
+
+        private static void ConfigureMicroBus(IServiceCollection services)
+        {
+            services.RegisterMicroBus(new BusBuilder()
+                .RegisterGlobalHandler<CacheInvalidationDelegatingHandler>()
+                .RegisterEventHandler<NoMatchingRegistrationEvent, NoMatchingRegistrationEventHandler>()
+                .RegisterHandlers(typeof(Program).Assembly));
+        }
+
+        private static void ConfigureStoreServices(IServiceCollection services)
+        {
+            services.AddTransient<ICustomerStoreService, CustomerStoreService>();
+        }
+
+        #endregion
     }
-
-    private static IHostBuilder CreateHostBuilder(string[] args)
-    {
-        return Host.CreateDefaultBuilder(args)
-            .ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.AddConsole();
-            })
-            .ConfigureServices(Configuration);
-    }
-
-    private static void Configuration(HostBuilderContext hostContext, IServiceCollection services)
-    {
-        ConfigureRedis(hostContext, services);
-        ConfigureElasticSearch(hostContext, services);
-        ConfigureKafka(hostContext, services);
-        ConfigureEntityFrameWork(hostContext, services);
-        ConfigureMicroBus(services);
-        ConfigureStoreServices(services);
-
-        services.AddSingleton<IClock, SystemClock>();
-        //  services.AddHostedService<ConsumerHostedService>();
-
-    
-    }
-
-
-    #region PrivateMethods
-
-    private static void ConfigureRedis(HostBuilderContext hostContext, IServiceCollection services)
-    {
-        services.AddRedis(hostContext.Configuration.GetSection("Cache").Get<RedisConfig>());
-    }
-
-    private static void ConfigureElasticSearch(HostBuilderContext hostContext, IServiceCollection services)
-    {
-        var configuration = hostContext.Configuration.GetSection("ElasticSearch").Get<ElasticSearchConfiguration>();
-        services.AddElasticSearch(configuration);
-    }
-
-    private static void ConfigureKafka(HostBuilderContext hostContext, IServiceCollection services)
-    {
-        var busConfig = hostContext.Configuration.GetSection("EventBus").Get<EventBusConfig>();
-        services.AddKafkaProducer(busConfig.ConnectionString);
-        services.AddKafkaConsumer(busConfig.ConnectionString, typeof(Program).Namespace);
-    }
-
-    private static void ConfigureEntityFrameWork(HostBuilderContext hostContext, IServiceCollection services)
-    {
-
-        services.AddEntityFrameworkSqlServer()
-            .AddEntityFrameworkUnitOfWork()
-            .AddEntityFrameworkDefaultRepository()
-            .AddDbContext<DatabaseContext>(options =>
-            {
-                options.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection"),
-                    sqlOptions =>
-                    {
-                        sqlOptions.MigrationsAssembly(typeof(Program).Assembly.GetName().Name);
-                        sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
-                    });
-            })
-            .AddScoped<IDbContextAccessor>(s => new DbContextAccessor(s.GetRequiredService<DatabaseContext>()));
-
-    }
-
-    private static void ConfigureMicroBus(IServiceCollection services)
-    {
-        services.RegisterMicroBus(new BusBuilder()
-            .RegisterGlobalHandler<CacheInvalidationDelegatingHandler>()
-            .RegisterEventHandler<NoMatchingRegistrationEvent, NoMatchingRegistrationEventHandler>()
-            .RegisterHandlers(typeof(Program).Assembly));
-    }
-
-    private static void ConfigureStoreServices(IServiceCollection services)
-    {
-        services.AddTransient<ICustomerStoreService, CustomerStoreService>();
-    }
-
-    #endregion
 }

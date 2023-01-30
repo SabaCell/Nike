@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Nike.EventBus.Events;
-
-public class IntegrationEvent
+namespace Nike.EventBus.Events
 {
-    public IntegrationEvent()
+    public class IntegrationEvent
     {
-        Id = Guid.NewGuid();
-        CreationAt = DateTime.Now;
+        public IntegrationEvent()
+        {
+            Id = Guid.NewGuid();
+            CreationAt = DateTime.Now;
+        }
+
+        public IntegrationEvent(Guid id, DateTime createDate)
+        {
+            Id = id;
+            CreationAt = createDate;
+        }
+
+        [JsonPropertyName("Id")] public Guid Id { get; set; }
+
+
+        [JsonPropertyName("CreationAt")] public DateTime CreationAt { get; }
     }
-
-    public IntegrationEvent(Guid id, DateTime createDate)
-    {
-        Id = id;
-        CreationAt = createDate;
-    }
-
-    [JsonPropertyName("Id")] public Guid Id { get; set; }
-
-
-    [JsonPropertyName("CreationAt")] public DateTime CreationAt { get; }
 }

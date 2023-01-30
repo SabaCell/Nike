@@ -1,13 +1,15 @@
 ﻿using System.Threading.Tasks;
 using Enexure.MicroBus.Messages;
 
-namespace Nike.Mediator.Handlers;
 
 //TODO remove it, Seems It's not neccesory 
-public class NoMatchingRegistrationEventHandler : Enexure.MicroBus.IEventHandler<NoMatchingRegistrationEvent>
+namespace Nike.Mediator.Handlers
 {
-    public virtual Task Handle(NoMatchingRegistrationEvent @event)
+    public class NoMatchingRegistrationEventHandler : Enexure.MicroBus.IEventHandler<NoMatchingRegistrationEvent>
     {
-        return Task.CompletedTask;
+        public virtual Task Handle(NoMatchingRegistrationEvent @event)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

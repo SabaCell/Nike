@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nike.Framework.Domain.EventSourcing;
+namespace Nike.Framework.Domain.EventSourcing{
 
 public class SystemClock : IClock
 {
@@ -8,5 +8,6 @@ public class SystemClock : IClock
     public DateTime Now()
     {
         return DateTime.Now;
+    }
     }
 }

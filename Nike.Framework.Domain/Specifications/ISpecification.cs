@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace Nike.Framework.Domain.Specifications;
-
-public interface ISpecification<TEntity>
+namespace Nike.Framework.Domain.Specifications
 {
-    Expression<Func<TEntity, bool>> Criteria { get; }
+    public interface ISpecification<TEntity>
+    {
+        Expression<Func<TEntity, bool>> Criteria { get; }
+    }
 }

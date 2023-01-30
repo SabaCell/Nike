@@ -1,8 +1,9 @@
 ﻿using System;
 
-namespace Nike.Framework.Domain;
-
-public interface IClock
+namespace Nike.Framework.Domain
 {
-    DateTime Now();
+    public interface IClock
+    {
+        DateTime Now();
+    }
 }

@@ -2,20 +2,21 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Nike.EventBus.Abstractions;
 
-namespace Nike.EventBus.RabbitMQ.AspNetCore;
-
-public static class ServiceCollectionExtensions
+namespace Nike.EventBus.RabbitMQ.AspNetCore
 {
-    public static IServiceCollection AddRabbitMq(this IServiceCollection serviceCollection,
-        string rabbitMqConnectionString)
+    public static class ServiceCollectionExtensions
     {
-        if (string.IsNullOrEmpty(rabbitMqConnectionString))
-            throw new ArgumentNullException(nameof(rabbitMqConnectionString));
+        public static IServiceCollection AddRabbitMq(this IServiceCollection serviceCollection,
+            string rabbitMqConnectionString)
+        {
+            if (string.IsNullOrEmpty(rabbitMqConnectionString))
+                throw new ArgumentNullException(nameof(rabbitMqConnectionString));
 
-        serviceCollection.AddSingleton<IRabbitMqConnection>(factory =>
-            new RabbitMqConnection(rabbitMqConnectionString));
-        serviceCollection.AddSingleton<IEventBusDispatcher, RabbitMQEventBusDispatcher>();
+            serviceCollection.AddSingleton<IRabbitMqConnection>(factory =>
+                new RabbitMqConnection(rabbitMqConnectionString));
+            serviceCollection.AddSingleton<IEventBusDispatcher, RabbitMQEventBusDispatcher>();
 
-        return serviceCollection;
+            return serviceCollection;
+        }
     }
 }

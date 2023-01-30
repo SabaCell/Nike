@@ -3,21 +3,22 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 
-namespace Nike.Web.Mvc;
-
-public class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
+namespace Nike.Web.Mvc
 {
-    private readonly ILogger<MvcOptions> _logger;
-    private readonly ObjectPoolProvider _objectPoolProvider;
-
-    public ConfigureMvcOptions(ILogger<MvcOptions> logger, ObjectPoolProvider objectPoolProvider)
+    public class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
     {
-        _logger = logger;
-        _objectPoolProvider = objectPoolProvider;
-    }
+        private readonly ILogger<MvcOptions> _logger;
+        private readonly ObjectPoolProvider _objectPoolProvider;
 
-    public void Configure(MvcOptions options)
-    {
-        options.UseHtmlEncodeJsonInputFormatter(_logger, _objectPoolProvider);
+        public ConfigureMvcOptions(ILogger<MvcOptions> logger, ObjectPoolProvider objectPoolProvider)
+        {
+            _logger = logger;
+            _objectPoolProvider = objectPoolProvider;
+        }
+
+        public void Configure(MvcOptions options)
+        {
+            options.UseHtmlEncodeJsonInputFormatter(_logger, _objectPoolProvider);
+        }
     }
 }

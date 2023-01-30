@@ -1,24 +1,25 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Nike.Redis.Microsoft.DependencyInjection;
-
-public static class ServiceCollectionExtensions
+namespace Nike.Redis.Microsoft.DependencyInjection
 {
-    public static IServiceCollection AddRedis(this IServiceCollection serviceCollection,
-        string redisConnectionString = null, string instanceName = null)
+    public static class ServiceCollectionExtensions
     {
-        serviceCollection.AddDistributedRedisCache(options =>
+        public static IServiceCollection AddRedis(this IServiceCollection serviceCollection,
+            string redisConnectionString = null, string instanceName = null)
         {
-            options.Configuration = redisConnectionString ?? "localhost";
-            options.InstanceName = instanceName ?? Assembly.GetEntryAssembly()?.GetName().Name;
-        });
+            serviceCollection.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString ?? "localhost";
+                options.InstanceName = instanceName ?? Assembly.GetEntryAssembly()?.GetName().Name;
+            });
 
-        return serviceCollection;
-    }
+            return serviceCollection;
+        }
 
-    public static IServiceCollection AddRedis(this IServiceCollection serviceCollection, RedisConfig config)
-    {
-        return AddRedis(serviceCollection, config.ConnectionString, config.InstanceName);
+        public static IServiceCollection AddRedis(this IServiceCollection serviceCollection, RedisConfig config)
+        {
+            return AddRedis(serviceCollection, config.ConnectionString, config.InstanceName);
+        }
     }
 }

@@ -1,29 +1,28 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace Nike.Swagger;
-
-public static class ApplicationBuilderExtensions
+namespace Nike.Swagger
 {
-    public static void UseSwaggerDefault(this WebApplication applicationBuilder,
-        Action<SwaggerOptions> swaggerOptions = null, Action<SwaggerUIOptions> swaggerUiOptions = null)
+    public static class ApplicationBuilderExtensions
     {
-        var provider = applicationBuilder.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-        applicationBuilder.UseSwagger(swaggerOptions ?? (_ => { }));
-        
-        applicationBuilder.UseSwaggerUI(swaggerUiOptions ?? (options =>
-
+        public static void UseSwaggerDefault(this WebApplication applicationBuilder,
+            Action<SwaggerOptions> swaggerOptions = null, Action<SwaggerUIOptions> swaggerUiOptions = null)
         {
-            foreach (var description in provider.ApiVersionDescriptions)
+            var provider = applicationBuilder.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+            applicationBuilder.UseSwagger(swaggerOptions ?? (_ => { }));
+        
+            applicationBuilder.UseSwaggerUI(swaggerUiOptions ?? (options =>
+
             {
-                options.SwaggerEndpoint($"{description.GroupName}/swagger.json",
-                    description.GroupName.ToUpperInvariant());
-                options.ConfigObject.DisplayOperationId = true;
-            }
-        }));
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    options.SwaggerEndpoint($"{description.GroupName}/swagger.json",
+                        description.GroupName.ToUpperInvariant());
+                    options.ConfigObject.DisplayOperationId = true;
+                }
+            }));
+        }
     }
 }

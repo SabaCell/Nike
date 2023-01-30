@@ -4,19 +4,20 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nike.Swagger;
-
-public class EnumSchemaFilter : ISchemaFilter
+namespace Nike.Swagger
 {
-    public void Apply(OpenApiSchema model, SchemaFilterContext context)
+    public abstract class EnumSchemaFilter : ISchemaFilter
     {
-        if (context.Type.IsEnum)
+        public void Apply(OpenApiSchema model, SchemaFilterContext context)
         {
-            model.Enum.Clear();
-            Enum.GetNames(context.Type)
-                .ToList()
-                .ForEach(name =>
-                    model.Enum.Add(new OpenApiString($"{Convert.ToInt64(Enum.Parse(context.Type, name))} - {name}")));
+            if (context.Type.IsEnum)
+            {
+                model.Enum.Clear();
+                Enum.GetNames(context.Type)
+                    .ToList()
+                    .ForEach(name =>
+                        model.Enum.Add(new OpenApiString($"{Convert.ToInt64(Enum.Parse(context.Type, name))} - {name}")));
+            }
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Nike.Web.Result.Wrappers;
-
-public class NotChangeActionResultWrapper : IActionResultWrapper
+namespace Nike.Web.Result.Wrappers
 {
-    public void Wrap(ResultExecutingContext actionResult)
+    public class NotChangeActionResultWrapper : IActionResultWrapper
     {
+        public void Wrap(ResultExecutingContext actionResult)
+        {
+        }
     }
 }

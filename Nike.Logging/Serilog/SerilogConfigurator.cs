@@ -1,18 +1,19 @@
 ﻿using Serilog;
 using Serilog.Formatting.Json;
 
-namespace Nike.Logging.Serilog;
-
-public static class SerilogConfigurator
+namespace Nike.Logging.Serilog
 {
-    public static ILogger Config()
+    public static class SerilogConfigurator
     {
-        Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .WriteTo
-            .Console(new JsonFormatter())
-            .CreateLogger();
+        public static ILogger Config()
+        {
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo
+                .Console(new JsonFormatter())
+                .CreateLogger();
 
-        return Log.Logger;
+            return Log.Logger;
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Nike.Framework.Domain.EventSourcing.Exceptions;
 
-namespace Nike.Framework.Domain.EventSourcing;
+namespace Nike.Framework.Domain.EventSourcing{
 
 public abstract class EntityBase<TId> : IEquatable<EntityBase<TId>>
     where TId : IEquatable<TId>
@@ -63,4 +63,5 @@ public abstract class EntityBase<TId> : IEquatable<EntityBase<TId>>
     {
         if (Id.Equals(default)) throw new DomainException("Invalid Entity.");
     }
+}
 }

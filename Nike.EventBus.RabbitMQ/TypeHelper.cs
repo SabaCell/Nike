@@ -4,55 +4,56 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace Nike.EventBus.RabbitMQ;
-
-public class TypeHelper
+namespace Nike.EventBus.RabbitMQ
 {
-    private readonly WeakReference<IList<Type>> _types = new(null);
-    private readonly string exceptTypesRegex = "(System.*|Microsoft.*)";
-
-    private IEnumerable<Type> Types
+    public class TypeHelper
     {
-        get
+        private readonly WeakReference<IList<Type>> _types = new WeakReference<IList<Type>>(null);
+        private readonly string exceptTypesRegex = "(System.*|Microsoft.*)";
+
+        private IEnumerable<Type> Types
         {
-            IList<Type> types;
-            if (!_types.TryGetTarget(out types))
+            get
             {
-                types = new List<Type>();
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                var count = assemblies.Length;
-                foreach (var assembly in assemblies)
+                IList<Type> types;
+                if (!_types.TryGetTarget(out types))
                 {
-                    var assemblyName = assembly.GetName().FullName;
-
-                    if (!assembly.IsDynamic)
+                    types = new List<Type>();
+                    var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    var count = assemblies.Length;
+                    foreach (var assembly in assemblies)
                     {
-                        Type[] exportedTypes = null;
-                        try
-                        {
-                            exportedTypes = assembly.GetExportedTypes();
-                        }
-                        catch (ReflectionTypeLoadException e)
-                        {
-                            exportedTypes = e.Types;
-                        }
+                        var assemblyName = assembly.GetName().FullName;
 
-                        if (exportedTypes != null)
-                            foreach (var exportedType in exportedTypes)
-                                if (!Regex.IsMatch(exportedType.FullName, exceptTypesRegex))
-                                    types.Add(exportedType);
+                        if (!assembly.IsDynamic)
+                        {
+                            Type[] exportedTypes = null;
+                            try
+                            {
+                                exportedTypes = assembly.GetExportedTypes();
+                            }
+                            catch (ReflectionTypeLoadException e)
+                            {
+                                exportedTypes = e.Types;
+                            }
+
+                            if (exportedTypes != null)
+                                foreach (var exportedType in exportedTypes)
+                                    if (!Regex.IsMatch(exportedType.FullName, exceptTypesRegex))
+                                        types.Add(exportedType);
+                        }
                     }
+
+                    _types.SetTarget(types);
                 }
 
-                _types.SetTarget(types);
+                return types;
             }
-
-            return types;
         }
-    }
 
-    public Type GetType(string typeFullName)
-    {
-        return Types.FirstOrDefault(type => type.FullName == typeFullName);
+        public Type GetType(string typeFullName)
+        {
+            return Types.FirstOrDefault(type => type.FullName == typeFullName);
+        }
     }
 }

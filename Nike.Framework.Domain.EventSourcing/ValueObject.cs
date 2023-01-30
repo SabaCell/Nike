@@ -1,6 +1,6 @@
 ﻿using Nike.Framework.Domain.EventSourcing.Equality;
 
-namespace Nike.Framework.Domain.EventSourcing;
+namespace Nike.Framework.Domain.EventSourcing{
 
 public abstract class ValueObject<T>
 {
@@ -15,4 +15,5 @@ public abstract class ValueObject<T>
     }
 
     protected abstract void Validate();
+}
 }

@@ -5,7 +5,7 @@ using Nike.EventBus.Events;
 using Nike.EventBus.Handlers;
 using Nike.Mediator.Handlers;
 
-namespace Nike.CustomerManagement.Application.Customers.IntegrationEvents;
+namespace Nike.CustomerManagement.Application.Customers.IntegrationEvents{
 
 public class RegisterCustomerIntegrationEvent : IntegrationEvent
 {
@@ -37,4 +37,5 @@ public class RegisterCustomerIntegrationEventHandler : IntegrationEventHandler<R
 
         await _bus.SendAsync(command);
     }
+}
 }

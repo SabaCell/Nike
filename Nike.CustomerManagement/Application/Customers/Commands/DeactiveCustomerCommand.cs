@@ -5,7 +5,7 @@ using Nike.CustomerManagement.Domain.Customers;
 using Nike.CustomerManagement.Infrastructure.Services.Customers;
 using Nike.Framework.Domain.Persistence;
 
-namespace Nike.CustomerManagement.Application.Customers.Commands;
+namespace Nike.CustomerManagement.Application.Customers.Commands{
 
 public class DeactiveCustomerCommand : ICommand
 {
@@ -41,5 +41,6 @@ public class DeactiveCustomerCommandHandler : ICommandHandler<DeactiveCustomerCo
             throw new NullReferenceException($"Customer with id {customerId} not found .");
 
         return customer;
+    }
     }
 }

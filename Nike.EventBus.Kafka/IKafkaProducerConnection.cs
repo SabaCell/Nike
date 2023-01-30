@@ -1,10 +1,11 @@
 ﻿using Confluent.Kafka;
 
-namespace Nike.EventBus.Kafka;
-
-public interface IKafkaProducerConnection
+namespace Nike.EventBus.Kafka
 {
-    bool IsConnected { get; }
+    public interface IKafkaProducerConnection
+    {
+        bool IsConnected { get; }
 
-    ProducerConfig Config { get; }
+        ProducerConfig Config { get; }
+    }
 }

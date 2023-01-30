@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Nike.Web.Result;
 
-namespace Nike.Web.Mvc;
-
-public static class MvcExtensions
+namespace Nike.Web.Mvc
 {
-    public static void AddFilters(this MvcOptions options)
+    public static class MvcExtensions
     {
-        options.Filters.AddService(typeof(GlobalExceptionFilter));
-        options.Filters.AddService(typeof(ResultFilter));
+        public static void AddFilters(this MvcOptions options)
+        {
+            options.Filters.AddService(typeof(GlobalExceptionFilter));
+            options.Filters.AddService(typeof(ResultFilter));
+        }
     }
 }

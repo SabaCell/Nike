@@ -1,21 +1,22 @@
 ﻿using Enexure.MicroBus;
 using Nike.Mediator.Models;
 
-namespace Nike.Mediator.Command;
-
-public abstract class UserDataCommandBase : ICommand
+namespace Nike.Mediator.Command
 {
-    private UserData _userData;
-
-    public void SetUserData(UserData userInfo)
+    public abstract class UserDataCommandBase : ICommand
     {
-        _userData = userInfo;
-    }
+        private UserData _userData;
 
-    public UserData GetUserData()
-    {
-        return _userData;
-    }
+        public void SetUserData(UserData userInfo)
+        {
+            _userData = userInfo;
+        }
 
-    public abstract void Validate();
+        public UserData GetUserData()
+        {
+            return _userData;
+        }
+
+        public abstract void Validate();
+    }
 }

@@ -1,27 +1,28 @@
 ﻿using Confluent.Kafka;
 
-namespace Nike.EventBus.Kafka;
-
-public class KafkaProducerConnection : IKafkaProducerConnection
+namespace Nike.EventBus.Kafka
 {
-    public KafkaProducerConnection(string brokers)
+    public class KafkaProducerConnection : IKafkaProducerConnection
     {
-        Config = new ProducerConfig
+        public KafkaProducerConnection(string brokers)
         {
-            BootstrapServers = brokers,
-            Partitioner = Partitioner.Random,
-            LogThreadName = true
-        };
+            Config = new ProducerConfig
+            {
+                BootstrapServers = brokers,
+                Partitioner = Partitioner.Random,
+                LogThreadName = true
+            };
 
-        IsConnected = true;
+            IsConnected = true;
+        }
+
+        public KafkaProducerConnection(ProducerConfig producerConfig)
+        {
+            Config = producerConfig;
+            IsConnected = true;
+        }
+
+        public bool IsConnected { get; }
+        public ProducerConfig Config { get; }
     }
-
-    public KafkaProducerConnection(ProducerConfig producerConfig)
-    {
-        Config = producerConfig;
-        IsConnected = true;
-    }
-
-    public bool IsConnected { get; }
-    public ProducerConfig Config { get; }
 }

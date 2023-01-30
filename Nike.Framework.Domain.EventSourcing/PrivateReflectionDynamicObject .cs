@@ -5,7 +5,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 
-namespace Nike.Framework.Domain.EventSourcing;
+namespace Nike.Framework.Domain.EventSourcing{
 
 public class PrivateReflectionDynamicObject : DynamicObject
 {
@@ -213,4 +213,5 @@ public class PrivateReflectionDynamicObject : DynamicObject
             FieldInfo.SetValue(obj, val);
         }
     }
+}
 }

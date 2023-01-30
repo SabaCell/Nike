@@ -1,15 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Enexure.MicroBus;
 
-namespace Nike.Mediator.Handlers;
-
-public abstract class EventHandler<TEvent> : IEventHandler<TEvent>
+namespace Nike.Mediator.Handlers
 {
-    public virtual async Task<Unit> Handle(TEvent message)
+    public abstract class EventHandler<TEvent> : IEventHandler<TEvent>
     {
-        await HandleAsync(message);
-        return Unit.Unit;
-    }
+        public virtual async Task<Unit> Handle(TEvent message)
+        {
+            await HandleAsync(message);
+            return Unit.Unit;
+        }
 
-    public abstract Task HandleAsync(TEvent @event);
+        public abstract Task HandleAsync(TEvent @event);
+    }
 }

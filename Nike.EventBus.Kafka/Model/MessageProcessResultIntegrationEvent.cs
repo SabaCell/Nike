@@ -1,24 +1,25 @@
 ﻿using System;
 using Nike.EventBus.Events;
 
-namespace Nike.EventBus.Kafka.Model;
-
-public class MessageProcessResultIntegrationEvent : IntegrationEvent
+namespace Nike.EventBus.Kafka.Model
 {
-    public Guid EventId { get; set; }
-
-    public bool IsSuccess { get; set; }
-
-    public string FailureReason { get; set; }
-
-    public static MessageProcessResultIntegrationEvent Success(Guid eventId)
+    public class MessageProcessResultIntegrationEvent : IntegrationEvent
     {
-        return new MessageProcessResultIntegrationEvent {EventId = eventId, IsSuccess = true};
-    }
+        public Guid EventId { get; set; }
 
-    public static MessageProcessResultIntegrationEvent Fail(Guid eventId, string failureReason)
-    {
-        return new MessageProcessResultIntegrationEvent
-            {EventId = eventId, IsSuccess = false, FailureReason = failureReason};
+        public bool IsSuccess { get; set; }
+
+        public string FailureReason { get; set; }
+
+        public static MessageProcessResultIntegrationEvent Success(Guid eventId)
+        {
+            return new MessageProcessResultIntegrationEvent {EventId = eventId, IsSuccess = true};
+        }
+
+        public static MessageProcessResultIntegrationEvent Fail(Guid eventId, string failureReason)
+        {
+            return new MessageProcessResultIntegrationEvent
+                {EventId = eventId, IsSuccess = false, FailureReason = failureReason};
+        }
     }
 }

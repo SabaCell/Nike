@@ -1,15 +1,16 @@
 ﻿using System;
 
-namespace Nike.Framework.Domain.Events;
-
-public abstract class DomainEvent
+namespace Nike.Framework.Domain.Events
 {
-    public DomainEvent(Type aggregateRootType)
+    public abstract class DomainEvent
     {
-        AggregateRootType = aggregateRootType;
-        RaisedAt = DateTime.Now;
-    }
+        public DomainEvent(Type aggregateRootType)
+        {
+            AggregateRootType = aggregateRootType;
+            RaisedAt = DateTime.Now;
+        }
 
-    public Type AggregateRootType { get; }
-    public DateTime RaisedAt { get; }
+        public Type AggregateRootType { get; }
+        public DateTime RaisedAt { get; }
+    }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nike.Framework.Domain.EventSourcing.Equality;
+namespace Nike.Framework.Domain.EventSourcing.Equality{
 
 public static class BitConverterUtil
 {
@@ -8,4 +8,5 @@ public static class BitConverterUtil
     {
         return BitConverter.ToInt32(BitConverter.GetBytes(value), 0);
     }
+}
 }

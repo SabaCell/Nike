@@ -5,12 +5,13 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Receiving;
 
-namespace Nike.EventBus.Mqtt.Services;
-
-public interface IMqttClientService : IHostedService,
-    IMqttClientConnectedHandler,
-    IMqttClientDisconnectedHandler,
-    IMqttApplicationMessageReceivedHandler
+namespace Nike.EventBus.Mqtt.Services
 {
-    Task PublishAsync(MqttApplicationMessage msg);
+    public interface IMqttClientService : IHostedService,
+        IMqttClientConnectedHandler,
+        IMqttClientDisconnectedHandler,
+        IMqttApplicationMessageReceivedHandler
+    {
+        Task PublishAsync(MqttApplicationMessage msg);
+    }
 }

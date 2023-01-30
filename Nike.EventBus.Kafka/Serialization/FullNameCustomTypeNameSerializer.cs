@@ -1,4 +1,4 @@
-namespace Nike.EventBus.Kafka.Serialization;
+ 
 
 
 /// This custom ITypeNameSerializer changes the default behaviour of EasyNetQ TypeNameSerializer 

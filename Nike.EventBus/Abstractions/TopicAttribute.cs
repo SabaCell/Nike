@@ -1,16 +1,17 @@
 ﻿using System;
 
-namespace Nike.EventBus.Abstractions;
-
-[AttributeUsage(AttributeTargets.Class)]
-public class TopicAttribute : Attribute
+namespace Nike.EventBus.Abstractions
 {
-    public TopicAttribute(string topicName, QualityOfServiceLevel serviceLevel = QualityOfServiceLevel.AtLeastOnce)
+    [AttributeUsage(AttributeTargets.Class)]
+    public abstract class TopicAttribute : Attribute
     {
-        TopicName = topicName;
-        ServiceLevel = serviceLevel;
-    }
+        public TopicAttribute(string topicName, QualityOfServiceLevel serviceLevel = QualityOfServiceLevel.AtLeastOnce)
+        {
+            TopicName = topicName;
+            ServiceLevel = serviceLevel;
+        }
 
-    public string TopicName { get; }
-    public QualityOfServiceLevel ServiceLevel { get; }
+        public string TopicName { get; }
+        public QualityOfServiceLevel ServiceLevel { get; }
+    }
 }

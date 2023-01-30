@@ -1,18 +1,19 @@
 ﻿using Nike.Framework.Domain.Equality;
 
-namespace Nike.Framework.Domain;
-
-public abstract class ValueObject<T>
+namespace Nike.Framework.Domain
 {
-    public override bool Equals(object obj)
+    public abstract class ValueObject<T>
     {
-        return EqualsBuilder.ReflectionEquals(this, obj);
-    }
+        public override bool Equals(object obj)
+        {
+            return EqualsBuilder.ReflectionEquals(this, obj);
+        }
 
-    public override int GetHashCode()
-    {
-        return HashCodeBuilder.ReflectionHashCode(this);
-    }
+        public override int GetHashCode()
+        {
+            return HashCodeBuilder.ReflectionHashCode(this);
+        }
 
-    protected abstract void Validate();
+        protected abstract void Validate();
+    }
 }

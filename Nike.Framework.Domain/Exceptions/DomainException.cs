@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Nike.Framework.Domain.Exceptions;
-
-[Serializable]
-public class DomainException : Exception
+namespace Nike.Framework.Domain.Exceptions
 {
-    public DomainException()
+    [Serializable]
+    public class DomainException : Exception
     {
-        AggregateRootType = GetType();
-    }
+        public DomainException()
+        {
+            AggregateRootType = GetType();
+        }
 
-    public DomainException(string message) : base(message)
-    {
-    }
+        public DomainException(string message) : base(message)
+        {
+        }
 
-    public DomainException(string message, Exception inner) : base(message, inner)
-    {
-    }
+        public DomainException(string message, Exception inner) : base(message, inner)
+        {
+        }
 
-    protected DomainException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
+        protected DomainException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
 
-    public Type AggregateRootType { get; }
+        public Type AggregateRootType { get; }
+    }
 }

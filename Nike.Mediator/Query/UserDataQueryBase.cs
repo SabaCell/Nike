@@ -1,20 +1,21 @@
 ﻿using Nike.Mediator.Models;
 
-namespace Nike.Mediator.Query;
-
-public abstract class UserDataQueryBase<T> : QueryBase<T> where T : class
+namespace Nike.Mediator.Query
 {
-    private UserData _userData;
-
-    public void SetUserData(UserData userInfo)
+    public abstract class UserDataQueryBase<T> : QueryBase<T> where T : class
     {
-        _userData = userInfo;
-    }
+        private UserData _userData;
 
-    public UserData GetUserData()
-    {
-        return _userData;
-    }
+        public void SetUserData(UserData userInfo)
+        {
+            _userData = userInfo;
+        }
 
-    public abstract void Validate();
+        public UserData GetUserData()
+        {
+            return _userData;
+        }
+
+        public abstract void Validate();
+    }
 }

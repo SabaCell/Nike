@@ -1,14 +1,15 @@
 ﻿using Nike.Framework.Domain.Events;
 
-namespace Nike.Mediator.Events;
-
-public class AfterCommittedEvent<TDomainEvent> : DomainEvent
-    where TDomainEvent : DomainEvent
+namespace Nike.Mediator.Events
 {
-    public AfterCommittedEvent(TDomainEvent @event) : base(@event.AggregateRootType)
+    public class AfterCommittedEvent<TDomainEvent> : DomainEvent
+        where TDomainEvent : DomainEvent
     {
-        Event = @event;
-    }
+        public AfterCommittedEvent(TDomainEvent @event) : base(@event.AggregateRootType)
+        {
+            Event = @event;
+        }
 
-    public TDomainEvent Event { get; }
+        public TDomainEvent Event { get; }
+    }
 }

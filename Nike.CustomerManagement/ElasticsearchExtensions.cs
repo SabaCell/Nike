@@ -2,7 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
 
-namespace Nike.CustomerManagement;
+namespace Nike.CustomerManagement{
 
 public class ElasticSearchConfiguration
 {
@@ -18,4 +18,5 @@ public static class ElasticSearchExtensions
         services.AddSingleton(settings);
         services.AddTransient<IElasticClient, ElasticClient>(e => new ElasticClient(settings));
     }
+}
 }
