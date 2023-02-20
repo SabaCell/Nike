@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Nike.Exceptions;
 
@@ -11,6 +12,7 @@ public class EntityNotFoundException : GeneralException
         : this(entityType, id, null, extra)
     {
         ErrorCode = ExceptionCode;
+        
     }
 
     /// <summary>
@@ -20,7 +22,7 @@ public class EntityNotFoundException : GeneralException
         IDictionary<string, object> extra)
         : base("Entity not found",
             $"There is no such an entity. Entity type: {entityType.FullName}, id: {id}, extra: {extra.ToFormattedString()}",
-            innerException)
+            innerException,HttpStatusCode.NotFound)
     {
         EntityType = entityType;
         Id = id;
