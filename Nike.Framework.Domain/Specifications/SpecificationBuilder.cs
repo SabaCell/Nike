@@ -13,7 +13,11 @@ public class SpecificationBuilder<T>
         _relationalSpecification.AddInclude(include);
         return this;
     }
-
+    public SpecificationBuilder<T> GroupBy(Expression<Func<T, object>> groupBy)
+    {
+        _relationalSpecification.GroupBy(groupBy);
+        return this;
+    }
     public SpecificationBuilder<T> AddInclude(string include)
     {
         _relationalSpecification.AddInclude(include);
