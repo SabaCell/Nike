@@ -9,6 +9,7 @@ public interface IRelationalSpecification<TEntity> : ISpecification<TEntity>
     List<Expression<Func<TEntity, object>>> Includes { get; }
     Expression<Func<TEntity, object>> OrderBy { get; }
     Expression<Func<TEntity, object>> OrderByDescending { get; }
+    public Expression<Func<TEntity, object>> GroupBy { get;  }
     int Skip { get; }
     int Take { get; }
     bool TrackingEnabled { get; }
@@ -18,4 +19,5 @@ public interface IRelationalSpecification<TEntity> : ISpecification<TEntity>
     void ApplyOrderByDescending(Expression<Func<TEntity, object>> orderByDescending);
     void ApplySkipTake(int skip, int take);
     void ApplyCriteria(Expression<Func<TEntity, bool>> criteria);
+    void ApplyGroupBy(Expression<Func<TEntity, object>> groupByExpression);
 }

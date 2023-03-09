@@ -11,6 +11,7 @@ public static class SpecificationExtensions
     {
         return queryable
             .SetTracking(specification)
+            .GroupBy(specification)
             .Include(specification)
             .Where(specification)
             .OrderBy(specification)
@@ -50,6 +51,14 @@ public static class SpecificationExtensions
         where T : class
     {
         return specification.Criteria == default ? queryable : queryable.Where(specification.Criteria);
+    }
+
+    private static IQueryable<T> GroupBy<T>(this IQueryable<T> queryable, IRelationalSpecification<T> specification)
+        where T : class
+    {
+        return specification.GroupBy == default
+            ? queryable
+            : queryable.GroupBy(specification.GroupBy).SelectMany(x => x);
     }
 
     private static IQueryable<T> SetTracking<T>(this IQueryable<T> queryable,

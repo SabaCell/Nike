@@ -14,7 +14,7 @@ public class RelationalSpecification<T> : IRelationalSpecification<T>
     public int Skip { get; private set; }
     public int Take { get; private set; }
     public Expression<Func<T, bool>> Criteria { get; private set; }
-
+    public Expression<Func<T, object>> GroupBy { get; private set; }
     public void AddInclude(Expression<Func<T, object>> include)
     {
         Includes.Add(include);
@@ -45,7 +45,10 @@ public class RelationalSpecification<T> : IRelationalSpecification<T>
     {
         Criteria = criteria;
     }
-
+    public void ApplyGroupBy(Expression<Func<T, object>> groupByExpression)
+    {
+        GroupBy = groupByExpression;
+    }
     public void DisableTracking()
     {
         TrackingEnabled = false;
@@ -107,6 +110,15 @@ public static class RelationalSpecificationExtenstion
         Expression<Func<TEntity, bool>> criteria)
     {
         specification.ApplyCriteria(criteria);
+
+        return specification;
+    }
+    
+    public static RelationalSpecification<TEntity> GroupBy<TEntity>(
+        this RelationalSpecification<TEntity> specification,
+        Expression<Func<TEntity, object>> groupBy)
+    {
+        specification.ApplyGroupBy(groupBy);
 
         return specification;
     }

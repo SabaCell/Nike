@@ -76,7 +76,7 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
 
     public Task<List<TEntity>> GetAllAsync()
     {
-        return DbSet.ToListAsync();
+        return DbSet.IgnoreAutoIncludes().ToListAsync();
     }
 
     private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification)
