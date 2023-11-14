@@ -3,30 +3,32 @@ using System.Linq;
 using Confluent.Kafka;
 using System.Threading;
 using System.Threading.Tasks;
-using Nike.EventBus.Kafka.Model;
 using System.Collections.Generic;
+using System.Text.Json;
+using Enexure.MicroBus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nike.EventBus.Kafka.Extenstion;
 
 namespace Nike.EventBus.Kafka.AspNetCore;
 
-[Obsolete(@"The ConsumerHostedService is no longer used. Please use <see cref='KafkaConsumerBackgroundService' /> instead from now!", true)]
-public class ConsumerHostedService : BackgroundService
+//[Obsolete(@"The ConsumerHostedService is no longer used. Please use <see cref='KafkaConsumerBackgroundService' /> instead from now!", true)]
+internal class ConsumerHostedService : BackgroundService
 {
     private readonly IKafkaConsumerConnection _connection;
     private readonly ILogger<ConsumerHostedService> _logger;
-    private readonly IServiceProvider _services;
+    private readonly IServiceProvider _serviceProvider;
+
     private readonly Dictionary<string, Type> _topics;
-    private readonly SemaphoreSlim _throttler = new(30);
+    //   private readonly SemaphoreSlim _throttler = new(30);
 
     public ConsumerHostedService(
         ILogger<ConsumerHostedService> logger,
         IKafkaConsumerConnection connection,
-        IServiceProvider services)
+        IServiceProvider serviceProvider)
     {
         _logger = logger;
-        _services = services;
+        _serviceProvider = serviceProvider;
         _connection = connection;
         _topics = TopicHelper.GetLiveTopics();
     }
@@ -48,35 +50,43 @@ public class ConsumerHostedService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
-
         using var consumer = MakeConsumer();
         consumer.Subscribe(_topics.Keys);
-
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                var consumeResult = new ConsumeMessageResult(_topics);
-                if (consumer.TryConsumeMessage(consumeResult, _logger, stoppingToken))
+                var consumeResult = consumer.Consume(stoppingToken);
+                //    new ConsumeMessageResult(_topics);
+                if (consumeResult is { Message: { } })
                 {
                     _logger.LogTrace(
-                        $"{consumer.Name} - Pull Message.TP:{consumeResult.Result.TopicPartition.Topic}:{consumeResult.Result.TopicPartition.Partition}, Offset:{consumeResult.Result.Offset.Value}");
+                        $"{consumer.Name} - Pull Message.TP:{consumeResult.TopicPartition.Topic}:" +
+                        $"{consumeResult.TopicPartition.Partition}, Offset:{consumeResult.Offset.Value}");
+                    var typeOfPayload = _topics.GetValueOrDefault(consumeResult.TopicPartition.Topic);
 
-                    await _throttler.WaitAsync(stoppingToken);
-                    consumeResult.PublishToDomainAsync(_services, _logger, _throttler, stoppingToken);
-
-                    consumer.StoreOffset(consumeResult.Result);
+                    if (typeOfPayload != null)
+                    {
+                        var message = JsonSerializer.Deserialize(consumeResult.Message.Value, typeOfPayload);
+                        using var scope = _serviceProvider.CreateScope();
+                        var microMediator = scope.ServiceProvider.GetRequiredService<IMicroMediator>();
+                        await microMediator.PublishAsync(message);
+                    }
+                    await Task.Delay(2, stoppingToken);
+                    consumer.StoreOffset(consumeResult);
                 }
 
                 await Task.Delay(1, stoppingToken);
             }
             catch (TaskCanceledException ex) when (stoppingToken.IsCancellationRequested)
             {
+          
                 _logger.LogError(ex,
                     $"(TaskCanceledException) Error occurred executing {ex.Source} {ex.Message}. {ex.Source}");
             }
             catch (OperationCanceledException ex) when (stoppingToken.IsCancellationRequested)
             {
+         
                 _logger.LogError(ex,
                     "(OperationCanceledException) Error occurred executing {WorkItem}.", nameof(_connection));
             }
@@ -104,17 +114,15 @@ public class ConsumerHostedService : BackgroundService
 
     private IConsumer<Ignore, string> MakeConsumer()
     {
-        _connection.Config.PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin;
-
         var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
             // Note: All handlers are called on the main .Consume thread.
             // .SetValueDeserializer(new DefaultDeserializer<string>())
             .SetErrorHandler((_, e) =>
-                _logger.LogError($"KafkaConsumer has error {e.Code} - {e.Reason}"))
+                _logger.LogError($"TopicConsumer has error on Topic: ({_.Name}) {e.Code} - {e.Reason}"))
             .SetStatisticsHandler((_, json) =>
             {
-                //Console.WriteLine($"Statistics: {json}")
-                // Console.WriteLine($"Statistics: raised")
+                _logger.LogTrace($"Statistics: {json}");
+                _logger.LogTrace($"Statistics: raised");
             })
             .SetPartitionsAssignedHandler((c, partitions) =>
             {
@@ -130,9 +138,6 @@ public class ConsumerHostedService : BackgroundService
                 _logger.LogTrace($"Revoking assignment: [{string.Join(", ", partitions)}]");
             })
             .Build();
-
-        _logger.LogInformation($"Consumer {consumer.Name} has been constructed...");
-
         return consumer;
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nike.CustomerManagement.Application.Customers.Commands;
+using Nike.CustomerManagement.Application.Customers.IntegrationEvents;
 using Nike.CustomerManagement.Domain.Customers;
 using Nike.CustomerManagement.Infrastructure;
 using Nike.CustomerManagement.Infrastructure.Services.Customers;
@@ -30,21 +31,27 @@ internal class Program
     {
         var host = CreateHostBuilder(args).Build();
 
-        var scop = host.Services.CreateScope();
+        // var scop = host.Services.CreateScope();
+        // var bus = scop.ServiceProvider.GetService<IEventBusDispatcher>();
+        // while (true)
+        // {
+        //      bus.PublishAsync(new ActiveCustomerIntegrationEvent());
+        //     Thread.Sleep(1);
+        // }
 
-        var bus = scop.ServiceProvider.GetService<IMicroMediator>();
-        var I = 1;
-        while (true)
-        {
-            var command = new RegisterCustomerCommand
-            {
-                FirstName = $"Name {I}",
-                LastName = $"Name {I}",
-                NationalCode = I.ToString()
-            };
-            bus.SendAsync(command);
-            Thread.Sleep(1);
-        }
+        // var bus = scop.ServiceProvider.GetService<IMicroMediator>();
+        // var I = 1;
+        // while (true)
+        // {
+        //     var command = new RegisterCustomerCommand
+        //     {
+        //         FirstName = $"Name {I}",
+        //         LastName = $"Name {I}",
+        //         NationalCode = I.ToString()
+        //     };
+        //     bus.SendAsync(command);
+        //     Thread.Sleep(1);
+        // }
         host.Run();
     }
 
@@ -64,14 +71,12 @@ internal class Program
         ConfigureRedis(hostContext, services);
         ConfigureElasticSearch(hostContext, services);
         ConfigureKafka(hostContext, services);
-        ConfigureEntityFrameWork(hostContext, services);
+        // ConfigureEntityFrameWork(hostContext, services);
         ConfigureMicroBus(services);
         ConfigureStoreServices(services);
 
         services.AddSingleton<IClock, SystemClock>();
         //  services.AddHostedService<ConsumerHostedService>();
-
-    
     }
 
 
@@ -97,7 +102,6 @@ internal class Program
 
     private static void ConfigureEntityFrameWork(HostBuilderContext hostContext, IServiceCollection services)
     {
-
         services.AddEntityFrameworkSqlServer()
             .AddEntityFrameworkUnitOfWork()
             .AddEntityFrameworkDefaultRepository()
@@ -111,7 +115,6 @@ internal class Program
                     });
             })
             .AddScoped<IDbContextAccessor>(s => new DbContextAccessor(s.GetRequiredService<DatabaseContext>()));
-
     }
 
     private static void ConfigureMicroBus(IServiceCollection services)

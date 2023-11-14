@@ -1,15 +1,13 @@
 using System;
 using System.Threading;
-using Enexure.MicroBus;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Nike.EventBus.Kafka.AspNetCore;
 
-public class KafkaConsumerBackgroundService : BackgroundService
+internal class KafkaConsumerBackgroundService : BackgroundService
 {
     private readonly IKafkaConsumerConnection _connection;
     private readonly IServiceProvider _serviceProvider;
@@ -36,6 +34,7 @@ public class KafkaConsumerBackgroundService : BackgroundService
             var consumer = new TopicConsumer(_connection, _serviceProvider, topic.Key, topic.Value, _logger);
             consumerTasks.Add(consumer.ExecuteAsync(stoppingToken));
         }
+
         return Task.WhenAll(consumerTasks.ToArray());
         // _logger.LogWarning(
         //     $"Stopping All conusmers request has been raised => IsCancellationRequested={stoppingToken.IsCancellationRequested}");

@@ -14,9 +14,7 @@ internal class TopicConsumer : IDisposable
     private readonly ILogger _logger;
     private readonly IKafkaConsumerConnection _connection;
     private readonly IServiceProvider _serviceProvider;
-
     private readonly IConsumer<Ignore, string> _consumer;
-
     // private readonly IMicroMediator _microMediator;
     private readonly Type _typeOfPayload;
     private readonly string _topic;
@@ -26,7 +24,6 @@ internal class TopicConsumer : IDisposable
     {
         _connection = connection;
         _serviceProvider = serviceProvider;
-
         _typeOfPayload = typeOfPayload;
         _logger = logger;
         _topic = topic;
@@ -69,11 +66,13 @@ internal class TopicConsumer : IDisposable
                 }
                 catch (TaskCanceledException ex) when (cancellationToken.IsCancellationRequested)
                 {
+                    _consumer.Close();
                     _logger.LogError(ex,
                         $"(TaskCanceledException) Error occurred executing on Topic ({_topic}) => {ex.Source} {ex.Message}. {ex.Source}");
                 }
                 catch (OperationCanceledException ex) when (cancellationToken.IsCancellationRequested)
                 {
+                    _consumer.Close();
                     _logger.LogError(ex,
                         $"(OperationCanceledException) Error occurred executing on Topic ({_topic}) => {nameof(_connection)}) => {ex.Source} {ex.Message}. {ex.StackTrace}.");
                 }
@@ -83,11 +82,6 @@ internal class TopicConsumer : IDisposable
                         $"(Exception) Error occurred executing on Topic ({_topic}) => {nameof(_connection)}.");
                 }
             }
-
-            _consumer.Close();
-
-            _logger.LogWarning(
-                $"Stopping conusmer request has been raised on Topic ({_topic}) => IsCancellationRequested=[{cancellationToken.IsCancellationRequested}]");
         }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
@@ -98,8 +92,6 @@ internal class TopicConsumer : IDisposable
 
     private IConsumer<Ignore, string> MakeConsumer(string topic)
     {
-        _connection.Config.PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin;
-
         var consumer = new ConsumerBuilder<Ignore, string>(_connection.Config)
             // Note: All handlers are called on the main .Consume thread.
             // .SetValueDeserializer(new DefaultDeserializer<string>())

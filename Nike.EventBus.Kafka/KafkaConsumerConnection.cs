@@ -7,7 +7,6 @@ public class KafkaConsumerConnection : IKafkaConsumerConnection
     public KafkaConsumerConnection(string brokers, string groupId, bool allowAutoCreateTopics)
     {
         MillisecondsTimeout = MillisecondsTimeout == 0 ? 1000 : MillisecondsTimeout;
-
         Config = new ConsumerConfig
         {
             BootstrapServers = brokers,
@@ -20,15 +19,11 @@ public class KafkaConsumerConnection : IKafkaConsumerConnection
             PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin,
             AllowAutoCreateTopics = allowAutoCreateTopics
         };
-
         IsConnected = true;
     }
-
-
     public bool IsConnected { get; }
     public int MillisecondsTimeout { get; set; }
     public ConsumerConfig Config { get; }
     public int StatisticsIntervalMs { get; set; }
     public int SessionTimeoutMs { get; set; }
-    public bool IsAsync { get; }
 }

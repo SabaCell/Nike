@@ -12,10 +12,8 @@ public class KafkaProducerConnection : IKafkaProducerConnection
             Partitioner = Partitioner.Random,
             LogThreadName = true
         };
-
         IsConnected = true;
     }
-
     public KafkaProducerConnection(ProducerConfig producerConfig)
     {
         Config = producerConfig;

@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageVersion>1.1.1.4</PackageVersion>
-        <TargetFramework>net6.0</TargetFramework>
+        <PackageVersion>1.1.1.6</PackageVersion>
         <Copyright>SabaCell</Copyright>
         <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
         <RepositoryUrl>https://github.com/sabacell/nike</RepositoryUrl>
         <PackageTags>microservice, netcore, kafka,High Performance, ef, reactive, DDD, EventSourcing</PackageTags>
+        <TargetFrameworks>net6.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Google.Protobuf" Version="3.19.4" />
-        <PackageReference Include="Confluent.Kafka" Version="1.8.2" />
+        <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
         <PackageReference Include="Enexure.MicroBus" Version="3.7.0" />
         <ProjectReference Include="..\Nike.EventBus\Nike.EventBus.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
