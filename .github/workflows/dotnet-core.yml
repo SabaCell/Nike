@@ -88,9 +88,6 @@ jobs:
       run: dotnet pack ./Nike.EventBus.Mqtt/Nike.EventBus.Mqtt.csproj  -c Release -o ./nuget
     - name: Build Nike.EventBus.Redis
       run: dotnet pack ./Nike.EventBus.Redis/Nike.EventBus.Redis.csproj  -c Release -o ./nuget
-      
-    - name: ls
-      run: ls -lah ./nuget 
     - name: Deploy Nike.EntityFramework
       run: dotnet nuget push /home/runner/work/Nike/Nike/nuget/Nike.EntityFramework*.nupkg  -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Deploy Nike.EntityFramework.Microsoft.DependencyInjection
