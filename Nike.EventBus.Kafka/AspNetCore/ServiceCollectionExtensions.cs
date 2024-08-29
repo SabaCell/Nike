@@ -28,21 +28,13 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddKafkaConsumer(this IServiceCollection serviceCollection, string brokers,
         string groupId, bool allowAutoCreateTopics = true,
-        ProcessConsumerType processConsumer = ProcessConsumerType.SingleProcess)
+        int consumerThreadCount = 1)
     {
         if (string.IsNullOrEmpty(brokers))
             throw new ArgumentNullException(nameof(brokers));
-        var consumer = new KafkaConsumerConnection(brokers, groupId, allowAutoCreateTopics);
+        var consumer = new KafkaConsumerConnection(brokers, groupId, allowAutoCreateTopics, consumerThreadCount);
         serviceCollection.AddSingleton<IKafkaConsumerConnection>(consumer);
-        if (processConsumer == ProcessConsumerType.SingleProcess)
-        {
-            serviceCollection.AddHostedService<ConsumerHostedService>();
-        }
-        else
-        {
-            serviceCollection.AddHostedService<KafkaConsumerBackgroundService>();
-        }
-
+        serviceCollection.AddHostedService<KafkaConsumerBackgroundService>();
         return serviceCollection;
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageVersion>1.1.1.6</PackageVersion>
+        <PackageVersion>1.1.1.7</PackageVersion>
         <TargetFramework>net6.0</TargetFramework>
         <Copyright>SabaCell</Copyright>
         <PackageProjectUrl>https://github.com/sabacell/nike</PackageProjectUrl>
@@ -17,6 +17,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0"/>
         <ProjectReference Include="..\Nike.Mediator\Nike.Mediator.csproj"/>
+        <PackageReference Include="Polly" Version="8.3.1" />
     </ItemGroup>
 
 </Project>

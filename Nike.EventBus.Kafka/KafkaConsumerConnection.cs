@@ -4,26 +4,25 @@ namespace Nike.EventBus.Kafka;
 
 public class KafkaConsumerConnection : IKafkaConsumerConnection
 {
-    public KafkaConsumerConnection(string brokers, string groupId, bool allowAutoCreateTopics)
+    public KafkaConsumerConnection(string brokers, string groupId, bool allowAutoCreateTopics,
+        int consumerThreadCount = 1)
     {
-        MillisecondsTimeout = MillisecondsTimeout == 0 ? 1000 : MillisecondsTimeout;
+        ConsumerThreadCount = consumerThreadCount;
         Config = new ConsumerConfig
         {
             BootstrapServers = brokers,
             GroupId = groupId,
-            StatisticsIntervalMs = StatisticsIntervalMs == 0 ? 1000 : StatisticsIntervalMs,
-            SessionTimeoutMs = SessionTimeoutMs == 0 ? 6000 : SessionTimeoutMs,
+            StatisticsIntervalMs = 1000,
+            SessionTimeoutMs = 6000,
             EnableAutoCommit = true,
-            EnableAutoOffsetStore = false,
-            EnablePartitionEof = true,
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+            EnableAutoOffsetStore = true,
             PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin,
-            AllowAutoCreateTopics = allowAutoCreateTopics
+            AllowAutoCreateTopics = allowAutoCreateTopics,
+            LogConnectionClose = false,
         };
-        IsConnected = true;
     }
-    public bool IsConnected { get; }
-    public int MillisecondsTimeout { get; set; }
+
     public ConsumerConfig Config { get; }
-    public int StatisticsIntervalMs { get; set; }
-    public int SessionTimeoutMs { get; set; }
+    public int ConsumerThreadCount { get; set; }
 }
